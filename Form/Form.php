@@ -4,13 +4,20 @@
 /*      email : btourlonias@openstudio.fr                                            */
 /*************************************************************************************/
 
-namespace TheliaGiftCard;
+namespace TheliaGiftCard\Form;
 
-use Thelia\Module\BaseModule;
 
-class TheliaGiftCard extends BaseModule
+use Thelia\Form\BaseForm;
+
+class Form extends BaseForm
 {
-    /** @var string */
-    const DOMAIN_NAME = 'theliagiftcard';
+    public function getName()
+    {
+        return 'submit_gift_card_number';
+    }
 
+    protected function buildForm()
+    {
+        
+    }
 }

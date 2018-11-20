@@ -2,29 +2,32 @@
 <database defaultIdMethod="native" name="thelia"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation="../../../vendor/propel/propel/resources/xsd/database.xsd" >
-    <!--
-    See propel documentation on http://propelorm.org for all information about schema file
-
-    <table name="product_rel" namespace="TheliaGiftCard\Model">
+    <table name="gift_card" namespace="TheliaGiftCard\Model">
         <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
-        <column defaultValue="0" name="visible" required="true" type="TINYINT" />
-        <column defaultValue="0" name="position" required="true" type="INTEGER" />
-        <column name="title" size="255" type="VARCHAR" />
-        <column name="description" type="CLOB" />
-        <column name="chapo" type="LONGVARCHAR" />
-        <column name="postscriptum" type="LONGVARCHAR" />
-        <foreign-key foreignTable="product" name="fk_product_id" onDelete="CASCADE" onUpdate="RESTRICT">
-            <reference foreign="id" local="product_id" />
+
+        <column name="sponsor_customer_id" required="true" type="INTEGER" />
+        <column name="code" required="true" size="100" type="VARCHAR" />
+        <column name="amount" scale="6" size="16" type="DECIMAL" />
+
+        <foreign-key foreignTable="customer" name="fk_card_gift_sponsor_customer" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference foreign="id" local="sponsor_customer_id" />
         </foreign-key>
+
         <behavior name="timestampable" />
-        <behavior name="i18n">
-            <parameter name="i18n_columns" value="title, description, chapo, postscriptum" />
-        </behavior>
-        <behavior name="versionable">
-            <parameter name="log_created_at" value="true" />
-            <parameter name="log_created_by" value="true" />
-        </behavior>
     </table>
-    -->
+
+    <table name="gift_card_customer" namespace="TheliaGiftCard\Model">
+        <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
+
+        <column name="customer_id" required="true" type="INTEGER" />
+        <column name="card_id" required="true" size="50" type="INTEGER" />
+        <column name="used_amount" scale="6" size="16" type="DECIMAL" />
+
+        <foreign-key foreignTable="customer" name="fk_card_gift_customer" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference foreign="id" local="customer_id" />
+        </foreign-key>
+
+        <behavior name="timestampable" />
+    </table>
     <external-schema filename="local/config/schema.xml" referenceOnly="true" />
 </database>
