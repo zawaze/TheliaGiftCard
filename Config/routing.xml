@@ -27,5 +27,7 @@
     ...
     </route>
     -->
-
+    <route id="spend.amount.card.gift.route" path="/card-gift/spend">
+        <default key="_controller">TheliaGiftCard\Controller\GiftCardCartController::SpendAmountAction</default>
+    </route>
 </routes>

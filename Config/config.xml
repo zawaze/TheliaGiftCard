@@ -11,9 +11,7 @@
     </loops>
 
     <forms>
-        <!--
-        <form name="MyFormName" class="TheliaGiftCard\Form\MySuperForm" />
-        -->
+        <form name="spend.amount.card.gift" class="TheliaGiftCard\Form\AddAmountCGForm" />
     </forms>
 
     <commands>
