@@ -12,11 +12,11 @@ use Thelia\Form\BaseForm;
 use TheliaGiftCard\TheliaGiftCard;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class AddAmountCGForm extends BaseForm
+class DelAmountCGForm extends BaseForm
 {
     public function getName()
     {
-        return 'amount_gift_card';
+        return 'delete_gift_card_amount';
     }
 
     protected function buildForm()

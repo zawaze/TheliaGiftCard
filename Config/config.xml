@@ -12,6 +12,7 @@
 
     <forms>
         <form name="spend.amount.card.gift" class="TheliaGiftCard\Form\AddAmountCGForm" />
+        <form name="delete.amount.card.gift" class="TheliaGiftCard\Form\DelAmountCGForm" />
     </forms>
 
     <commands>
@@ -20,11 +21,16 @@
         -->
     </commands>
 
-    <!--
     <services>
+        <service id="giftcard.service" class="TheliaGiftCard\Service\GiftCardService">
+        </service>
+        <service id="giftcard.order.listener" class="TheliaGiftCard\EventListener\OrderPayListener">
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="service_container" />
+            <argument type="service" id="request" />
+        </service>
 
     </services>
-    -->
 
     <!--
     <hooks>

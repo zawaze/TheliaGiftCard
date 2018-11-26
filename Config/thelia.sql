@@ -49,5 +49,63 @@ CREATE TABLE `gift_card_customer`
         ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
+-- ---------------------------------------------------------------------
+-- gift_card_cart
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `gift_card_cart`;
+
+CREATE TABLE `gift_card_cart`
+(
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `gift_card_id` INTEGER,
+    `cart_id` INTEGER NOT NULL,
+    `spend_amount` DECIMAL(16,6),
+    `created_at` DATETIME,
+    `updated_at` DATETIME,
+    PRIMARY KEY (`id`),
+    INDEX `FI_card_gift_cart` (`cart_id`),
+    INDEX `FI_card_gift_cart_cg` (`gift_card_id`),
+    CONSTRAINT `fk_card_gift_cart`
+        FOREIGN KEY (`cart_id`)
+        REFERENCES `cart` (`id`)
+        ON UPDATE UPDATE
+        ON DELETE UPDATE,
+    CONSTRAINT `fk_card_gift_cart_cg`
+        FOREIGN KEY (`gift_card_id`)
+        REFERENCES `gift_card` (`id`)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- gift_card_order
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `gift_card_order`;
+
+CREATE TABLE `gift_card_order`
+(
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `gift_card_id` INTEGER,
+    `order_id` INTEGER NOT NULL,
+    `spend_amount` DECIMAL(16,6),
+    `created_at` DATETIME,
+    `updated_at` DATETIME,
+    PRIMARY KEY (`id`),
+    INDEX `FI_card_gift_order` (`order_id`),
+    INDEX `FI_card_gift_order_cg` (`gift_card_id`),
+    CONSTRAINT `fk_card_gift_order`
+        FOREIGN KEY (`order_id`)
+        REFERENCES `order` (`id`)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT,
+    CONSTRAINT `fk_card_gift_order_cg`
+        FOREIGN KEY (`gift_card_id`)
+        REFERENCES `gift_card` (`id`)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
+) ENGINE=InnoDB;
+
 # This restores the fkey checks, after having unset them earlier
 SET FOREIGN_KEY_CHECKS = 1;

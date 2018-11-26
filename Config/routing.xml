@@ -30,4 +30,7 @@
     <route id="spend.amount.card.gift.route" path="/card-gift/spend">
         <default key="_controller">TheliaGiftCard\Controller\GiftCardCartController::SpendAmountAction</default>
     </route>
+    <route id="delete.amount.card.gift.route" path="/card-gift/delete">
+        <default key="_controller">TheliaGiftCard\Controller\GiftCardCartController::DeleteAmountAction</default>
+    </route>
 </routes>

@@ -11,12 +11,12 @@ use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\RelationMap;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Map\TableMapTrait;
-use TheliaGiftCard\Model\GiftCard;
-use TheliaGiftCard\Model\GiftCardQuery;
+use TheliaGiftCard\Model\GiftCardCart;
+use TheliaGiftCard\Model\GiftCardCartQuery;
 
 
 /**
- * This class defines the structure of the 'gift_card' table.
+ * This class defines the structure of the 'gift_card_cart' table.
  *
  *
  *
@@ -26,14 +26,14 @@ use TheliaGiftCard\Model\GiftCardQuery;
  * (i.e. if it's a text column type).
  *
  */
-class GiftCardTableMap extends TableMap
+class GiftCardCartTableMap extends TableMap
 {
     use InstancePoolTrait;
     use TableMapTrait;
     /**
      * The (dot-path) name of this class
      */
-    const CLASS_NAME = 'TheliaGiftCard.Model.Map.GiftCardTableMap';
+    const CLASS_NAME = 'TheliaGiftCard.Model.Map.GiftCardCartTableMap';
 
     /**
      * The default database name for this class
@@ -43,17 +43,17 @@ class GiftCardTableMap extends TableMap
     /**
      * The table name for this class
      */
-    const TABLE_NAME = 'gift_card';
+    const TABLE_NAME = 'gift_card_cart';
 
     /**
      * The related Propel class for this table
      */
-    const OM_CLASS = '\\TheliaGiftCard\\Model\\GiftCard';
+    const OM_CLASS = '\\TheliaGiftCard\\Model\\GiftCardCart';
 
     /**
      * A class that can be returned by this tableMap
      */
-    const CLASS_DEFAULT = 'TheliaGiftCard.Model.GiftCard';
+    const CLASS_DEFAULT = 'TheliaGiftCard.Model.GiftCardCart';
 
     /**
      * The total number of columns
@@ -73,32 +73,32 @@ class GiftCardTableMap extends TableMap
     /**
      * the column name for the ID field
      */
-    const ID = 'gift_card.ID';
+    const ID = 'gift_card_cart.ID';
 
     /**
-     * the column name for the SPONSOR_CUSTOMER_ID field
+     * the column name for the GIFT_CARD_ID field
      */
-    const SPONSOR_CUSTOMER_ID = 'gift_card.SPONSOR_CUSTOMER_ID';
+    const GIFT_CARD_ID = 'gift_card_cart.GIFT_CARD_ID';
 
     /**
-     * the column name for the CODE field
+     * the column name for the CART_ID field
      */
-    const CODE = 'gift_card.CODE';
+    const CART_ID = 'gift_card_cart.CART_ID';
 
     /**
-     * the column name for the AMOUNT field
+     * the column name for the SPEND_AMOUNT field
      */
-    const AMOUNT = 'gift_card.AMOUNT';
+    const SPEND_AMOUNT = 'gift_card_cart.SPEND_AMOUNT';
 
     /**
      * the column name for the CREATED_AT field
      */
-    const CREATED_AT = 'gift_card.CREATED_AT';
+    const CREATED_AT = 'gift_card_cart.CREATED_AT';
 
     /**
      * the column name for the UPDATED_AT field
      */
-    const UPDATED_AT = 'gift_card.UPDATED_AT';
+    const UPDATED_AT = 'gift_card_cart.UPDATED_AT';
 
     /**
      * The default string format for model objects of the related table
@@ -112,11 +112,11 @@ class GiftCardTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'SponsorCustomerId', 'Code', 'Amount', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'sponsorCustomerId', 'code', 'amount', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(GiftCardTableMap::ID, GiftCardTableMap::SPONSOR_CUSTOMER_ID, GiftCardTableMap::CODE, GiftCardTableMap::AMOUNT, GiftCardTableMap::CREATED_AT, GiftCardTableMap::UPDATED_AT, ),
-        self::TYPE_RAW_COLNAME   => array('ID', 'SPONSOR_CUSTOMER_ID', 'CODE', 'AMOUNT', 'CREATED_AT', 'UPDATED_AT', ),
-        self::TYPE_FIELDNAME     => array('id', 'sponsor_customer_id', 'code', 'amount', 'created_at', 'updated_at', ),
+        self::TYPE_PHPNAME       => array('Id', 'GiftCardId', 'CartId', 'SpendAmount', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'giftCardId', 'cartId', 'spendAmount', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(GiftCardCartTableMap::ID, GiftCardCartTableMap::GIFT_CARD_ID, GiftCardCartTableMap::CART_ID, GiftCardCartTableMap::SPEND_AMOUNT, GiftCardCartTableMap::CREATED_AT, GiftCardCartTableMap::UPDATED_AT, ),
+        self::TYPE_RAW_COLNAME   => array('ID', 'GIFT_CARD_ID', 'CART_ID', 'SPEND_AMOUNT', 'CREATED_AT', 'UPDATED_AT', ),
+        self::TYPE_FIELDNAME     => array('id', 'gift_card_id', 'cart_id', 'spend_amount', 'created_at', 'updated_at', ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
@@ -127,11 +127,11 @@ class GiftCardTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'SponsorCustomerId' => 1, 'Code' => 2, 'Amount' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'sponsorCustomerId' => 1, 'code' => 2, 'amount' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(GiftCardTableMap::ID => 0, GiftCardTableMap::SPONSOR_CUSTOMER_ID => 1, GiftCardTableMap::CODE => 2, GiftCardTableMap::AMOUNT => 3, GiftCardTableMap::CREATED_AT => 4, GiftCardTableMap::UPDATED_AT => 5, ),
-        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'SPONSOR_CUSTOMER_ID' => 1, 'CODE' => 2, 'AMOUNT' => 3, 'CREATED_AT' => 4, 'UPDATED_AT' => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'sponsor_customer_id' => 1, 'code' => 2, 'amount' => 3, 'created_at' => 4, 'updated_at' => 5, ),
+        self::TYPE_PHPNAME       => array('Id' => 0, 'GiftCardId' => 1, 'CartId' => 2, 'SpendAmount' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'giftCardId' => 1, 'cartId' => 2, 'spendAmount' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
+        self::TYPE_COLNAME       => array(GiftCardCartTableMap::ID => 0, GiftCardCartTableMap::GIFT_CARD_ID => 1, GiftCardCartTableMap::CART_ID => 2, GiftCardCartTableMap::SPEND_AMOUNT => 3, GiftCardCartTableMap::CREATED_AT => 4, GiftCardCartTableMap::UPDATED_AT => 5, ),
+        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'GIFT_CARD_ID' => 1, 'CART_ID' => 2, 'SPEND_AMOUNT' => 3, 'CREATED_AT' => 4, 'UPDATED_AT' => 5, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'gift_card_id' => 1, 'cart_id' => 2, 'spend_amount' => 3, 'created_at' => 4, 'updated_at' => 5, ),
         self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
     );
 
@@ -145,16 +145,16 @@ class GiftCardTableMap extends TableMap
     public function initialize()
     {
         // attributes
-        $this->setName('gift_card');
-        $this->setPhpName('GiftCard');
-        $this->setClassName('\\TheliaGiftCard\\Model\\GiftCard');
+        $this->setName('gift_card_cart');
+        $this->setPhpName('GiftCardCart');
+        $this->setClassName('\\TheliaGiftCard\\Model\\GiftCardCart');
         $this->setPackage('TheliaGiftCard.Model');
         $this->setUseIdGenerator(true);
         // columns
         $this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
-        $this->addForeignKey('SPONSOR_CUSTOMER_ID', 'SponsorCustomerId', 'INTEGER', 'customer', 'ID', true, null, null);
-        $this->addColumn('CODE', 'Code', 'VARCHAR', true, 100, null);
-        $this->addColumn('AMOUNT', 'Amount', 'DECIMAL', false, 16, null);
+        $this->addForeignKey('GIFT_CARD_ID', 'GiftCardId', 'INTEGER', 'gift_card', 'ID', false, null, null);
+        $this->addForeignKey('CART_ID', 'CartId', 'INTEGER', 'cart', 'ID', true, null, null);
+        $this->addColumn('SPEND_AMOUNT', 'SpendAmount', 'DECIMAL', false, 16, null);
         $this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -164,9 +164,8 @@ class GiftCardTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Customer', '\\Thelia\\Model\\Customer', RelationMap::MANY_TO_ONE, array('sponsor_customer_id' => 'id', ), 'RESTRICT', 'RESTRICT');
-        $this->addRelation('GiftCardCart', '\\TheliaGiftCard\\Model\\GiftCardCart', RelationMap::ONE_TO_MANY, array('id' => 'gift_card_id', ), 'RESTRICT', 'RESTRICT', 'GiftCardCarts');
-        $this->addRelation('GiftCardOrder', '\\TheliaGiftCard\\Model\\GiftCardOrder', RelationMap::ONE_TO_MANY, array('id' => 'gift_card_id', ), 'RESTRICT', 'RESTRICT', 'GiftCardOrders');
+        $this->addRelation('Cart', '\\Thelia\\Model\\Cart', RelationMap::MANY_TO_ONE, array('cart_id' => 'id', ), 'UPDATE', 'UPDATE');
+        $this->addRelation('GiftCard', '\\TheliaGiftCard\\Model\\GiftCard', RelationMap::MANY_TO_ONE, array('gift_card_id' => 'id', ), 'RESTRICT', 'RESTRICT');
     } // buildRelations()
 
     /**
@@ -238,7 +237,7 @@ class GiftCardTableMap extends TableMap
      */
     public static function getOMClass($withPrefix = true)
     {
-        return $withPrefix ? GiftCardTableMap::CLASS_DEFAULT : GiftCardTableMap::OM_CLASS;
+        return $withPrefix ? GiftCardCartTableMap::CLASS_DEFAULT : GiftCardCartTableMap::OM_CLASS;
     }
 
     /**
@@ -252,21 +251,21 @@ class GiftCardTableMap extends TableMap
      *
      * @throws PropelException Any exceptions caught during processing will be
      *         rethrown wrapped into a PropelException.
-     * @return array (GiftCard object, last column rank)
+     * @return array (GiftCardCart object, last column rank)
      */
     public static function populateObject($row, $offset = 0, $indexType = TableMap::TYPE_NUM)
     {
-        $key = GiftCardTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
-        if (null !== ($obj = GiftCardTableMap::getInstanceFromPool($key))) {
+        $key = GiftCardCartTableMap::getPrimaryKeyHashFromRow($row, $offset, $indexType);
+        if (null !== ($obj = GiftCardCartTableMap::getInstanceFromPool($key))) {
             // We no longer rehydrate the object, since this can cause data loss.
             // See http://www.propelorm.org/ticket/509
             // $obj->hydrate($row, $offset, true); // rehydrate
-            $col = $offset + GiftCardTableMap::NUM_HYDRATE_COLUMNS;
+            $col = $offset + GiftCardCartTableMap::NUM_HYDRATE_COLUMNS;
         } else {
-            $cls = GiftCardTableMap::OM_CLASS;
+            $cls = GiftCardCartTableMap::OM_CLASS;
             $obj = new $cls();
             $col = $obj->hydrate($row, $offset, false, $indexType);
-            GiftCardTableMap::addInstanceToPool($obj, $key);
+            GiftCardCartTableMap::addInstanceToPool($obj, $key);
         }
 
         return array($obj, $col);
@@ -289,8 +288,8 @@ class GiftCardTableMap extends TableMap
         $cls = static::getOMClass(false);
         // populate the object(s)
         while ($row = $dataFetcher->fetch()) {
-            $key = GiftCardTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
-            if (null !== ($obj = GiftCardTableMap::getInstanceFromPool($key))) {
+            $key = GiftCardCartTableMap::getPrimaryKeyHashFromRow($row, 0, $dataFetcher->getIndexType());
+            if (null !== ($obj = GiftCardCartTableMap::getInstanceFromPool($key))) {
                 // We no longer rehydrate the object, since this can cause data loss.
                 // See http://www.propelorm.org/ticket/509
                 // $obj->hydrate($row, 0, true); // rehydrate
@@ -299,7 +298,7 @@ class GiftCardTableMap extends TableMap
                 $obj = new $cls();
                 $obj->hydrate($row);
                 $results[] = $obj;
-                GiftCardTableMap::addInstanceToPool($obj, $key);
+                GiftCardCartTableMap::addInstanceToPool($obj, $key);
             } // if key exists
         }
 
@@ -320,17 +319,17 @@ class GiftCardTableMap extends TableMap
     public static function addSelectColumns(Criteria $criteria, $alias = null)
     {
         if (null === $alias) {
-            $criteria->addSelectColumn(GiftCardTableMap::ID);
-            $criteria->addSelectColumn(GiftCardTableMap::SPONSOR_CUSTOMER_ID);
-            $criteria->addSelectColumn(GiftCardTableMap::CODE);
-            $criteria->addSelectColumn(GiftCardTableMap::AMOUNT);
-            $criteria->addSelectColumn(GiftCardTableMap::CREATED_AT);
-            $criteria->addSelectColumn(GiftCardTableMap::UPDATED_AT);
+            $criteria->addSelectColumn(GiftCardCartTableMap::ID);
+            $criteria->addSelectColumn(GiftCardCartTableMap::GIFT_CARD_ID);
+            $criteria->addSelectColumn(GiftCardCartTableMap::CART_ID);
+            $criteria->addSelectColumn(GiftCardCartTableMap::SPEND_AMOUNT);
+            $criteria->addSelectColumn(GiftCardCartTableMap::CREATED_AT);
+            $criteria->addSelectColumn(GiftCardCartTableMap::UPDATED_AT);
         } else {
             $criteria->addSelectColumn($alias . '.ID');
-            $criteria->addSelectColumn($alias . '.SPONSOR_CUSTOMER_ID');
-            $criteria->addSelectColumn($alias . '.CODE');
-            $criteria->addSelectColumn($alias . '.AMOUNT');
+            $criteria->addSelectColumn($alias . '.GIFT_CARD_ID');
+            $criteria->addSelectColumn($alias . '.CART_ID');
+            $criteria->addSelectColumn($alias . '.SPEND_AMOUNT');
             $criteria->addSelectColumn($alias . '.CREATED_AT');
             $criteria->addSelectColumn($alias . '.UPDATED_AT');
         }
@@ -345,7 +344,7 @@ class GiftCardTableMap extends TableMap
      */
     public static function getTableMap()
     {
-        return Propel::getServiceContainer()->getDatabaseMap(GiftCardTableMap::DATABASE_NAME)->getTable(GiftCardTableMap::TABLE_NAME);
+        return Propel::getServiceContainer()->getDatabaseMap(GiftCardCartTableMap::DATABASE_NAME)->getTable(GiftCardCartTableMap::TABLE_NAME);
     }
 
     /**
@@ -353,16 +352,16 @@ class GiftCardTableMap extends TableMap
      */
     public static function buildTableMap()
     {
-      $dbMap = Propel::getServiceContainer()->getDatabaseMap(GiftCardTableMap::DATABASE_NAME);
-      if (!$dbMap->hasTable(GiftCardTableMap::TABLE_NAME)) {
-        $dbMap->addTableObject(new GiftCardTableMap());
+      $dbMap = Propel::getServiceContainer()->getDatabaseMap(GiftCardCartTableMap::DATABASE_NAME);
+      if (!$dbMap->hasTable(GiftCardCartTableMap::TABLE_NAME)) {
+        $dbMap->addTableObject(new GiftCardCartTableMap());
       }
     }
 
     /**
-     * Performs a DELETE on the database, given a GiftCard or Criteria object OR a primary key value.
+     * Performs a DELETE on the database, given a GiftCardCart or Criteria object OR a primary key value.
      *
-     * @param mixed               $values Criteria or GiftCard object or primary key or array of primary keys
+     * @param mixed               $values Criteria or GiftCardCart object or primary key or array of primary keys
      *              which is used to create the DELETE statement
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).  This includes CASCADE-related rows
@@ -373,25 +372,25 @@ class GiftCardTableMap extends TableMap
      public static function doDelete($values, ConnectionInterface $con = null)
      {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(GiftCardTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(GiftCardCartTableMap::DATABASE_NAME);
         }
 
         if ($values instanceof Criteria) {
             // rename for clarity
             $criteria = $values;
-        } elseif ($values instanceof \TheliaGiftCard\Model\GiftCard) { // it's a model object
+        } elseif ($values instanceof \TheliaGiftCard\Model\GiftCardCart) { // it's a model object
             // create criteria based on pk values
             $criteria = $values->buildPkeyCriteria();
         } else { // it's a primary key, or an array of pks
-            $criteria = new Criteria(GiftCardTableMap::DATABASE_NAME);
-            $criteria->add(GiftCardTableMap::ID, (array) $values, Criteria::IN);
+            $criteria = new Criteria(GiftCardCartTableMap::DATABASE_NAME);
+            $criteria->add(GiftCardCartTableMap::ID, (array) $values, Criteria::IN);
         }
 
-        $query = GiftCardQuery::create()->mergeWith($criteria);
+        $query = GiftCardCartQuery::create()->mergeWith($criteria);
 
-        if ($values instanceof Criteria) { GiftCardTableMap::clearInstancePool();
+        if ($values instanceof Criteria) { GiftCardCartTableMap::clearInstancePool();
         } elseif (!is_object($values)) { // it's a primary key, or an array of pks
-            foreach ((array) $values as $singleval) { GiftCardTableMap::removeInstanceFromPool($singleval);
+            foreach ((array) $values as $singleval) { GiftCardCartTableMap::removeInstanceFromPool($singleval);
             }
         }
 
@@ -399,20 +398,20 @@ class GiftCardTableMap extends TableMap
     }
 
     /**
-     * Deletes all rows from the gift_card table.
+     * Deletes all rows from the gift_card_cart table.
      *
      * @param ConnectionInterface $con the connection to use
      * @return int The number of affected rows (if supported by underlying database driver).
      */
     public static function doDeleteAll(ConnectionInterface $con = null)
     {
-        return GiftCardQuery::create()->doDeleteAll($con);
+        return GiftCardCartQuery::create()->doDeleteAll($con);
     }
 
     /**
-     * Performs an INSERT on the database, given a GiftCard or Criteria object.
+     * Performs an INSERT on the database, given a GiftCardCart or Criteria object.
      *
-     * @param mixed               $criteria Criteria or GiftCard object containing data that is used to create the INSERT statement.
+     * @param mixed               $criteria Criteria or GiftCardCart object containing data that is used to create the INSERT statement.
      * @param ConnectionInterface $con the ConnectionInterface connection to use
      * @return mixed           The new primary key.
      * @throws PropelException Any exceptions caught during processing will be
@@ -421,22 +420,22 @@ class GiftCardTableMap extends TableMap
     public static function doInsert($criteria, ConnectionInterface $con = null)
     {
         if (null === $con) {
-            $con = Propel::getServiceContainer()->getWriteConnection(GiftCardTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(GiftCardCartTableMap::DATABASE_NAME);
         }
 
         if ($criteria instanceof Criteria) {
             $criteria = clone $criteria; // rename for clarity
         } else {
-            $criteria = $criteria->buildCriteria(); // build Criteria from GiftCard object
+            $criteria = $criteria->buildCriteria(); // build Criteria from GiftCardCart object
         }
 
-        if ($criteria->containsKey(GiftCardTableMap::ID) && $criteria->keyContainsValue(GiftCardTableMap::ID) ) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key ('.GiftCardTableMap::ID.')');
+        if ($criteria->containsKey(GiftCardCartTableMap::ID) && $criteria->keyContainsValue(GiftCardCartTableMap::ID) ) {
+            throw new PropelException('Cannot insert a value for auto-increment primary key ('.GiftCardCartTableMap::ID.')');
         }
 
 
         // Set the correct dbName
-        $query = GiftCardQuery::create()->mergeWith($criteria);
+        $query = GiftCardCartQuery::create()->mergeWith($criteria);
 
         try {
             // use transaction because $criteria could contain info
@@ -452,7 +451,7 @@ class GiftCardTableMap extends TableMap
         return $pk;
     }
 
-} // GiftCardTableMap
+} // GiftCardCartTableMap
 // This is the static code needed to register the TableMap for this table with the main Propel class.
 //
-GiftCardTableMap::buildTableMap();
+GiftCardCartTableMap::buildTableMap();

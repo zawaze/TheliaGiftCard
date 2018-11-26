@@ -10,7 +10,6 @@ use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Propel\Runtime\ActiveRecord\ActiveRecordInterface;
 use Propel\Runtime\Collection\Collection;
-use Propel\Runtime\Collection\ObjectCollection;
 use Propel\Runtime\Connection\ConnectionInterface;
 use Propel\Runtime\Exception\BadMethodCallException;
 use Propel\Runtime\Exception\PropelException;
@@ -18,21 +17,19 @@ use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
 use Propel\Runtime\Util\PropelDateTime;
 use TheliaGiftCard\Model\GiftCard as ChildGiftCard;
-use TheliaGiftCard\Model\GiftCardCart as ChildGiftCardCart;
-use TheliaGiftCard\Model\GiftCardCartQuery as ChildGiftCardCartQuery;
 use TheliaGiftCard\Model\GiftCardOrder as ChildGiftCardOrder;
 use TheliaGiftCard\Model\GiftCardOrderQuery as ChildGiftCardOrderQuery;
 use TheliaGiftCard\Model\GiftCardQuery as ChildGiftCardQuery;
-use TheliaGiftCard\Model\Map\GiftCardTableMap;
-use Thelia\Model\Customer as ChildCustomer;
-use Thelia\Model\CustomerQuery;
+use TheliaGiftCard\Model\Map\GiftCardOrderTableMap;
+use Thelia\Model\Order as ChildOrder;
+use Thelia\Model\OrderQuery;
 
-abstract class GiftCard implements ActiveRecordInterface
+abstract class GiftCardOrder implements ActiveRecordInterface
 {
     /**
      * TableMap class name
      */
-    const TABLE_MAP = '\\TheliaGiftCard\\Model\\Map\\GiftCardTableMap';
+    const TABLE_MAP = '\\TheliaGiftCard\\Model\\Map\\GiftCardOrderTableMap';
 
 
     /**
@@ -68,22 +65,22 @@ abstract class GiftCard implements ActiveRecordInterface
     protected $id;
 
     /**
-     * The value for the sponsor_customer_id field.
+     * The value for the gift_card_id field.
      * @var        int
      */
-    protected $sponsor_customer_id;
+    protected $gift_card_id;
 
     /**
-     * The value for the code field.
-     * @var        string
+     * The value for the order_id field.
+     * @var        int
      */
-    protected $code;
+    protected $order_id;
 
     /**
-     * The value for the amount field.
+     * The value for the spend_amount field.
      * @var        string
      */
-    protected $amount;
+    protected $spend_amount;
 
     /**
      * The value for the created_at field.
@@ -98,21 +95,14 @@ abstract class GiftCard implements ActiveRecordInterface
     protected $updated_at;
 
     /**
-     * @var        Customer
+     * @var        Order
      */
-    protected $aCustomer;
+    protected $aOrder;
 
     /**
-     * @var        ObjectCollection|ChildGiftCardCart[] Collection to store aggregation of ChildGiftCardCart objects.
+     * @var        GiftCard
      */
-    protected $collGiftCardCarts;
-    protected $collGiftCardCartsPartial;
-
-    /**
-     * @var        ObjectCollection|ChildGiftCardOrder[] Collection to store aggregation of ChildGiftCardOrder objects.
-     */
-    protected $collGiftCardOrders;
-    protected $collGiftCardOrdersPartial;
+    protected $aGiftCard;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -123,19 +113,7 @@ abstract class GiftCard implements ActiveRecordInterface
     protected $alreadyInSave = false;
 
     /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection
-     */
-    protected $giftCardCartsScheduledForDeletion = null;
-
-    /**
-     * An array of objects scheduled for deletion.
-     * @var ObjectCollection
-     */
-    protected $giftCardOrdersScheduledForDeletion = null;
-
-    /**
-     * Initializes internal state of TheliaGiftCard\Model\Base\GiftCard object.
+     * Initializes internal state of TheliaGiftCard\Model\Base\GiftCardOrder object.
      */
     public function __construct()
     {
@@ -230,9 +208,9 @@ abstract class GiftCard implements ActiveRecordInterface
     }
 
     /**
-     * Compares this with another <code>GiftCard</code> instance.  If
-     * <code>obj</code> is an instance of <code>GiftCard</code>, delegates to
-     * <code>equals(GiftCard)</code>.  Otherwise, returns <code>false</code>.
+     * Compares this with another <code>GiftCardOrder</code> instance.  If
+     * <code>obj</code> is an instance of <code>GiftCardOrder</code>, delegates to
+     * <code>equals(GiftCardOrder)</code>.  Otherwise, returns <code>false</code>.
      *
      * @param  mixed   $obj The object to compare to.
      * @return boolean Whether equal to the object specified.
@@ -315,7 +293,7 @@ abstract class GiftCard implements ActiveRecordInterface
      * @param string $name  The virtual column name
      * @param mixed  $value The value to give to the virtual column
      *
-     * @return GiftCard The current object, for fluid interface
+     * @return GiftCardOrder The current object, for fluid interface
      */
     public function setVirtualColumn($name, $value)
     {
@@ -347,7 +325,7 @@ abstract class GiftCard implements ActiveRecordInterface
      *                       or a format name ('XML', 'YAML', 'JSON', 'CSV')
      * @param string $data The source data to import from
      *
-     * @return GiftCard The current object, for fluid interface
+     * @return GiftCardOrder The current object, for fluid interface
      */
     public function importFrom($parser, $data)
     {
@@ -404,36 +382,36 @@ abstract class GiftCard implements ActiveRecordInterface
     }
 
     /**
-     * Get the [sponsor_customer_id] column value.
+     * Get the [gift_card_id] column value.
      *
      * @return   int
      */
-    public function getSponsorCustomerId()
+    public function getGiftCardId()
     {
 
-        return $this->sponsor_customer_id;
+        return $this->gift_card_id;
     }
 
     /**
-     * Get the [code] column value.
+     * Get the [order_id] column value.
      *
-     * @return   string
+     * @return   int
      */
-    public function getCode()
+    public function getOrderId()
     {
 
-        return $this->code;
+        return $this->order_id;
     }
 
     /**
-     * Get the [amount] column value.
+     * Get the [spend_amount] column value.
      *
      * @return   string
      */
-    public function getAmount()
+    public function getSpendAmount()
     {
 
-        return $this->amount;
+        return $this->spend_amount;
     }
 
     /**
@@ -480,7 +458,7 @@ abstract class GiftCard implements ActiveRecordInterface
      * Set the value of [id] column.
      *
      * @param      int $v new value
-     * @return   \TheliaGiftCard\Model\GiftCard The current object (for fluent API support)
+     * @return   \TheliaGiftCard\Model\GiftCardOrder The current object (for fluent API support)
      */
     public function setId($v)
     {
@@ -490,7 +468,7 @@ abstract class GiftCard implements ActiveRecordInterface
 
         if ($this->id !== $v) {
             $this->id = $v;
-            $this->modifiedColumns[GiftCardTableMap::ID] = true;
+            $this->modifiedColumns[GiftCardOrderTableMap::ID] = true;
         }
 
 
@@ -498,78 +476,82 @@ abstract class GiftCard implements ActiveRecordInterface
     } // setId()
 
     /**
-     * Set the value of [sponsor_customer_id] column.
+     * Set the value of [gift_card_id] column.
      *
      * @param      int $v new value
-     * @return   \TheliaGiftCard\Model\GiftCard The current object (for fluent API support)
+     * @return   \TheliaGiftCard\Model\GiftCardOrder The current object (for fluent API support)
      */
-    public function setSponsorCustomerId($v)
+    public function setGiftCardId($v)
     {
         if ($v !== null) {
             $v = (int) $v;
         }
 
-        if ($this->sponsor_customer_id !== $v) {
-            $this->sponsor_customer_id = $v;
-            $this->modifiedColumns[GiftCardTableMap::SPONSOR_CUSTOMER_ID] = true;
+        if ($this->gift_card_id !== $v) {
+            $this->gift_card_id = $v;
+            $this->modifiedColumns[GiftCardOrderTableMap::GIFT_CARD_ID] = true;
         }
 
-        if ($this->aCustomer !== null && $this->aCustomer->getId() !== $v) {
-            $this->aCustomer = null;
+        if ($this->aGiftCard !== null && $this->aGiftCard->getId() !== $v) {
+            $this->aGiftCard = null;
         }
 
 
         return $this;
-    } // setSponsorCustomerId()
+    } // setGiftCardId()
 
     /**
-     * Set the value of [code] column.
+     * Set the value of [order_id] column.
+     *
+     * @param      int $v new value
+     * @return   \TheliaGiftCard\Model\GiftCardOrder The current object (for fluent API support)
+     */
+    public function setOrderId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->order_id !== $v) {
+            $this->order_id = $v;
+            $this->modifiedColumns[GiftCardOrderTableMap::ORDER_ID] = true;
+        }
+
+        if ($this->aOrder !== null && $this->aOrder->getId() !== $v) {
+            $this->aOrder = null;
+        }
+
+
+        return $this;
+    } // setOrderId()
+
+    /**
+     * Set the value of [spend_amount] column.
      *
      * @param      string $v new value
-     * @return   \TheliaGiftCard\Model\GiftCard The current object (for fluent API support)
+     * @return   \TheliaGiftCard\Model\GiftCardOrder The current object (for fluent API support)
      */
-    public function setCode($v)
+    public function setSpendAmount($v)
     {
         if ($v !== null) {
             $v = (string) $v;
         }
 
-        if ($this->code !== $v) {
-            $this->code = $v;
-            $this->modifiedColumns[GiftCardTableMap::CODE] = true;
+        if ($this->spend_amount !== $v) {
+            $this->spend_amount = $v;
+            $this->modifiedColumns[GiftCardOrderTableMap::SPEND_AMOUNT] = true;
         }
 
 
         return $this;
-    } // setCode()
-
-    /**
-     * Set the value of [amount] column.
-     *
-     * @param      string $v new value
-     * @return   \TheliaGiftCard\Model\GiftCard The current object (for fluent API support)
-     */
-    public function setAmount($v)
-    {
-        if ($v !== null) {
-            $v = (string) $v;
-        }
-
-        if ($this->amount !== $v) {
-            $this->amount = $v;
-            $this->modifiedColumns[GiftCardTableMap::AMOUNT] = true;
-        }
-
-
-        return $this;
-    } // setAmount()
+    } // setSpendAmount()
 
     /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param      mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return   \TheliaGiftCard\Model\GiftCard The current object (for fluent API support)
+     * @return   \TheliaGiftCard\Model\GiftCardOrder The current object (for fluent API support)
      */
     public function setCreatedAt($v)
     {
@@ -577,7 +559,7 @@ abstract class GiftCard implements ActiveRecordInterface
         if ($this->created_at !== null || $dt !== null) {
             if ($dt !== $this->created_at) {
                 $this->created_at = $dt;
-                $this->modifiedColumns[GiftCardTableMap::CREATED_AT] = true;
+                $this->modifiedColumns[GiftCardOrderTableMap::CREATED_AT] = true;
             }
         } // if either are not null
 
@@ -590,7 +572,7 @@ abstract class GiftCard implements ActiveRecordInterface
      *
      * @param      mixed $v string, integer (timestamp), or \DateTime value.
      *               Empty strings are treated as NULL.
-     * @return   \TheliaGiftCard\Model\GiftCard The current object (for fluent API support)
+     * @return   \TheliaGiftCard\Model\GiftCardOrder The current object (for fluent API support)
      */
     public function setUpdatedAt($v)
     {
@@ -598,7 +580,7 @@ abstract class GiftCard implements ActiveRecordInterface
         if ($this->updated_at !== null || $dt !== null) {
             if ($dt !== $this->updated_at) {
                 $this->updated_at = $dt;
-                $this->modifiedColumns[GiftCardTableMap::UPDATED_AT] = true;
+                $this->modifiedColumns[GiftCardOrderTableMap::UPDATED_AT] = true;
             }
         } // if either are not null
 
@@ -643,25 +625,25 @@ abstract class GiftCard implements ActiveRecordInterface
         try {
 
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : GiftCardTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 0 + $startcol : GiftCardOrderTableMap::translateFieldName('Id', TableMap::TYPE_PHPNAME, $indexType)];
             $this->id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : GiftCardTableMap::translateFieldName('SponsorCustomerId', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->sponsor_customer_id = (null !== $col) ? (int) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : GiftCardOrderTableMap::translateFieldName('GiftCardId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->gift_card_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : GiftCardTableMap::translateFieldName('Code', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->code = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : GiftCardOrderTableMap::translateFieldName('OrderId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->order_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : GiftCardTableMap::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)];
-            $this->amount = (null !== $col) ? (string) $col : null;
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : GiftCardOrderTableMap::translateFieldName('SpendAmount', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->spend_amount = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : GiftCardTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : GiftCardOrderTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : GiftCardTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : GiftCardOrderTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -674,10 +656,10 @@ abstract class GiftCard implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = GiftCardTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 6; // 6 = GiftCardOrderTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
-            throw new PropelException("Error populating \TheliaGiftCard\Model\GiftCard object", 0, $e);
+            throw new PropelException("Error populating \TheliaGiftCard\Model\GiftCardOrder object", 0, $e);
         }
     }
 
@@ -696,8 +678,11 @@ abstract class GiftCard implements ActiveRecordInterface
      */
     public function ensureConsistency()
     {
-        if ($this->aCustomer !== null && $this->sponsor_customer_id !== $this->aCustomer->getId()) {
-            $this->aCustomer = null;
+        if ($this->aGiftCard !== null && $this->gift_card_id !== $this->aGiftCard->getId()) {
+            $this->aGiftCard = null;
+        }
+        if ($this->aOrder !== null && $this->order_id !== $this->aOrder->getId()) {
+            $this->aOrder = null;
         }
     } // ensureConsistency
 
@@ -722,13 +707,13 @@ abstract class GiftCard implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getReadConnection(GiftCardTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getReadConnection(GiftCardOrderTableMap::DATABASE_NAME);
         }
 
         // We don't need to alter the object instance pool; we're just modifying this instance
         // already in the pool.
 
-        $dataFetcher = ChildGiftCardQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
+        $dataFetcher = ChildGiftCardOrderQuery::create(null, $this->buildPkeyCriteria())->setFormatter(ModelCriteria::FORMAT_STATEMENT)->find($con);
         $row = $dataFetcher->fetch();
         $dataFetcher->close();
         if (!$row) {
@@ -738,11 +723,8 @@ abstract class GiftCard implements ActiveRecordInterface
 
         if ($deep) {  // also de-associate any related objects?
 
-            $this->aCustomer = null;
-            $this->collGiftCardCarts = null;
-
-            $this->collGiftCardOrders = null;
-
+            $this->aOrder = null;
+            $this->aGiftCard = null;
         } // if (deep)
     }
 
@@ -752,8 +734,8 @@ abstract class GiftCard implements ActiveRecordInterface
      * @param      ConnectionInterface $con
      * @return void
      * @throws PropelException
-     * @see GiftCard::setDeleted()
-     * @see GiftCard::isDeleted()
+     * @see GiftCardOrder::setDeleted()
+     * @see GiftCardOrder::isDeleted()
      */
     public function delete(ConnectionInterface $con = null)
     {
@@ -762,12 +744,12 @@ abstract class GiftCard implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(GiftCardTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(GiftCardOrderTableMap::DATABASE_NAME);
         }
 
         $con->beginTransaction();
         try {
-            $deleteQuery = ChildGiftCardQuery::create()
+            $deleteQuery = ChildGiftCardOrderQuery::create()
                 ->filterByPrimaryKey($this->getPrimaryKey());
             $ret = $this->preDelete($con);
             if ($ret) {
@@ -804,7 +786,7 @@ abstract class GiftCard implements ActiveRecordInterface
         }
 
         if ($con === null) {
-            $con = Propel::getServiceContainer()->getWriteConnection(GiftCardTableMap::DATABASE_NAME);
+            $con = Propel::getServiceContainer()->getWriteConnection(GiftCardOrderTableMap::DATABASE_NAME);
         }
 
         $con->beginTransaction();
@@ -814,16 +796,16 @@ abstract class GiftCard implements ActiveRecordInterface
             if ($isInsert) {
                 $ret = $ret && $this->preInsert($con);
                 // timestampable behavior
-                if (!$this->isColumnModified(GiftCardTableMap::CREATED_AT)) {
+                if (!$this->isColumnModified(GiftCardOrderTableMap::CREATED_AT)) {
                     $this->setCreatedAt(time());
                 }
-                if (!$this->isColumnModified(GiftCardTableMap::UPDATED_AT)) {
+                if (!$this->isColumnModified(GiftCardOrderTableMap::UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             } else {
                 $ret = $ret && $this->preUpdate($con);
                 // timestampable behavior
-                if ($this->isModified() && !$this->isColumnModified(GiftCardTableMap::UPDATED_AT)) {
+                if ($this->isModified() && !$this->isColumnModified(GiftCardOrderTableMap::UPDATED_AT)) {
                     $this->setUpdatedAt(time());
                 }
             }
@@ -835,7 +817,7 @@ abstract class GiftCard implements ActiveRecordInterface
                     $this->postUpdate($con);
                 }
                 $this->postSave($con);
-                GiftCardTableMap::addInstanceToPool($this);
+                GiftCardOrderTableMap::addInstanceToPool($this);
             } else {
                 $affectedRows = 0;
             }
@@ -870,11 +852,18 @@ abstract class GiftCard implements ActiveRecordInterface
             // method.  This object relates to these object(s) by a
             // foreign key reference.
 
-            if ($this->aCustomer !== null) {
-                if ($this->aCustomer->isModified() || $this->aCustomer->isNew()) {
-                    $affectedRows += $this->aCustomer->save($con);
+            if ($this->aOrder !== null) {
+                if ($this->aOrder->isModified() || $this->aOrder->isNew()) {
+                    $affectedRows += $this->aOrder->save($con);
                 }
-                $this->setCustomer($this->aCustomer);
+                $this->setOrder($this->aOrder);
+            }
+
+            if ($this->aGiftCard !== null) {
+                if ($this->aGiftCard->isModified() || $this->aGiftCard->isNew()) {
+                    $affectedRows += $this->aGiftCard->save($con);
+                }
+                $this->setGiftCard($this->aGiftCard);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -886,42 +875,6 @@ abstract class GiftCard implements ActiveRecordInterface
                 }
                 $affectedRows += 1;
                 $this->resetModified();
-            }
-
-            if ($this->giftCardCartsScheduledForDeletion !== null) {
-                if (!$this->giftCardCartsScheduledForDeletion->isEmpty()) {
-                    foreach ($this->giftCardCartsScheduledForDeletion as $giftCardCart) {
-                        // need to save related object because we set the relation to null
-                        $giftCardCart->save($con);
-                    }
-                    $this->giftCardCartsScheduledForDeletion = null;
-                }
-            }
-
-                if ($this->collGiftCardCarts !== null) {
-            foreach ($this->collGiftCardCarts as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
-            }
-
-            if ($this->giftCardOrdersScheduledForDeletion !== null) {
-                if (!$this->giftCardOrdersScheduledForDeletion->isEmpty()) {
-                    foreach ($this->giftCardOrdersScheduledForDeletion as $giftCardOrder) {
-                        // need to save related object because we set the relation to null
-                        $giftCardOrder->save($con);
-                    }
-                    $this->giftCardOrdersScheduledForDeletion = null;
-                }
-            }
-
-                if ($this->collGiftCardOrders !== null) {
-            foreach ($this->collGiftCardOrders as $referrerFK) {
-                    if (!$referrerFK->isDeleted() && ($referrerFK->isNew() || $referrerFK->isModified())) {
-                        $affectedRows += $referrerFK->save($con);
-                    }
-                }
             }
 
             $this->alreadyInSave = false;
@@ -944,33 +897,33 @@ abstract class GiftCard implements ActiveRecordInterface
         $modifiedColumns = array();
         $index = 0;
 
-        $this->modifiedColumns[GiftCardTableMap::ID] = true;
+        $this->modifiedColumns[GiftCardOrderTableMap::ID] = true;
         if (null !== $this->id) {
-            throw new PropelException('Cannot insert a value for auto-increment primary key (' . GiftCardTableMap::ID . ')');
+            throw new PropelException('Cannot insert a value for auto-increment primary key (' . GiftCardOrderTableMap::ID . ')');
         }
 
          // check the columns in natural order for more readable SQL queries
-        if ($this->isColumnModified(GiftCardTableMap::ID)) {
+        if ($this->isColumnModified(GiftCardOrderTableMap::ID)) {
             $modifiedColumns[':p' . $index++]  = 'ID';
         }
-        if ($this->isColumnModified(GiftCardTableMap::SPONSOR_CUSTOMER_ID)) {
-            $modifiedColumns[':p' . $index++]  = 'SPONSOR_CUSTOMER_ID';
+        if ($this->isColumnModified(GiftCardOrderTableMap::GIFT_CARD_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'GIFT_CARD_ID';
         }
-        if ($this->isColumnModified(GiftCardTableMap::CODE)) {
-            $modifiedColumns[':p' . $index++]  = 'CODE';
+        if ($this->isColumnModified(GiftCardOrderTableMap::ORDER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'ORDER_ID';
         }
-        if ($this->isColumnModified(GiftCardTableMap::AMOUNT)) {
-            $modifiedColumns[':p' . $index++]  = 'AMOUNT';
+        if ($this->isColumnModified(GiftCardOrderTableMap::SPEND_AMOUNT)) {
+            $modifiedColumns[':p' . $index++]  = 'SPEND_AMOUNT';
         }
-        if ($this->isColumnModified(GiftCardTableMap::CREATED_AT)) {
+        if ($this->isColumnModified(GiftCardOrderTableMap::CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'CREATED_AT';
         }
-        if ($this->isColumnModified(GiftCardTableMap::UPDATED_AT)) {
+        if ($this->isColumnModified(GiftCardOrderTableMap::UPDATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'UPDATED_AT';
         }
 
         $sql = sprintf(
-            'INSERT INTO gift_card (%s) VALUES (%s)',
+            'INSERT INTO gift_card_order (%s) VALUES (%s)',
             implode(', ', $modifiedColumns),
             implode(', ', array_keys($modifiedColumns))
         );
@@ -982,14 +935,14 @@ abstract class GiftCard implements ActiveRecordInterface
                     case 'ID':
                         $stmt->bindValue($identifier, $this->id, PDO::PARAM_INT);
                         break;
-                    case 'SPONSOR_CUSTOMER_ID':
-                        $stmt->bindValue($identifier, $this->sponsor_customer_id, PDO::PARAM_INT);
+                    case 'GIFT_CARD_ID':
+                        $stmt->bindValue($identifier, $this->gift_card_id, PDO::PARAM_INT);
                         break;
-                    case 'CODE':
-                        $stmt->bindValue($identifier, $this->code, PDO::PARAM_STR);
+                    case 'ORDER_ID':
+                        $stmt->bindValue($identifier, $this->order_id, PDO::PARAM_INT);
                         break;
-                    case 'AMOUNT':
-                        $stmt->bindValue($identifier, $this->amount, PDO::PARAM_STR);
+                    case 'SPEND_AMOUNT':
+                        $stmt->bindValue($identifier, $this->spend_amount, PDO::PARAM_STR);
                         break;
                     case 'CREATED_AT':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1043,7 +996,7 @@ abstract class GiftCard implements ActiveRecordInterface
      */
     public function getByName($name, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = GiftCardTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = GiftCardOrderTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
         $field = $this->getByPosition($pos);
 
         return $field;
@@ -1063,13 +1016,13 @@ abstract class GiftCard implements ActiveRecordInterface
                 return $this->getId();
                 break;
             case 1:
-                return $this->getSponsorCustomerId();
+                return $this->getGiftCardId();
                 break;
             case 2:
-                return $this->getCode();
+                return $this->getOrderId();
                 break;
             case 3:
-                return $this->getAmount();
+                return $this->getSpendAmount();
                 break;
             case 4:
                 return $this->getCreatedAt();
@@ -1100,16 +1053,16 @@ abstract class GiftCard implements ActiveRecordInterface
      */
     public function toArray($keyType = TableMap::TYPE_PHPNAME, $includeLazyLoadColumns = true, $alreadyDumpedObjects = array(), $includeForeignObjects = false)
     {
-        if (isset($alreadyDumpedObjects['GiftCard'][$this->getPrimaryKey()])) {
+        if (isset($alreadyDumpedObjects['GiftCardOrder'][$this->getPrimaryKey()])) {
             return '*RECURSION*';
         }
-        $alreadyDumpedObjects['GiftCard'][$this->getPrimaryKey()] = true;
-        $keys = GiftCardTableMap::getFieldNames($keyType);
+        $alreadyDumpedObjects['GiftCardOrder'][$this->getPrimaryKey()] = true;
+        $keys = GiftCardOrderTableMap::getFieldNames($keyType);
         $result = array(
             $keys[0] => $this->getId(),
-            $keys[1] => $this->getSponsorCustomerId(),
-            $keys[2] => $this->getCode(),
-            $keys[3] => $this->getAmount(),
+            $keys[1] => $this->getGiftCardId(),
+            $keys[2] => $this->getOrderId(),
+            $keys[3] => $this->getSpendAmount(),
             $keys[4] => $this->getCreatedAt(),
             $keys[5] => $this->getUpdatedAt(),
         );
@@ -1119,14 +1072,11 @@ abstract class GiftCard implements ActiveRecordInterface
         }
 
         if ($includeForeignObjects) {
-            if (null !== $this->aCustomer) {
-                $result['Customer'] = $this->aCustomer->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            if (null !== $this->aOrder) {
+                $result['Order'] = $this->aOrder->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
-            if (null !== $this->collGiftCardCarts) {
-                $result['GiftCardCarts'] = $this->collGiftCardCarts->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
-            }
-            if (null !== $this->collGiftCardOrders) {
-                $result['GiftCardOrders'] = $this->collGiftCardOrders->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
+            if (null !== $this->aGiftCard) {
+                $result['GiftCard'] = $this->aGiftCard->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1146,7 +1096,7 @@ abstract class GiftCard implements ActiveRecordInterface
      */
     public function setByName($name, $value, $type = TableMap::TYPE_PHPNAME)
     {
-        $pos = GiftCardTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
+        $pos = GiftCardOrderTableMap::translateFieldName($name, $type, TableMap::TYPE_NUM);
 
         return $this->setByPosition($pos, $value);
     }
@@ -1166,13 +1116,13 @@ abstract class GiftCard implements ActiveRecordInterface
                 $this->setId($value);
                 break;
             case 1:
-                $this->setSponsorCustomerId($value);
+                $this->setGiftCardId($value);
                 break;
             case 2:
-                $this->setCode($value);
+                $this->setOrderId($value);
                 break;
             case 3:
-                $this->setAmount($value);
+                $this->setSpendAmount($value);
                 break;
             case 4:
                 $this->setCreatedAt($value);
@@ -1202,12 +1152,12 @@ abstract class GiftCard implements ActiveRecordInterface
      */
     public function fromArray($arr, $keyType = TableMap::TYPE_PHPNAME)
     {
-        $keys = GiftCardTableMap::getFieldNames($keyType);
+        $keys = GiftCardOrderTableMap::getFieldNames($keyType);
 
         if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
-        if (array_key_exists($keys[1], $arr)) $this->setSponsorCustomerId($arr[$keys[1]]);
-        if (array_key_exists($keys[2], $arr)) $this->setCode($arr[$keys[2]]);
-        if (array_key_exists($keys[3], $arr)) $this->setAmount($arr[$keys[3]]);
+        if (array_key_exists($keys[1], $arr)) $this->setGiftCardId($arr[$keys[1]]);
+        if (array_key_exists($keys[2], $arr)) $this->setOrderId($arr[$keys[2]]);
+        if (array_key_exists($keys[3], $arr)) $this->setSpendAmount($arr[$keys[3]]);
         if (array_key_exists($keys[4], $arr)) $this->setCreatedAt($arr[$keys[4]]);
         if (array_key_exists($keys[5], $arr)) $this->setUpdatedAt($arr[$keys[5]]);
     }
@@ -1219,14 +1169,14 @@ abstract class GiftCard implements ActiveRecordInterface
      */
     public function buildCriteria()
     {
-        $criteria = new Criteria(GiftCardTableMap::DATABASE_NAME);
+        $criteria = new Criteria(GiftCardOrderTableMap::DATABASE_NAME);
 
-        if ($this->isColumnModified(GiftCardTableMap::ID)) $criteria->add(GiftCardTableMap::ID, $this->id);
-        if ($this->isColumnModified(GiftCardTableMap::SPONSOR_CUSTOMER_ID)) $criteria->add(GiftCardTableMap::SPONSOR_CUSTOMER_ID, $this->sponsor_customer_id);
-        if ($this->isColumnModified(GiftCardTableMap::CODE)) $criteria->add(GiftCardTableMap::CODE, $this->code);
-        if ($this->isColumnModified(GiftCardTableMap::AMOUNT)) $criteria->add(GiftCardTableMap::AMOUNT, $this->amount);
-        if ($this->isColumnModified(GiftCardTableMap::CREATED_AT)) $criteria->add(GiftCardTableMap::CREATED_AT, $this->created_at);
-        if ($this->isColumnModified(GiftCardTableMap::UPDATED_AT)) $criteria->add(GiftCardTableMap::UPDATED_AT, $this->updated_at);
+        if ($this->isColumnModified(GiftCardOrderTableMap::ID)) $criteria->add(GiftCardOrderTableMap::ID, $this->id);
+        if ($this->isColumnModified(GiftCardOrderTableMap::GIFT_CARD_ID)) $criteria->add(GiftCardOrderTableMap::GIFT_CARD_ID, $this->gift_card_id);
+        if ($this->isColumnModified(GiftCardOrderTableMap::ORDER_ID)) $criteria->add(GiftCardOrderTableMap::ORDER_ID, $this->order_id);
+        if ($this->isColumnModified(GiftCardOrderTableMap::SPEND_AMOUNT)) $criteria->add(GiftCardOrderTableMap::SPEND_AMOUNT, $this->spend_amount);
+        if ($this->isColumnModified(GiftCardOrderTableMap::CREATED_AT)) $criteria->add(GiftCardOrderTableMap::CREATED_AT, $this->created_at);
+        if ($this->isColumnModified(GiftCardOrderTableMap::UPDATED_AT)) $criteria->add(GiftCardOrderTableMap::UPDATED_AT, $this->updated_at);
 
         return $criteria;
     }
@@ -1241,8 +1191,8 @@ abstract class GiftCard implements ActiveRecordInterface
      */
     public function buildPkeyCriteria()
     {
-        $criteria = new Criteria(GiftCardTableMap::DATABASE_NAME);
-        $criteria->add(GiftCardTableMap::ID, $this->id);
+        $criteria = new Criteria(GiftCardOrderTableMap::DATABASE_NAME);
+        $criteria->add(GiftCardOrderTableMap::ID, $this->id);
 
         return $criteria;
     }
@@ -1283,38 +1233,18 @@ abstract class GiftCard implements ActiveRecordInterface
      * If desired, this method can also make copies of all associated (fkey referrers)
      * objects.
      *
-     * @param      object $copyObj An object of \TheliaGiftCard\Model\GiftCard (or compatible) type.
+     * @param      object $copyObj An object of \TheliaGiftCard\Model\GiftCardOrder (or compatible) type.
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
      * @param      boolean $makeNew Whether to reset autoincrement PKs and make the object new.
      * @throws PropelException
      */
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
-        $copyObj->setSponsorCustomerId($this->getSponsorCustomerId());
-        $copyObj->setCode($this->getCode());
-        $copyObj->setAmount($this->getAmount());
+        $copyObj->setGiftCardId($this->getGiftCardId());
+        $copyObj->setOrderId($this->getOrderId());
+        $copyObj->setSpendAmount($this->getSpendAmount());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
-
-        if ($deepCopy) {
-            // important: temporarily setNew(false) because this affects the behavior of
-            // the getter/setter methods for fkey referrer objects.
-            $copyObj->setNew(false);
-
-            foreach ($this->getGiftCardCarts() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addGiftCardCart($relObj->copy($deepCopy));
-                }
-            }
-
-            foreach ($this->getGiftCardOrders() as $relObj) {
-                if ($relObj !== $this) {  // ensure that we don't try to copy a reference to ourselves
-                    $copyObj->addGiftCardOrder($relObj->copy($deepCopy));
-                }
-            }
-
-        } // if ($deepCopy)
-
         if ($makeNew) {
             $copyObj->setNew(true);
             $copyObj->setId(NULL); // this is a auto-increment column, so set to default value
@@ -1330,7 +1260,7 @@ abstract class GiftCard implements ActiveRecordInterface
      * objects.
      *
      * @param      boolean $deepCopy Whether to also copy all rows that refer (by fkey) to the current row.
-     * @return                 \TheliaGiftCard\Model\GiftCard Clone of current object.
+     * @return                 \TheliaGiftCard\Model\GiftCardOrder Clone of current object.
      * @throws PropelException
      */
     public function copy($deepCopy = false)
@@ -1344,26 +1274,26 @@ abstract class GiftCard implements ActiveRecordInterface
     }
 
     /**
-     * Declares an association between this object and a ChildCustomer object.
+     * Declares an association between this object and a ChildOrder object.
      *
-     * @param                  ChildCustomer $v
-     * @return                 \TheliaGiftCard\Model\GiftCard The current object (for fluent API support)
+     * @param                  ChildOrder $v
+     * @return                 \TheliaGiftCard\Model\GiftCardOrder The current object (for fluent API support)
      * @throws PropelException
      */
-    public function setCustomer(ChildCustomer $v = null)
+    public function setOrder(ChildOrder $v = null)
     {
         if ($v === null) {
-            $this->setSponsorCustomerId(NULL);
+            $this->setOrderId(NULL);
         } else {
-            $this->setSponsorCustomerId($v->getId());
+            $this->setOrderId($v->getId());
         }
 
-        $this->aCustomer = $v;
+        $this->aOrder = $v;
 
         // Add binding for other direction of this n:n relationship.
-        // If this object has already been added to the ChildCustomer object, it will not be re-added.
+        // If this object has already been added to the ChildOrder object, it will not be re-added.
         if ($v !== null) {
-            $v->addGiftCard($this);
+            $v->addGiftCardOrder($this);
         }
 
 
@@ -1372,531 +1302,77 @@ abstract class GiftCard implements ActiveRecordInterface
 
 
     /**
-     * Get the associated ChildCustomer object
+     * Get the associated ChildOrder object
      *
      * @param      ConnectionInterface $con Optional Connection object.
-     * @return                 ChildCustomer The associated ChildCustomer object.
+     * @return                 ChildOrder The associated ChildOrder object.
      * @throws PropelException
      */
-    public function getCustomer(ConnectionInterface $con = null)
+    public function getOrder(ConnectionInterface $con = null)
     {
-        if ($this->aCustomer === null && ($this->sponsor_customer_id !== null)) {
-            $this->aCustomer = CustomerQuery::create()->findPk($this->sponsor_customer_id, $con);
+        if ($this->aOrder === null && ($this->order_id !== null)) {
+            $this->aOrder = OrderQuery::create()->findPk($this->order_id, $con);
             /* The following can be used additionally to
                 guarantee the related object contains a reference
                 to this object.  This level of coupling may, however, be
                 undesirable since it could result in an only partially populated collection
                 in the referenced object.
-                $this->aCustomer->addGiftCards($this);
+                $this->aOrder->addGiftCardOrders($this);
              */
         }
 
-        return $this->aCustomer;
-    }
-
-
-    /**
-     * Initializes a collection based on the name of a relation.
-     * Avoids crafting an 'init[$relationName]s' method name
-     * that wouldn't work when StandardEnglishPluralizer is used.
-     *
-     * @param      string $relationName The name of the relation to initialize
-     * @return void
-     */
-    public function initRelation($relationName)
-    {
-        if ('GiftCardCart' == $relationName) {
-            return $this->initGiftCardCarts();
-        }
-        if ('GiftCardOrder' == $relationName) {
-            return $this->initGiftCardOrders();
-        }
+        return $this->aOrder;
     }
 
     /**
-     * Clears out the collGiftCardCarts collection
+     * Declares an association between this object and a ChildGiftCard object.
      *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addGiftCardCarts()
-     */
-    public function clearGiftCardCarts()
-    {
-        $this->collGiftCardCarts = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collGiftCardCarts collection loaded partially.
-     */
-    public function resetPartialGiftCardCarts($v = true)
-    {
-        $this->collGiftCardCartsPartial = $v;
-    }
-
-    /**
-     * Initializes the collGiftCardCarts collection.
-     *
-     * By default this just sets the collGiftCardCarts collection to an empty array (like clearcollGiftCardCarts());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initGiftCardCarts($overrideExisting = true)
-    {
-        if (null !== $this->collGiftCardCarts && !$overrideExisting) {
-            return;
-        }
-        $this->collGiftCardCarts = new ObjectCollection();
-        $this->collGiftCardCarts->setModel('\TheliaGiftCard\Model\GiftCardCart');
-    }
-
-    /**
-     * Gets an array of ChildGiftCardCart objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildGiftCard is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return Collection|ChildGiftCardCart[] List of ChildGiftCardCart objects
+     * @param                  ChildGiftCard $v
+     * @return                 \TheliaGiftCard\Model\GiftCardOrder The current object (for fluent API support)
      * @throws PropelException
      */
-    public function getGiftCardCarts($criteria = null, ConnectionInterface $con = null)
+    public function setGiftCard(ChildGiftCard $v = null)
     {
-        $partial = $this->collGiftCardCartsPartial && !$this->isNew();
-        if (null === $this->collGiftCardCarts || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collGiftCardCarts) {
-                // return empty collection
-                $this->initGiftCardCarts();
-            } else {
-                $collGiftCardCarts = ChildGiftCardCartQuery::create(null, $criteria)
-                    ->filterByGiftCard($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collGiftCardCartsPartial && count($collGiftCardCarts)) {
-                        $this->initGiftCardCarts(false);
-
-                        foreach ($collGiftCardCarts as $obj) {
-                            if (false == $this->collGiftCardCarts->contains($obj)) {
-                                $this->collGiftCardCarts->append($obj);
-                            }
-                        }
-
-                        $this->collGiftCardCartsPartial = true;
-                    }
-
-                    reset($collGiftCardCarts);
-
-                    return $collGiftCardCarts;
-                }
-
-                if ($partial && $this->collGiftCardCarts) {
-                    foreach ($this->collGiftCardCarts as $obj) {
-                        if ($obj->isNew()) {
-                            $collGiftCardCarts[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collGiftCardCarts = $collGiftCardCarts;
-                $this->collGiftCardCartsPartial = false;
-            }
+        if ($v === null) {
+            $this->setGiftCardId(NULL);
+        } else {
+            $this->setGiftCardId($v->getId());
         }
 
-        return $this->collGiftCardCarts;
-    }
+        $this->aGiftCard = $v;
 
-    /**
-     * Sets a collection of GiftCardCart objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $giftCardCarts A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return   ChildGiftCard The current object (for fluent API support)
-     */
-    public function setGiftCardCarts(Collection $giftCardCarts, ConnectionInterface $con = null)
-    {
-        $giftCardCartsToDelete = $this->getGiftCardCarts(new Criteria(), $con)->diff($giftCardCarts);
-
-
-        $this->giftCardCartsScheduledForDeletion = $giftCardCartsToDelete;
-
-        foreach ($giftCardCartsToDelete as $giftCardCartRemoved) {
-            $giftCardCartRemoved->setGiftCard(null);
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildGiftCard object, it will not be re-added.
+        if ($v !== null) {
+            $v->addGiftCardOrder($this);
         }
 
-        $this->collGiftCardCarts = null;
-        foreach ($giftCardCarts as $giftCardCart) {
-            $this->addGiftCardCart($giftCardCart);
-        }
-
-        $this->collGiftCardCarts = $giftCardCarts;
-        $this->collGiftCardCartsPartial = false;
 
         return $this;
     }
 
+
     /**
-     * Returns the number of related GiftCardCart objects.
+     * Get the associated ChildGiftCard object
      *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related GiftCardCart objects.
+     * @param      ConnectionInterface $con Optional Connection object.
+     * @return                 ChildGiftCard The associated ChildGiftCard object.
      * @throws PropelException
      */
-    public function countGiftCardCarts(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
+    public function getGiftCard(ConnectionInterface $con = null)
     {
-        $partial = $this->collGiftCardCartsPartial && !$this->isNew();
-        if (null === $this->collGiftCardCarts || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collGiftCardCarts) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getGiftCardCarts());
-            }
-
-            $query = ChildGiftCardCartQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByGiftCard($this)
-                ->count($con);
+        if ($this->aGiftCard === null && ($this->gift_card_id !== null)) {
+            $this->aGiftCard = ChildGiftCardQuery::create()->findPk($this->gift_card_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aGiftCard->addGiftCardOrders($this);
+             */
         }
 
-        return count($this->collGiftCardCarts);
-    }
-
-    /**
-     * Method called to associate a ChildGiftCardCart object to this object
-     * through the ChildGiftCardCart foreign key attribute.
-     *
-     * @param    ChildGiftCardCart $l ChildGiftCardCart
-     * @return   \TheliaGiftCard\Model\GiftCard The current object (for fluent API support)
-     */
-    public function addGiftCardCart(ChildGiftCardCart $l)
-    {
-        if ($this->collGiftCardCarts === null) {
-            $this->initGiftCardCarts();
-            $this->collGiftCardCartsPartial = true;
-        }
-
-        if (!in_array($l, $this->collGiftCardCarts->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
-            $this->doAddGiftCardCart($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param GiftCardCart $giftCardCart The giftCardCart object to add.
-     */
-    protected function doAddGiftCardCart($giftCardCart)
-    {
-        $this->collGiftCardCarts[]= $giftCardCart;
-        $giftCardCart->setGiftCard($this);
-    }
-
-    /**
-     * @param  GiftCardCart $giftCardCart The giftCardCart object to remove.
-     * @return ChildGiftCard The current object (for fluent API support)
-     */
-    public function removeGiftCardCart($giftCardCart)
-    {
-        if ($this->getGiftCardCarts()->contains($giftCardCart)) {
-            $this->collGiftCardCarts->remove($this->collGiftCardCarts->search($giftCardCart));
-            if (null === $this->giftCardCartsScheduledForDeletion) {
-                $this->giftCardCartsScheduledForDeletion = clone $this->collGiftCardCarts;
-                $this->giftCardCartsScheduledForDeletion->clear();
-            }
-            $this->giftCardCartsScheduledForDeletion[]= $giftCardCart;
-            $giftCardCart->setGiftCard(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this GiftCard is new, it will return
-     * an empty collection; or if this GiftCard has previously
-     * been saved, it will retrieve related GiftCardCarts from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in GiftCard.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return Collection|ChildGiftCardCart[] List of ChildGiftCardCart objects
-     */
-    public function getGiftCardCartsJoinCart($criteria = null, $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildGiftCardCartQuery::create(null, $criteria);
-        $query->joinWith('Cart', $joinBehavior);
-
-        return $this->getGiftCardCarts($query, $con);
-    }
-
-    /**
-     * Clears out the collGiftCardOrders collection
-     *
-     * This does not modify the database; however, it will remove any associated objects, causing
-     * them to be refetched by subsequent calls to accessor method.
-     *
-     * @return void
-     * @see        addGiftCardOrders()
-     */
-    public function clearGiftCardOrders()
-    {
-        $this->collGiftCardOrders = null; // important to set this to NULL since that means it is uninitialized
-    }
-
-    /**
-     * Reset is the collGiftCardOrders collection loaded partially.
-     */
-    public function resetPartialGiftCardOrders($v = true)
-    {
-        $this->collGiftCardOrdersPartial = $v;
-    }
-
-    /**
-     * Initializes the collGiftCardOrders collection.
-     *
-     * By default this just sets the collGiftCardOrders collection to an empty array (like clearcollGiftCardOrders());
-     * however, you may wish to override this method in your stub class to provide setting appropriate
-     * to your application -- for example, setting the initial array to the values stored in database.
-     *
-     * @param      boolean $overrideExisting If set to true, the method call initializes
-     *                                        the collection even if it is not empty
-     *
-     * @return void
-     */
-    public function initGiftCardOrders($overrideExisting = true)
-    {
-        if (null !== $this->collGiftCardOrders && !$overrideExisting) {
-            return;
-        }
-        $this->collGiftCardOrders = new ObjectCollection();
-        $this->collGiftCardOrders->setModel('\TheliaGiftCard\Model\GiftCardOrder');
-    }
-
-    /**
-     * Gets an array of ChildGiftCardOrder objects which contain a foreign key that references this object.
-     *
-     * If the $criteria is not null, it is used to always fetch the results from the database.
-     * Otherwise the results are fetched from the database the first time, then cached.
-     * Next time the same method is called without $criteria, the cached collection is returned.
-     * If this ChildGiftCard is new, it will return
-     * an empty collection or the current collection; the criteria is ignored on a new object.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @return Collection|ChildGiftCardOrder[] List of ChildGiftCardOrder objects
-     * @throws PropelException
-     */
-    public function getGiftCardOrders($criteria = null, ConnectionInterface $con = null)
-    {
-        $partial = $this->collGiftCardOrdersPartial && !$this->isNew();
-        if (null === $this->collGiftCardOrders || null !== $criteria  || $partial) {
-            if ($this->isNew() && null === $this->collGiftCardOrders) {
-                // return empty collection
-                $this->initGiftCardOrders();
-            } else {
-                $collGiftCardOrders = ChildGiftCardOrderQuery::create(null, $criteria)
-                    ->filterByGiftCard($this)
-                    ->find($con);
-
-                if (null !== $criteria) {
-                    if (false !== $this->collGiftCardOrdersPartial && count($collGiftCardOrders)) {
-                        $this->initGiftCardOrders(false);
-
-                        foreach ($collGiftCardOrders as $obj) {
-                            if (false == $this->collGiftCardOrders->contains($obj)) {
-                                $this->collGiftCardOrders->append($obj);
-                            }
-                        }
-
-                        $this->collGiftCardOrdersPartial = true;
-                    }
-
-                    reset($collGiftCardOrders);
-
-                    return $collGiftCardOrders;
-                }
-
-                if ($partial && $this->collGiftCardOrders) {
-                    foreach ($this->collGiftCardOrders as $obj) {
-                        if ($obj->isNew()) {
-                            $collGiftCardOrders[] = $obj;
-                        }
-                    }
-                }
-
-                $this->collGiftCardOrders = $collGiftCardOrders;
-                $this->collGiftCardOrdersPartial = false;
-            }
-        }
-
-        return $this->collGiftCardOrders;
-    }
-
-    /**
-     * Sets a collection of GiftCardOrder objects related by a one-to-many relationship
-     * to the current object.
-     * It will also schedule objects for deletion based on a diff between old objects (aka persisted)
-     * and new objects from the given Propel collection.
-     *
-     * @param      Collection $giftCardOrders A Propel collection.
-     * @param      ConnectionInterface $con Optional connection object
-     * @return   ChildGiftCard The current object (for fluent API support)
-     */
-    public function setGiftCardOrders(Collection $giftCardOrders, ConnectionInterface $con = null)
-    {
-        $giftCardOrdersToDelete = $this->getGiftCardOrders(new Criteria(), $con)->diff($giftCardOrders);
-
-
-        $this->giftCardOrdersScheduledForDeletion = $giftCardOrdersToDelete;
-
-        foreach ($giftCardOrdersToDelete as $giftCardOrderRemoved) {
-            $giftCardOrderRemoved->setGiftCard(null);
-        }
-
-        $this->collGiftCardOrders = null;
-        foreach ($giftCardOrders as $giftCardOrder) {
-            $this->addGiftCardOrder($giftCardOrder);
-        }
-
-        $this->collGiftCardOrders = $giftCardOrders;
-        $this->collGiftCardOrdersPartial = false;
-
-        return $this;
-    }
-
-    /**
-     * Returns the number of related GiftCardOrder objects.
-     *
-     * @param      Criteria $criteria
-     * @param      boolean $distinct
-     * @param      ConnectionInterface $con
-     * @return int             Count of related GiftCardOrder objects.
-     * @throws PropelException
-     */
-    public function countGiftCardOrders(Criteria $criteria = null, $distinct = false, ConnectionInterface $con = null)
-    {
-        $partial = $this->collGiftCardOrdersPartial && !$this->isNew();
-        if (null === $this->collGiftCardOrders || null !== $criteria || $partial) {
-            if ($this->isNew() && null === $this->collGiftCardOrders) {
-                return 0;
-            }
-
-            if ($partial && !$criteria) {
-                return count($this->getGiftCardOrders());
-            }
-
-            $query = ChildGiftCardOrderQuery::create(null, $criteria);
-            if ($distinct) {
-                $query->distinct();
-            }
-
-            return $query
-                ->filterByGiftCard($this)
-                ->count($con);
-        }
-
-        return count($this->collGiftCardOrders);
-    }
-
-    /**
-     * Method called to associate a ChildGiftCardOrder object to this object
-     * through the ChildGiftCardOrder foreign key attribute.
-     *
-     * @param    ChildGiftCardOrder $l ChildGiftCardOrder
-     * @return   \TheliaGiftCard\Model\GiftCard The current object (for fluent API support)
-     */
-    public function addGiftCardOrder(ChildGiftCardOrder $l)
-    {
-        if ($this->collGiftCardOrders === null) {
-            $this->initGiftCardOrders();
-            $this->collGiftCardOrdersPartial = true;
-        }
-
-        if (!in_array($l, $this->collGiftCardOrders->getArrayCopy(), true)) { // only add it if the **same** object is not already associated
-            $this->doAddGiftCardOrder($l);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param GiftCardOrder $giftCardOrder The giftCardOrder object to add.
-     */
-    protected function doAddGiftCardOrder($giftCardOrder)
-    {
-        $this->collGiftCardOrders[]= $giftCardOrder;
-        $giftCardOrder->setGiftCard($this);
-    }
-
-    /**
-     * @param  GiftCardOrder $giftCardOrder The giftCardOrder object to remove.
-     * @return ChildGiftCard The current object (for fluent API support)
-     */
-    public function removeGiftCardOrder($giftCardOrder)
-    {
-        if ($this->getGiftCardOrders()->contains($giftCardOrder)) {
-            $this->collGiftCardOrders->remove($this->collGiftCardOrders->search($giftCardOrder));
-            if (null === $this->giftCardOrdersScheduledForDeletion) {
-                $this->giftCardOrdersScheduledForDeletion = clone $this->collGiftCardOrders;
-                $this->giftCardOrdersScheduledForDeletion->clear();
-            }
-            $this->giftCardOrdersScheduledForDeletion[]= $giftCardOrder;
-            $giftCardOrder->setGiftCard(null);
-        }
-
-        return $this;
-    }
-
-
-    /**
-     * If this collection has already been initialized with
-     * an identical criteria, it returns the collection.
-     * Otherwise if this GiftCard is new, it will return
-     * an empty collection; or if this GiftCard has previously
-     * been saved, it will retrieve related GiftCardOrders from storage.
-     *
-     * This method is protected by default in order to keep the public
-     * api reasonable.  You can provide public methods for those you
-     * actually need in GiftCard.
-     *
-     * @param      Criteria $criteria optional Criteria object to narrow the query
-     * @param      ConnectionInterface $con optional connection object
-     * @param      string $joinBehavior optional join type to use (defaults to Criteria::LEFT_JOIN)
-     * @return Collection|ChildGiftCardOrder[] List of ChildGiftCardOrder objects
-     */
-    public function getGiftCardOrdersJoinOrder($criteria = null, $con = null, $joinBehavior = Criteria::LEFT_JOIN)
-    {
-        $query = ChildGiftCardOrderQuery::create(null, $criteria);
-        $query->joinWith('Order', $joinBehavior);
-
-        return $this->getGiftCardOrders($query, $con);
+        return $this->aGiftCard;
     }
 
     /**
@@ -1905,9 +1381,9 @@ abstract class GiftCard implements ActiveRecordInterface
     public function clear()
     {
         $this->id = null;
-        $this->sponsor_customer_id = null;
-        $this->code = null;
-        $this->amount = null;
+        $this->gift_card_id = null;
+        $this->order_id = null;
+        $this->spend_amount = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;
@@ -1929,21 +1405,10 @@ abstract class GiftCard implements ActiveRecordInterface
     public function clearAllReferences($deep = false)
     {
         if ($deep) {
-            if ($this->collGiftCardCarts) {
-                foreach ($this->collGiftCardCarts as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
-            if ($this->collGiftCardOrders) {
-                foreach ($this->collGiftCardOrders as $o) {
-                    $o->clearAllReferences($deep);
-                }
-            }
         } // if ($deep)
 
-        $this->collGiftCardCarts = null;
-        $this->collGiftCardOrders = null;
-        $this->aCustomer = null;
+        $this->aOrder = null;
+        $this->aGiftCard = null;
     }
 
     /**
@@ -1953,7 +1418,7 @@ abstract class GiftCard implements ActiveRecordInterface
      */
     public function __toString()
     {
-        return (string) $this->exportTo(GiftCardTableMap::DEFAULT_STRING_FORMAT);
+        return (string) $this->exportTo(GiftCardOrderTableMap::DEFAULT_STRING_FORMAT);
     }
 
     // timestampable behavior
@@ -1961,11 +1426,11 @@ abstract class GiftCard implements ActiveRecordInterface
     /**
      * Mark the current object so that the update date doesn't get updated during next save
      *
-     * @return     ChildGiftCard The current object (for fluent API support)
+     * @return     ChildGiftCardOrder The current object (for fluent API support)
      */
     public function keepUpdateDateUnchanged()
     {
-        $this->modifiedColumns[GiftCardTableMap::UPDATED_AT] = true;
+        $this->modifiedColumns[GiftCardOrderTableMap::UPDATED_AT] = true;
 
         return $this;
     }
