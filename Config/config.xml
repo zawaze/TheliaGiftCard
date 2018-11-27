@@ -5,9 +5,7 @@
         xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
 
     <loops>
-        <!-- sample definition
-        <loop name="MySuperLoop" class="TheliaGiftCard\Loop\MySuperLoop" />
-        -->
+        <loop name="used.amount.card.gift" class="TheliaGiftCard\Loop\GiftCArdOrderUseLoop" />
     </loops>
 
     <forms>
@@ -22,6 +20,8 @@
     </commands>
 
     <services>
+        <service id="giftcard.service" class="TheliaGiftCard\Service\GiftCardAmountSpendService">
+        </service>
         <service id="giftcard.service" class="TheliaGiftCard\Service\GiftCardService">
         </service>
         <service id="giftcard.order.listener" class="TheliaGiftCard\EventListener\OrderPayListener">
@@ -29,26 +29,15 @@
             <argument type="service" id="service_container" />
             <argument type="service" id="request" />
         </service>
-
+        <service id="giftcard.amount.spend.service" class="TheliaGiftCard\Service\GiftCardAmountSpendService">
+            <argument type="service" id="thelia.taxEngine"/>
+            <argument type="service" id="giftcard.service"/>
+        </service>
     </services>
 
-    <!--
     <hooks>
-        <hook id="theliagiftcard.hook" class="TheliaGiftCard\Hook\MySuperHook">
-            <tag name="hook.event_listener" event="main.body.bottom" type="front|back|pdf|email" method="onMainBodyBottom" />
+        <hook id="theliagiftcard.hook" class="TheliaGiftCard\Hook\HookManager">
+            <tag name="hook.event_listener" event="order-edit.after-order-product-list" type="back" method="cardGiftAccountUsageInOrder" />
         </hook>
     </hooks>
-    -->
-
-    <!--
-    <exports>
-
-    </exports>
-    -->
-
-    <!--
-    <imports>
-
-    </imports>
-    -->
 </config>

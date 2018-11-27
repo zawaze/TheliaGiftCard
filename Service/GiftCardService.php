@@ -31,6 +31,12 @@ class GiftCardService
                 ->save();
 
             return true;
+
+        } else {
+            $giftCardCart
+                ->setSpendAmount($amount)
+                ->save();
+            return true;
         }
 
         return false;

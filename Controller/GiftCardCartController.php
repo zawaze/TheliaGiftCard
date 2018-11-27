@@ -6,8 +6,18 @@
 
 namespace TheliaGiftCard\Controller;
 
+use CreditAccount\GiftCardAmountApendService;
+use Front\Front;
 use Thelia\Controller\Front\BaseFrontController;
+use Thelia\Core\Event\Delivery\DeliveryPostageEvent;
+use Thelia\Core\Event\Order\OrderEvent;
+use Thelia\Core\Event\TheliaEvents;
 use Thelia\Form\Exception\FormValidationException;
+use Thelia\Model\AddressQuery;
+use Thelia\Model\AreaDeliveryModuleQuery;
+use Thelia\Model\ModuleQuery;
+use Thelia\Module\Exception\DeliveryException;
+use TheliaGiftCard\Service\GiftCardAmountSpendService;
 use TheliaGiftCard\Service\GiftCardService;
 use TheliaGiftCard\TheliaGiftCard;
 
@@ -17,32 +27,26 @@ class GiftCardCartController extends BaseFrontController
     {
         $form = $this->createForm('spend.amount.card.gift');
 
+
         try {
             $amountForm = $this->validateForm($form);
 
-            // get cart session
-            $cart = $this->getRequest()->getSession()->getSessionCart();
-
-            $discount = $cart->getDiscount();
-
-            /** @var GiftCardService $gcservice */
-            $gcservice = $this->getContainer()->get('giftcard.service');
-
-            //set session dicount  and spend amount
-            /**  To do gérer l option de  cumul  ou  non */
-
             $amount = $amountForm->get('amount_used')->getData();
 
-            $test = $gcservice->setCardOnCart($cart->getId(), $amount);
+            /** @var GiftCardAmountSpendService $gifCardService */
+            $gifCardService = $this->container->get('giftcard.amount.spend.service');
 
-            if ($test) {
-                $cart
-                    ->setDiscount($discount + $amount)
-                    ->save();
+            $order = $this->getSession()->getOrder();
+
+            if(null== $order){
+                return;
             }
 
+            $postageBase = $this->getDelivery($order);
 
-            return $this->generateRedirectFromRoute('cart.view');
+            $gifCardService->applyGiftCardDiscountInCartAndOrder($amount, $this->getSession(), $this->getDispatcher());
+
+            return $this->generateRedirectFromRoute('order.invoice');
 
         } catch (FormValidationException $error_message) {
 
@@ -52,10 +56,8 @@ class GiftCardCartController extends BaseFrontController
                 ->addForm($form)
                 ->setGeneralError($error_message);
 
-
             return $this->generateErrorRedirect($form);
         }
-
     }
 
     public function DeleteAmountAction()
@@ -84,7 +86,7 @@ class GiftCardCartController extends BaseFrontController
                 ->setDiscount($total)
                 ->save();
 
-            return $this->generateRedirectFromRoute('cart.view');
+            return $this->generateRedirectFromRoute('order.invoice');
 
         } catch (FormValidationException $error_message) {
 
@@ -98,5 +100,68 @@ class GiftCardCartController extends BaseFrontController
             return $this->generateErrorRedirect($form);
         }
 
+    }
+
+    public function getDelivery($order)
+    {
+        $deliveryModule = $order->getModuleRelatedByDeliveryModuleId();
+        $deliveryAddress = AddressQuery::create()->findPk($order->getChoosenDeliveryAddress());
+
+        /* check that the delivery address belongs to the current customer */
+        if ($deliveryAddress->getCustomerId() !== $this->getSecurityContext()->getCustomerUser()->getId()) {
+            throw new \Exception(
+                $this->getTranslator()->trans(
+                    "Delivery address does not belong to the current customer",
+                    [],
+                    Front::MESSAGE_DOMAIN
+                )
+            );
+        }
+
+        /* check that the delivery module fetches the delivery address area */
+        if (null === AreaDeliveryModuleQuery::create()->findByCountryAndModule(
+                $deliveryAddress->getCountry(),
+                $deliveryModule
+            )) {
+            throw new \Exception(
+                $this->getTranslator()->trans(
+                    "Delivery module cannot be use with selected delivery address",
+                    [],
+                    Front::MESSAGE_DOMAIN
+                )
+            );
+        }
+
+        /* get postage amount */
+        $moduleInstance = $deliveryModule->getDeliveryModuleInstance($this->container);
+
+        $cart = $this->getSession()->getSessionCart($this->getDispatcher());
+        $deliveryPostageEvent = new DeliveryPostageEvent($moduleInstance, $cart, $deliveryAddress);
+
+        $this->getDispatcher()->dispatch(
+            TheliaEvents::MODULE_DELIVERY_GET_POSTAGE,
+            $deliveryPostageEvent
+        );
+
+        if (!$deliveryPostageEvent->isValidModule() || null === $deliveryPostageEvent->getPostage()) {
+            throw new DeliveryException(
+                $this->getTranslator()->trans('The delivery module is not valid.', [], Front::MESSAGE_DOMAIN)
+            );
+        }
+
+        $postage = $deliveryPostageEvent->getPostage();
+
+
+
+        $orderEvent = new OrderEvent($order);
+        $orderEvent->setDeliveryAddress($deliveryAddress->getId());
+        $orderEvent->setDeliveryModule($deliveryModule->getId());
+        $orderEvent->setPostage($postage->getAmount());
+        $orderEvent->setPostageTax($postage->getAmountTax());
+        $orderEvent->setPostageTaxRuleTitle($postage->getTaxRuleTitle());
+
+        $this->getDispatcher()->dispatch(TheliaEvents::ORDER_SET_DELIVERY_ADDRESS, $orderEvent);
+        $this->getDispatcher()->dispatch(TheliaEvents::ORDER_SET_DELIVERY_MODULE, $orderEvent);
+        $this->getDispatcher()->dispatch(TheliaEvents::ORDER_SET_POSTAGE, $orderEvent);
     }
 }

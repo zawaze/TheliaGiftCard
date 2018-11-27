@@ -1,0 +1,16 @@
+{loop type="currency" name="amount.currency" default_only=1}
+    {$currencySymbol = $SYMBOL}
+{/loop}
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        {intl l="Order Gift-Card amount usage for this order" }
+    </div>
+    <div class="panel-body table-responsive">
+        <ul class="list-unstyled">
+            {loop type="used.amount.card.gift" name="gift_card_amount_spend_order" order_id=$order_id}
+                <li>{intl l="New entry in order gift card amount : <span %class>%amount</span>" class=$class amount={format_money number=$SPEND_AMOUNT symbol=$currencySymbol}}</li>
+            {/loop}
+        </ul>
+    </div>
+</div>
