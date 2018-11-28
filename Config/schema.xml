@@ -6,11 +6,16 @@
         <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
 
         <column name="sponsor_customer_id" required="true" type="INTEGER" />
+        <column name="order_id" required="true" type="INTEGER" />
         <column name="code" required="true" size="100" type="VARCHAR" />
         <column name="amount" scale="6" size="16" type="DECIMAL" />
 
         <foreign-key foreignTable="customer" name="fk_card_gift_sponsor_customer" onDelete="RESTRICT" onUpdate="RESTRICT">
             <reference foreign="id" local="sponsor_customer_id" />
+        </foreign-key>
+
+        <foreign-key foreignTable="order" name="fk_gift_card_order" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference foreign="id" local="order_id" />
         </foreign-key>
 
         <behavior name="timestampable" />

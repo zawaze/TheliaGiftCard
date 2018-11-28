@@ -25,7 +25,9 @@ use TheliaGiftCard\Model\GiftCardOrderQuery as ChildGiftCardOrderQuery;
 use TheliaGiftCard\Model\GiftCardQuery as ChildGiftCardQuery;
 use TheliaGiftCard\Model\Map\GiftCardTableMap;
 use Thelia\Model\Customer as ChildCustomer;
+use Thelia\Model\Order as ChildOrder;
 use Thelia\Model\CustomerQuery;
+use Thelia\Model\OrderQuery;
 
 abstract class GiftCard implements ActiveRecordInterface
 {
@@ -74,6 +76,12 @@ abstract class GiftCard implements ActiveRecordInterface
     protected $sponsor_customer_id;
 
     /**
+     * The value for the order_id field.
+     * @var        int
+     */
+    protected $order_id;
+
+    /**
      * The value for the code field.
      * @var        string
      */
@@ -101,6 +109,11 @@ abstract class GiftCard implements ActiveRecordInterface
      * @var        Customer
      */
     protected $aCustomer;
+
+    /**
+     * @var        Order
+     */
+    protected $aOrder;
 
     /**
      * @var        ObjectCollection|ChildGiftCardCart[] Collection to store aggregation of ChildGiftCardCart objects.
@@ -415,6 +428,17 @@ abstract class GiftCard implements ActiveRecordInterface
     }
 
     /**
+     * Get the [order_id] column value.
+     *
+     * @return   int
+     */
+    public function getOrderId()
+    {
+
+        return $this->order_id;
+    }
+
+    /**
      * Get the [code] column value.
      *
      * @return   string
@@ -521,6 +545,31 @@ abstract class GiftCard implements ActiveRecordInterface
 
         return $this;
     } // setSponsorCustomerId()
+
+    /**
+     * Set the value of [order_id] column.
+     *
+     * @param      int $v new value
+     * @return   \TheliaGiftCard\Model\GiftCard The current object (for fluent API support)
+     */
+    public function setOrderId($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->order_id !== $v) {
+            $this->order_id = $v;
+            $this->modifiedColumns[GiftCardTableMap::ORDER_ID] = true;
+        }
+
+        if ($this->aOrder !== null && $this->aOrder->getId() !== $v) {
+            $this->aOrder = null;
+        }
+
+
+        return $this;
+    } // setOrderId()
 
     /**
      * Set the value of [code] column.
@@ -649,19 +698,22 @@ abstract class GiftCard implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 1 + $startcol : GiftCardTableMap::translateFieldName('SponsorCustomerId', TableMap::TYPE_PHPNAME, $indexType)];
             $this->sponsor_customer_id = (null !== $col) ? (int) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : GiftCardTableMap::translateFieldName('Code', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 2 + $startcol : GiftCardTableMap::translateFieldName('OrderId', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->order_id = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : GiftCardTableMap::translateFieldName('Code', TableMap::TYPE_PHPNAME, $indexType)];
             $this->code = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 3 + $startcol : GiftCardTableMap::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : GiftCardTableMap::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)];
             $this->amount = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 4 + $startcol : GiftCardTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : GiftCardTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : GiftCardTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : GiftCardTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -674,7 +726,7 @@ abstract class GiftCard implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 6; // 6 = GiftCardTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 7; // 7 = GiftCardTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating \TheliaGiftCard\Model\GiftCard object", 0, $e);
@@ -698,6 +750,9 @@ abstract class GiftCard implements ActiveRecordInterface
     {
         if ($this->aCustomer !== null && $this->sponsor_customer_id !== $this->aCustomer->getId()) {
             $this->aCustomer = null;
+        }
+        if ($this->aOrder !== null && $this->order_id !== $this->aOrder->getId()) {
+            $this->aOrder = null;
         }
     } // ensureConsistency
 
@@ -739,6 +794,7 @@ abstract class GiftCard implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aCustomer = null;
+            $this->aOrder = null;
             $this->collGiftCardCarts = null;
 
             $this->collGiftCardOrders = null;
@@ -877,6 +933,13 @@ abstract class GiftCard implements ActiveRecordInterface
                 $this->setCustomer($this->aCustomer);
             }
 
+            if ($this->aOrder !== null) {
+                if ($this->aOrder->isModified() || $this->aOrder->isNew()) {
+                    $affectedRows += $this->aOrder->save($con);
+                }
+                $this->setOrder($this->aOrder);
+            }
+
             if ($this->isNew() || $this->isModified()) {
                 // persist changes
                 if ($this->isNew()) {
@@ -956,6 +1019,9 @@ abstract class GiftCard implements ActiveRecordInterface
         if ($this->isColumnModified(GiftCardTableMap::SPONSOR_CUSTOMER_ID)) {
             $modifiedColumns[':p' . $index++]  = 'SPONSOR_CUSTOMER_ID';
         }
+        if ($this->isColumnModified(GiftCardTableMap::ORDER_ID)) {
+            $modifiedColumns[':p' . $index++]  = 'ORDER_ID';
+        }
         if ($this->isColumnModified(GiftCardTableMap::CODE)) {
             $modifiedColumns[':p' . $index++]  = 'CODE';
         }
@@ -984,6 +1050,9 @@ abstract class GiftCard implements ActiveRecordInterface
                         break;
                     case 'SPONSOR_CUSTOMER_ID':
                         $stmt->bindValue($identifier, $this->sponsor_customer_id, PDO::PARAM_INT);
+                        break;
+                    case 'ORDER_ID':
+                        $stmt->bindValue($identifier, $this->order_id, PDO::PARAM_INT);
                         break;
                     case 'CODE':
                         $stmt->bindValue($identifier, $this->code, PDO::PARAM_STR);
@@ -1066,15 +1135,18 @@ abstract class GiftCard implements ActiveRecordInterface
                 return $this->getSponsorCustomerId();
                 break;
             case 2:
-                return $this->getCode();
+                return $this->getOrderId();
                 break;
             case 3:
-                return $this->getAmount();
+                return $this->getCode();
                 break;
             case 4:
-                return $this->getCreatedAt();
+                return $this->getAmount();
                 break;
             case 5:
+                return $this->getCreatedAt();
+                break;
+            case 6:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1108,10 +1180,11 @@ abstract class GiftCard implements ActiveRecordInterface
         $result = array(
             $keys[0] => $this->getId(),
             $keys[1] => $this->getSponsorCustomerId(),
-            $keys[2] => $this->getCode(),
-            $keys[3] => $this->getAmount(),
-            $keys[4] => $this->getCreatedAt(),
-            $keys[5] => $this->getUpdatedAt(),
+            $keys[2] => $this->getOrderId(),
+            $keys[3] => $this->getCode(),
+            $keys[4] => $this->getAmount(),
+            $keys[5] => $this->getCreatedAt(),
+            $keys[6] => $this->getUpdatedAt(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1121,6 +1194,9 @@ abstract class GiftCard implements ActiveRecordInterface
         if ($includeForeignObjects) {
             if (null !== $this->aCustomer) {
                 $result['Customer'] = $this->aCustomer->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aOrder) {
+                $result['Order'] = $this->aOrder->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
             if (null !== $this->collGiftCardCarts) {
                 $result['GiftCardCarts'] = $this->collGiftCardCarts->toArray(null, true, $keyType, $includeLazyLoadColumns, $alreadyDumpedObjects);
@@ -1169,15 +1245,18 @@ abstract class GiftCard implements ActiveRecordInterface
                 $this->setSponsorCustomerId($value);
                 break;
             case 2:
-                $this->setCode($value);
+                $this->setOrderId($value);
                 break;
             case 3:
-                $this->setAmount($value);
+                $this->setCode($value);
                 break;
             case 4:
-                $this->setCreatedAt($value);
+                $this->setAmount($value);
                 break;
             case 5:
+                $this->setCreatedAt($value);
+                break;
+            case 6:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1206,10 +1285,11 @@ abstract class GiftCard implements ActiveRecordInterface
 
         if (array_key_exists($keys[0], $arr)) $this->setId($arr[$keys[0]]);
         if (array_key_exists($keys[1], $arr)) $this->setSponsorCustomerId($arr[$keys[1]]);
-        if (array_key_exists($keys[2], $arr)) $this->setCode($arr[$keys[2]]);
-        if (array_key_exists($keys[3], $arr)) $this->setAmount($arr[$keys[3]]);
-        if (array_key_exists($keys[4], $arr)) $this->setCreatedAt($arr[$keys[4]]);
-        if (array_key_exists($keys[5], $arr)) $this->setUpdatedAt($arr[$keys[5]]);
+        if (array_key_exists($keys[2], $arr)) $this->setOrderId($arr[$keys[2]]);
+        if (array_key_exists($keys[3], $arr)) $this->setCode($arr[$keys[3]]);
+        if (array_key_exists($keys[4], $arr)) $this->setAmount($arr[$keys[4]]);
+        if (array_key_exists($keys[5], $arr)) $this->setCreatedAt($arr[$keys[5]]);
+        if (array_key_exists($keys[6], $arr)) $this->setUpdatedAt($arr[$keys[6]]);
     }
 
     /**
@@ -1223,6 +1303,7 @@ abstract class GiftCard implements ActiveRecordInterface
 
         if ($this->isColumnModified(GiftCardTableMap::ID)) $criteria->add(GiftCardTableMap::ID, $this->id);
         if ($this->isColumnModified(GiftCardTableMap::SPONSOR_CUSTOMER_ID)) $criteria->add(GiftCardTableMap::SPONSOR_CUSTOMER_ID, $this->sponsor_customer_id);
+        if ($this->isColumnModified(GiftCardTableMap::ORDER_ID)) $criteria->add(GiftCardTableMap::ORDER_ID, $this->order_id);
         if ($this->isColumnModified(GiftCardTableMap::CODE)) $criteria->add(GiftCardTableMap::CODE, $this->code);
         if ($this->isColumnModified(GiftCardTableMap::AMOUNT)) $criteria->add(GiftCardTableMap::AMOUNT, $this->amount);
         if ($this->isColumnModified(GiftCardTableMap::CREATED_AT)) $criteria->add(GiftCardTableMap::CREATED_AT, $this->created_at);
@@ -1291,6 +1372,7 @@ abstract class GiftCard implements ActiveRecordInterface
     public function copyInto($copyObj, $deepCopy = false, $makeNew = true)
     {
         $copyObj->setSponsorCustomerId($this->getSponsorCustomerId());
+        $copyObj->setOrderId($this->getOrderId());
         $copyObj->setCode($this->getCode());
         $copyObj->setAmount($this->getAmount());
         $copyObj->setCreatedAt($this->getCreatedAt());
@@ -1392,6 +1474,57 @@ abstract class GiftCard implements ActiveRecordInterface
         }
 
         return $this->aCustomer;
+    }
+
+    /**
+     * Declares an association between this object and a ChildOrder object.
+     *
+     * @param                  ChildOrder $v
+     * @return                 \TheliaGiftCard\Model\GiftCard The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setOrder(ChildOrder $v = null)
+    {
+        if ($v === null) {
+            $this->setOrderId(NULL);
+        } else {
+            $this->setOrderId($v->getId());
+        }
+
+        $this->aOrder = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildOrder object, it will not be re-added.
+        if ($v !== null) {
+            $v->addGiftCard($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildOrder object
+     *
+     * @param      ConnectionInterface $con Optional Connection object.
+     * @return                 ChildOrder The associated ChildOrder object.
+     * @throws PropelException
+     */
+    public function getOrder(ConnectionInterface $con = null)
+    {
+        if ($this->aOrder === null && ($this->order_id !== null)) {
+            $this->aOrder = OrderQuery::create()->findPk($this->order_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aOrder->addGiftCards($this);
+             */
+        }
+
+        return $this->aOrder;
     }
 
 
@@ -1906,6 +2039,7 @@ abstract class GiftCard implements ActiveRecordInterface
     {
         $this->id = null;
         $this->sponsor_customer_id = null;
+        $this->order_id = null;
         $this->code = null;
         $this->amount = null;
         $this->created_at = null;
@@ -1944,6 +2078,7 @@ abstract class GiftCard implements ActiveRecordInterface
         $this->collGiftCardCarts = null;
         $this->collGiftCardOrders = null;
         $this->aCustomer = null;
+        $this->aOrder = null;
     }
 
     /**
