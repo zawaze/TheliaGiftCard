@@ -33,6 +33,18 @@ class AddAmountCGForm extends BaseForm
                     'constraints' => [
                         new Assert\NotBlank
                     ]
+                ])
+            ->add(
+                'gift_card_id',
+                TextType::class,
+                [
+                    'label' => $this->translator->trans('FORM_LIST_CARD_GIFT', [], TheliaGiftCard::DOMAIN_NAME),
+                    'label_attr' => [
+                        'for' => $this->getName() . '-label'
+                    ],
+                    'constraints' => [
+                        new Assert\NotBlank
+                    ]
                 ]
             );
     }

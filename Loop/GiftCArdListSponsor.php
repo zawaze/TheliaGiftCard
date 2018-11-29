@@ -30,7 +30,7 @@ class GiftCArdListSponsor extends BaseLoop implements PropelSearchLoopInterface
     protected function getArgDefinitions()
     {
         return new ArgumentCollection(
-            Argument::createIntTypeArgument('customer_id', null),
+            Argument::createAlphaNumStringTypeArgument('customer_id', null),
             Argument::createIntTypeArgument('card_id', null)
         );
     }
@@ -60,8 +60,17 @@ class GiftCArdListSponsor extends BaseLoop implements PropelSearchLoopInterface
 
         );
 
-        if ($customerId !== null) {
-            $search->filterBySponsorCustomerId($customerId);
+        if ($customerId === 'current') {
+            $currentCustomer = $this->securityContext->getCustomerUser();
+            if (null === $currentCustomer) {
+                return null;
+            } else {
+                $search->filterBySponsorCustomerId($currentCustomer->getId(), Criteria::EQUAL);
+            }
+        } else {
+            if ($customerId !== null) {
+                $search->filterBySponsorCustomerId($customerId);
+            }
         }
 
         if ($cardId !== null) {
@@ -88,7 +97,7 @@ class GiftCArdListSponsor extends BaseLoop implements PropelSearchLoopInterface
                 $customer = CustomerQuery::create()->findPk($customerID);
 
                 if (null !== $customer) {
-                    $loopResultRow->set('USER_NAME', $customer->getLastname());
+                    $loopResultRow->set('USER_NAME', $customer->getLastname().' '.$customer->getFirstname());
                 }
             } else {
                 $loopResultRow->set('USER_NAME', 0);

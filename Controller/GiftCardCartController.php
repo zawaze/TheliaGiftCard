@@ -115,43 +115,6 @@ class GiftCardCartController extends BaseFrontController
 
     public function DeleteAmountAction()
     {
-        $form = $this->createForm('delete.amount.card.gift');
-
-        try {
-            $amountForm = $this->validateForm($form);
-
-            // get cart session
-            $cart = $this->getRequest()->getSession()->getSessionCart();
-
-            $discount = $cart->getDiscount();
-
-            //set session dicount  and spend amount
-
-            $amount = $amountForm->get('amount_used')->getData();
-
-            $total = $discount - $amount;
-
-            if (0 < $total) {
-                $total = 0;
-            }
-
-            $cart
-                ->setDiscount($total)
-                ->save();
-
-            return $this->generateRedirectFromRoute('order.invoice');
-
-        } catch (FormValidationException $error_message) {
-
-            $form->setErrorMessage($error_message);
-
-            $this->getParserContext()
-                ->addForm($form)
-                ->setGeneralError($error_message);
-
-
-            return $this->generateErrorRedirect($form);
-        }
 
     }
 

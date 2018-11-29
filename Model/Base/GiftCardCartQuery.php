@@ -26,6 +26,7 @@ use Thelia\Model\Cart;
  * @method     ChildGiftCardCartQuery orderByGiftCardId($order = Criteria::ASC) Order by the gift_card_id column
  * @method     ChildGiftCardCartQuery orderByCartId($order = Criteria::ASC) Order by the cart_id column
  * @method     ChildGiftCardCartQuery orderBySpendAmount($order = Criteria::ASC) Order by the spend_amount column
+ * @method     ChildGiftCardCartQuery orderBySpendDelivery($order = Criteria::ASC) Order by the spend_delivery column
  * @method     ChildGiftCardCartQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildGiftCardCartQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
@@ -33,6 +34,7 @@ use Thelia\Model\Cart;
  * @method     ChildGiftCardCartQuery groupByGiftCardId() Group by the gift_card_id column
  * @method     ChildGiftCardCartQuery groupByCartId() Group by the cart_id column
  * @method     ChildGiftCardCartQuery groupBySpendAmount() Group by the spend_amount column
+ * @method     ChildGiftCardCartQuery groupBySpendDelivery() Group by the spend_delivery column
  * @method     ChildGiftCardCartQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildGiftCardCartQuery groupByUpdatedAt() Group by the updated_at column
  *
@@ -55,6 +57,7 @@ use Thelia\Model\Cart;
  * @method     ChildGiftCardCart findOneByGiftCardId(int $gift_card_id) Return the first ChildGiftCardCart filtered by the gift_card_id column
  * @method     ChildGiftCardCart findOneByCartId(int $cart_id) Return the first ChildGiftCardCart filtered by the cart_id column
  * @method     ChildGiftCardCart findOneBySpendAmount(string $spend_amount) Return the first ChildGiftCardCart filtered by the spend_amount column
+ * @method     ChildGiftCardCart findOneBySpendDelivery(string $spend_delivery) Return the first ChildGiftCardCart filtered by the spend_delivery column
  * @method     ChildGiftCardCart findOneByCreatedAt(string $created_at) Return the first ChildGiftCardCart filtered by the created_at column
  * @method     ChildGiftCardCart findOneByUpdatedAt(string $updated_at) Return the first ChildGiftCardCart filtered by the updated_at column
  *
@@ -62,6 +65,7 @@ use Thelia\Model\Cart;
  * @method     array findByGiftCardId(int $gift_card_id) Return ChildGiftCardCart objects filtered by the gift_card_id column
  * @method     array findByCartId(int $cart_id) Return ChildGiftCardCart objects filtered by the cart_id column
  * @method     array findBySpendAmount(string $spend_amount) Return ChildGiftCardCart objects filtered by the spend_amount column
+ * @method     array findBySpendDelivery(string $spend_delivery) Return ChildGiftCardCart objects filtered by the spend_delivery column
  * @method     array findByCreatedAt(string $created_at) Return ChildGiftCardCart objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return ChildGiftCardCart objects filtered by the updated_at column
  *
@@ -152,7 +156,7 @@ abstract class GiftCardCartQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT ID, GIFT_CARD_ID, CART_ID, SPEND_AMOUNT, CREATED_AT, UPDATED_AT FROM gift_card_cart WHERE ID = :p0';
+        $sql = 'SELECT ID, GIFT_CARD_ID, CART_ID, SPEND_AMOUNT, SPEND_DELIVERY, CREATED_AT, UPDATED_AT FROM gift_card_cart WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -407,6 +411,47 @@ abstract class GiftCardCartQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(GiftCardCartTableMap::SPEND_AMOUNT, $spendAmount, $comparison);
+    }
+
+    /**
+     * Filter the query on the spend_delivery column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterBySpendDelivery(1234); // WHERE spend_delivery = 1234
+     * $query->filterBySpendDelivery(array(12, 34)); // WHERE spend_delivery IN (12, 34)
+     * $query->filterBySpendDelivery(array('min' => 12)); // WHERE spend_delivery > 12
+     * </code>
+     *
+     * @param     mixed $spendDelivery The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildGiftCardCartQuery The current query, for fluid interface
+     */
+    public function filterBySpendDelivery($spendDelivery = null, $comparison = null)
+    {
+        if (is_array($spendDelivery)) {
+            $useMinMax = false;
+            if (isset($spendDelivery['min'])) {
+                $this->addUsingAlias(GiftCardCartTableMap::SPEND_DELIVERY, $spendDelivery['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($spendDelivery['max'])) {
+                $this->addUsingAlias(GiftCardCartTableMap::SPEND_DELIVERY, $spendDelivery['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(GiftCardCartTableMap::SPEND_DELIVERY, $spendDelivery, $comparison);
     }
 
     /**
