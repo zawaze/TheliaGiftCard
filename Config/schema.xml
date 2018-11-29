@@ -32,6 +32,10 @@
             <reference foreign="id" local="customer_id" />
         </foreign-key>
 
+        <foreign-key foreignTable="gift_card" name="fk_card_gift_id" onDelete="CASCADE" onUpdate="CASCADE">
+            <reference foreign="id" local="card_id" />
+        </foreign-key>
+
         <behavior name="timestampable" />
     </table>
 

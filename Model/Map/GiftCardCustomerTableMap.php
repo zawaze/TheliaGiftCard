@@ -153,7 +153,7 @@ class GiftCardCustomerTableMap extends TableMap
         // columns
         $this->addPrimaryKey('ID', 'Id', 'INTEGER', true, null, null);
         $this->addForeignKey('CUSTOMER_ID', 'CustomerId', 'INTEGER', 'customer', 'ID', true, null, null);
-        $this->addColumn('CARD_ID', 'CardId', 'INTEGER', true, 50, null);
+        $this->addForeignKey('CARD_ID', 'CardId', 'INTEGER', 'gift_card', 'ID', true, 50, null);
         $this->addColumn('USED_AMOUNT', 'UsedAmount', 'DECIMAL', false, 16, null);
         $this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
@@ -165,6 +165,7 @@ class GiftCardCustomerTableMap extends TableMap
     public function buildRelations()
     {
         $this->addRelation('Customer', '\\Thelia\\Model\\Customer', RelationMap::MANY_TO_ONE, array('customer_id' => 'id', ), 'CASCADE', 'CASCADE');
+        $this->addRelation('GiftCard', '\\TheliaGiftCard\\Model\\GiftCard', RelationMap::MANY_TO_ONE, array('card_id' => 'id', ), 'CASCADE', 'CASCADE');
     } // buildRelations()
 
     /**

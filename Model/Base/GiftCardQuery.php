@@ -51,6 +51,10 @@ use Thelia\Model\Order;
  * @method     ChildGiftCardQuery rightJoinOrder($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Order relation
  * @method     ChildGiftCardQuery innerJoinOrder($relationAlias = null) Adds a INNER JOIN clause to the query using the Order relation
  *
+ * @method     ChildGiftCardQuery leftJoinGiftCardCustomer($relationAlias = null) Adds a LEFT JOIN clause to the query using the GiftCardCustomer relation
+ * @method     ChildGiftCardQuery rightJoinGiftCardCustomer($relationAlias = null) Adds a RIGHT JOIN clause to the query using the GiftCardCustomer relation
+ * @method     ChildGiftCardQuery innerJoinGiftCardCustomer($relationAlias = null) Adds a INNER JOIN clause to the query using the GiftCardCustomer relation
+ *
  * @method     ChildGiftCardQuery leftJoinGiftCardCart($relationAlias = null) Adds a LEFT JOIN clause to the query using the GiftCardCart relation
  * @method     ChildGiftCardQuery rightJoinGiftCardCart($relationAlias = null) Adds a RIGHT JOIN clause to the query using the GiftCardCart relation
  * @method     ChildGiftCardQuery innerJoinGiftCardCart($relationAlias = null) Adds a INNER JOIN clause to the query using the GiftCardCart relation
@@ -685,6 +689,79 @@ abstract class GiftCardQuery extends ModelCriteria
         return $this
             ->joinOrder($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Order', '\Thelia\Model\OrderQuery');
+    }
+
+    /**
+     * Filter the query by a related \TheliaGiftCard\Model\GiftCardCustomer object
+     *
+     * @param \TheliaGiftCard\Model\GiftCardCustomer|ObjectCollection $giftCardCustomer  the related object to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildGiftCardQuery The current query, for fluid interface
+     */
+    public function filterByGiftCardCustomer($giftCardCustomer, $comparison = null)
+    {
+        if ($giftCardCustomer instanceof \TheliaGiftCard\Model\GiftCardCustomer) {
+            return $this
+                ->addUsingAlias(GiftCardTableMap::ID, $giftCardCustomer->getCardId(), $comparison);
+        } elseif ($giftCardCustomer instanceof ObjectCollection) {
+            return $this
+                ->useGiftCardCustomerQuery()
+                ->filterByPrimaryKeys($giftCardCustomer->getPrimaryKeys())
+                ->endUse();
+        } else {
+            throw new PropelException('filterByGiftCardCustomer() only accepts arguments of type \TheliaGiftCard\Model\GiftCardCustomer or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the GiftCardCustomer relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return ChildGiftCardQuery The current query, for fluid interface
+     */
+    public function joinGiftCardCustomer($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('GiftCardCustomer');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'GiftCardCustomer');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the GiftCardCustomer relation GiftCardCustomer object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \TheliaGiftCard\Model\GiftCardCustomerQuery A secondary query class using the current class as primary query
+     */
+    public function useGiftCardCustomerQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinGiftCardCustomer($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'GiftCardCustomer', '\TheliaGiftCard\Model\GiftCardCustomerQuery');
     }
 
     /**

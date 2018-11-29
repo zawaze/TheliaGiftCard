@@ -49,9 +49,15 @@ CREATE TABLE `gift_card_customer`
     `updated_at` DATETIME,
     PRIMARY KEY (`id`),
     INDEX `FI_card_gift_customer` (`customer_id`),
+    INDEX `FI_card_gift_id` (`card_id`),
     CONSTRAINT `fk_card_gift_customer`
         FOREIGN KEY (`customer_id`)
         REFERENCES `customer` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT `fk_card_gift_id`
+        FOREIGN KEY (`card_id`)
+        REFERENCES `gift_card` (`id`)
         ON UPDATE CASCADE
         ON DELETE CASCADE
 ) ENGINE=InnoDB;

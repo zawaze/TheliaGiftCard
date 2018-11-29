@@ -172,6 +172,7 @@ class GiftCardTableMap extends TableMap
     {
         $this->addRelation('Customer', '\\Thelia\\Model\\Customer', RelationMap::MANY_TO_ONE, array('sponsor_customer_id' => 'id', ), 'CASCADE', 'CASCADE');
         $this->addRelation('Order', '\\Thelia\\Model\\Order', RelationMap::MANY_TO_ONE, array('order_id' => 'id', ), 'CASCADE', 'CASCADE');
+        $this->addRelation('GiftCardCustomer', '\\TheliaGiftCard\\Model\\GiftCardCustomer', RelationMap::ONE_TO_MANY, array('id' => 'card_id', ), 'CASCADE', 'CASCADE', 'GiftCardCustomers');
         $this->addRelation('GiftCardCart', '\\TheliaGiftCard\\Model\\GiftCardCart', RelationMap::ONE_TO_MANY, array('id' => 'gift_card_id', ), 'CASCADE', 'CASCADE', 'GiftCardCarts');
         $this->addRelation('GiftCardOrder', '\\TheliaGiftCard\\Model\\GiftCardOrder', RelationMap::ONE_TO_MANY, array('id' => 'gift_card_id', ), 'CASCADE', 'CASCADE', 'GiftCardOrders');
     } // buildRelations()
@@ -195,6 +196,7 @@ class GiftCardTableMap extends TableMap
     {
         // Invalidate objects in ".$this->getClassNameFromBuilder($joinedTableTableMapBuilder)." instance pool,
         // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+                GiftCardCustomerTableMap::clearInstancePool();
                 GiftCardCartTableMap::clearInstancePool();
                 GiftCardOrderTableMap::clearInstancePool();
             }

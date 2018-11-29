@@ -11,6 +11,7 @@
     <forms>
         <form name="spend.amount.card.gift" class="TheliaGiftCard\Form\AddAmountCGForm" />
         <form name="delete.amount.card.gift" class="TheliaGiftCard\Form\DelAmountCGForm" />
+        <form name="add.code.card.gift" class="TheliaGiftCard\Form\AddCardGiftCustomerForm" />
     </forms>
 
     <commands>

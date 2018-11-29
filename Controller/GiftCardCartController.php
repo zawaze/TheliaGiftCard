@@ -17,12 +17,65 @@ use Thelia\Model\AddressQuery;
 use Thelia\Model\AreaDeliveryModuleQuery;
 use Thelia\Model\ModuleQuery;
 use Thelia\Module\Exception\DeliveryException;
+use TheliaGiftCard\Model\GiftCardCustomer;
+use TheliaGiftCard\Model\GiftCardCustomerQuery;
+use TheliaGiftCard\Model\GiftCardQuery;
 use TheliaGiftCard\Service\GiftCardAmountSpendService;
 use TheliaGiftCard\Service\GiftCardService;
 use TheliaGiftCard\TheliaGiftCard;
 
 class GiftCardCartController extends BaseFrontController
 {
+    public function addGiftCardAction()
+    {
+        $this->checkAuth();
+
+        $form = $this->createForm('add.code.card.gift');
+
+        try {
+
+            $codeForm = $this->validateForm($form);
+            $code = $codeForm->get('code_gift_card')->getData();
+
+            $giftCard = GiftCardQuery::create()
+                ->filterByCode($code)
+                ->findOne();
+
+            if (null === $giftCard) {
+                throw new FormValidationException('Gift Card Code inalid');
+            }
+
+            $gifCardUser = GiftCardCustomerQuery::create()
+                ->filterByCardId($giftCard->getId())
+                ->findOne();
+
+            if (null !== $gifCardUser) {
+                throw new FormValidationException('Gift Card Code inalid');
+            }
+
+            $newGifCardUser = new GiftCardCustomer();
+
+            $user = $this->getRequest()->getSession()->getCustomerUser()->getId();
+
+            $newGifCardUser
+                ->setCustomerId($user)
+                ->setCardId($giftCard->getId())
+                ->setUsedAmount(0)
+                ->save();
+
+            return $this->generateSuccessRedirect($form);
+
+        } catch (FormValidationException $error_message) {
+
+            $form->setErrorMessage($error_message);
+
+            return $this->generateRedirectFromRoute('customer.home');
+        } catch (\Exception $e) {
+            throw new \Exception('Gift Card save error' . $e);
+        }
+
+    }
+
     public function SpendAmountAction()
     {
         $form = $this->createForm('spend.amount.card.gift');
@@ -38,7 +91,7 @@ class GiftCardCartController extends BaseFrontController
 
             $order = $this->getSession()->getOrder();
 
-            if(null== $order){
+            if (null == $order) {
                 return;
             }
 
@@ -150,7 +203,6 @@ class GiftCardCartController extends BaseFrontController
         }
 
         $postage = $deliveryPostageEvent->getPostage();
-
 
 
         $orderEvent = new OrderEvent($order);

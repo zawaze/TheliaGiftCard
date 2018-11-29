@@ -16,8 +16,10 @@ use Propel\Runtime\Exception\PropelException;
 use Propel\Runtime\Map\TableMap;
 use Propel\Runtime\Parser\AbstractParser;
 use Propel\Runtime\Util\PropelDateTime;
+use TheliaGiftCard\Model\GiftCard as ChildGiftCard;
 use TheliaGiftCard\Model\GiftCardCustomer as ChildGiftCardCustomer;
 use TheliaGiftCard\Model\GiftCardCustomerQuery as ChildGiftCardCustomerQuery;
+use TheliaGiftCard\Model\GiftCardQuery as ChildGiftCardQuery;
 use TheliaGiftCard\Model\Map\GiftCardCustomerTableMap;
 use Thelia\Model\Customer as ChildCustomer;
 use Thelia\Model\CustomerQuery;
@@ -96,6 +98,11 @@ abstract class GiftCardCustomer implements ActiveRecordInterface
      * @var        Customer
      */
     protected $aCustomer;
+
+    /**
+     * @var        GiftCard
+     */
+    protected $aGiftCard;
 
     /**
      * Flag to prevent endless save loop, if this object is referenced
@@ -510,6 +517,10 @@ abstract class GiftCardCustomer implements ActiveRecordInterface
             $this->modifiedColumns[GiftCardCustomerTableMap::CARD_ID] = true;
         }
 
+        if ($this->aGiftCard !== null && $this->aGiftCard->getId() !== $v) {
+            $this->aGiftCard = null;
+        }
+
 
         return $this;
     } // setCardId()
@@ -670,6 +681,9 @@ abstract class GiftCardCustomer implements ActiveRecordInterface
         if ($this->aCustomer !== null && $this->customer_id !== $this->aCustomer->getId()) {
             $this->aCustomer = null;
         }
+        if ($this->aGiftCard !== null && $this->card_id !== $this->aGiftCard->getId()) {
+            $this->aGiftCard = null;
+        }
     } // ensureConsistency
 
     /**
@@ -710,6 +724,7 @@ abstract class GiftCardCustomer implements ActiveRecordInterface
         if ($deep) {  // also de-associate any related objects?
 
             $this->aCustomer = null;
+            $this->aGiftCard = null;
         } // if (deep)
     }
 
@@ -842,6 +857,13 @@ abstract class GiftCardCustomer implements ActiveRecordInterface
                     $affectedRows += $this->aCustomer->save($con);
                 }
                 $this->setCustomer($this->aCustomer);
+            }
+
+            if ($this->aGiftCard !== null) {
+                if ($this->aGiftCard->isModified() || $this->aGiftCard->isNew()) {
+                    $affectedRows += $this->aGiftCard->save($con);
+                }
+                $this->setGiftCard($this->aGiftCard);
             }
 
             if ($this->isNew() || $this->isModified()) {
@@ -1052,6 +1074,9 @@ abstract class GiftCardCustomer implements ActiveRecordInterface
         if ($includeForeignObjects) {
             if (null !== $this->aCustomer) {
                 $result['Customer'] = $this->aCustomer->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
+            }
+            if (null !== $this->aGiftCard) {
+                $result['GiftCard'] = $this->aGiftCard->toArray($keyType, $includeLazyLoadColumns,  $alreadyDumpedObjects, true);
             }
         }
 
@@ -1300,6 +1325,57 @@ abstract class GiftCardCustomer implements ActiveRecordInterface
     }
 
     /**
+     * Declares an association between this object and a ChildGiftCard object.
+     *
+     * @param                  ChildGiftCard $v
+     * @return                 \TheliaGiftCard\Model\GiftCardCustomer The current object (for fluent API support)
+     * @throws PropelException
+     */
+    public function setGiftCard(ChildGiftCard $v = null)
+    {
+        if ($v === null) {
+            $this->setCardId(NULL);
+        } else {
+            $this->setCardId($v->getId());
+        }
+
+        $this->aGiftCard = $v;
+
+        // Add binding for other direction of this n:n relationship.
+        // If this object has already been added to the ChildGiftCard object, it will not be re-added.
+        if ($v !== null) {
+            $v->addGiftCardCustomer($this);
+        }
+
+
+        return $this;
+    }
+
+
+    /**
+     * Get the associated ChildGiftCard object
+     *
+     * @param      ConnectionInterface $con Optional Connection object.
+     * @return                 ChildGiftCard The associated ChildGiftCard object.
+     * @throws PropelException
+     */
+    public function getGiftCard(ConnectionInterface $con = null)
+    {
+        if ($this->aGiftCard === null && ($this->card_id !== null)) {
+            $this->aGiftCard = ChildGiftCardQuery::create()->findPk($this->card_id, $con);
+            /* The following can be used additionally to
+                guarantee the related object contains a reference
+                to this object.  This level of coupling may, however, be
+                undesirable since it could result in an only partially populated collection
+                in the referenced object.
+                $this->aGiftCard->addGiftCardCustomers($this);
+             */
+        }
+
+        return $this->aGiftCard;
+    }
+
+    /**
      * Clears the current object and sets all attributes to their default values
      */
     public function clear()
@@ -1332,6 +1408,7 @@ abstract class GiftCardCustomer implements ActiveRecordInterface
         } // if ($deep)
 
         $this->aCustomer = null;
+        $this->aGiftCard = null;
     }
 
     /**
