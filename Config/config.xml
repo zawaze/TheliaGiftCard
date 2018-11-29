@@ -7,6 +7,7 @@
     <loops>
         <loop name="used.amount.card.gift" class="TheliaGiftCard\Loop\GiftCArdOrderUseLoop" />
         <loop name="list.card.gift" class="TheliaGiftCard\Loop\GiftCArdList" />
+        <loop name="sponsor.list.card.gift" class="TheliaGiftCard\Loop\GiftCArdListSponsor" />
     </loops>
 
     <forms>

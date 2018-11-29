@@ -20,11 +20,12 @@ use TheliaGiftCard\Model\GiftCard;
 use TheliaGiftCard\Model\GiftCardCustomer;
 use TheliaGiftCard\Model\GiftCardCustomerQuery;
 use TheliaGiftCard\Model\GiftCardOrder;
+use TheliaGiftCard\Model\GiftCardQuery;
 use TheliaGiftCard\Model\Map\GiftCardCustomerTableMap;
 use TheliaGiftCard\Model\Map\GiftCardTableMap;
 
 
-class GiftCArdList extends BaseLoop implements PropelSearchLoopInterface
+class GiftCArdListSponsor extends BaseLoop implements PropelSearchLoopInterface
 {
     protected function getArgDefinitions()
     {
@@ -39,37 +40,32 @@ class GiftCArdList extends BaseLoop implements PropelSearchLoopInterface
         $customerId = $this->getCustomerId();
         $cardId = $this->getCardId();
 
-        $search = GiftCardCustomerQuery::create();
+        $search = GiftCardQuery::create();
 
-        $cardGiftJoin = new Join(
-            GiftCardCustomerTableMap::CARD_ID,
+        $cardGiftCustomerJoin = new Join(
             GiftCardTableMap::ID,
-            Criteria::JOIN
+            GiftCardCustomerTableMap::CARD_ID,
+            Criteria::LEFT_JOIN
         );
 
-        $search->addJoinObject($cardGiftJoin, 'cardGiftJoin');
+        $search->addJoinObject($cardGiftCustomerJoin, 'cardGiftCustomerJoin');
 
         $search->withColumn(
-            GiftCardTableMap::TABLE_NAME . '.' . 'amount','amount'
-
-        );
-
-        $search->withColumn(
-            GiftCardTableMap::TABLE_NAME . '.' . 'code','code'
+            GiftCardCustomerTableMap::TABLE_NAME . '.' . 'used_amount', 'used_amount'
 
         );
 
         $search->withColumn(
-            GiftCardTableMap::TABLE_NAME . '.' . 'sponsor_customer_id','sponsor_customer_id'
+            GiftCardCustomerTableMap::TABLE_NAME . '.' . 'customer_id', 'customer_id'
 
         );
 
         if ($customerId !== null) {
-            $search->filterByCustomerId($customerId);
+            $search->filterBySponsorCustomerId($customerId);
         }
 
         if ($cardId !== null) {
-            $search->filterByCardId($cardId);
+            $search->filterById($cardId);
         }
 
         return $search;
@@ -81,20 +77,21 @@ class GiftCArdList extends BaseLoop implements PropelSearchLoopInterface
         /** @var GiftCardCustomer $giftCard */
         foreach ($loopResult->getResultDataCollection() as $giftCard) {
 
-            $date = $giftCard->getCreatedAt();
-
             $loopResultRow = (new LoopResultRow($giftCard))
                 ->set('ID', $giftCard->getId())
-                ->set('USED_AMOUNT', $giftCard->getUsedAmount())
-                ->set('DATE', $date->format('d-m-Y'))
-                ->set('INIT_AMOUNT', $giftCard->getVirtualColumn('amount'))
-                ->set('CODE', $giftCard->getVirtualColumn('code'));;
+                ->set('AMOUNT', $giftCard->getAmount())
+                ->set('USED_AMOUNT', $giftCard->getVirtualColumn('used_amount'))
+                ->set('CODE', $giftCard->getCode());
 
-            $sponsorCustomerID = $giftCard->getVirtualColumn('sponsor_customer_id');
-            $sponsorCustomer = CustomerQuery::create()->findPk($sponsorCustomerID);
 
-            if(null !== $sponsorCustomer){
-                $loopResultRow->set('SPONSOR_NAME', $sponsorCustomer->getLastname());
+            if ($customerID = $giftCard->getVirtualColumn('customer_id')) {
+                $customer = CustomerQuery::create()->findPk($customerID);
+
+                if (null !== $customer) {
+                    $loopResultRow->set('USER_NAME', $customer->getLastname());
+                }
+            } else {
+                $loopResultRow->set('USER_NAME', 0);
             }
 
             $loopResult->addRow($loopResultRow);
