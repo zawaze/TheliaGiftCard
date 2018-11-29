@@ -7,9 +7,13 @@
 namespace TheliaGiftCard;
 
 use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Install\Database;
 use Thelia\Model\Message;
 use Thelia\Model\MessageQuery;
 use Thelia\Module\BaseModule;
+use TheliaGiftCard\Model\GiftCardCartQuery;
+use TheliaGiftCard\Model\GiftCardCustomerQuery;
+use TheliaGiftCard\Model\GiftCardOrderQuery;
 use TheliaGiftCard\Model\GiftCardQuery;
 
 class TheliaGiftCard extends BaseModule
@@ -50,6 +54,18 @@ class TheliaGiftCard extends BaseModule
 
     public function postActivation(ConnectionInterface $con = null)
     {
+        try {
+            GiftCardQuery::create()->findOne();
+            GiftCardCartQuery::create()->findOne();
+            GiftCardCustomerQuery::create()->findOne();
+            GiftCardOrderQuery::create()->findOne();
+
+        } catch (\Exception $e) {
+            $database = new Database($con);
+            $database->insertSql(null, [__DIR__ . "/Config/thelia.sql"]);
+        }
+
+
         if (null === MessageQuery::create()->findOneByName(self::GIFT_CARD_MESSAGE_NAME)) {
             $message = new Message();
             $email_templates_dir = __DIR__.DS.'templates'.DS.'email'.DS.'default'.DS.'email-gift_card';

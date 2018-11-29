@@ -21,6 +21,10 @@
         </author>
     </authors>
     <type>classic</type>
+    <required>
+        <module>FreeOrder</module>
+    </required>
+
     <thelia>2.3.4</thelia>
     <stability>other</stability>
     <mandatory>0</mandatory>

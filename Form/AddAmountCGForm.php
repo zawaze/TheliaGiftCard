@@ -16,7 +16,7 @@ class AddAmountCGForm extends BaseForm
 {
     public function getName()
     {
-        return 'amount_gift_card';
+        return 'spend_amount_card_gift';
     }
 
     protected function buildForm()

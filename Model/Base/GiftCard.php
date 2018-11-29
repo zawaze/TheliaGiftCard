@@ -953,10 +953,9 @@ abstract class GiftCard implements ActiveRecordInterface
 
             if ($this->giftCardCartsScheduledForDeletion !== null) {
                 if (!$this->giftCardCartsScheduledForDeletion->isEmpty()) {
-                    foreach ($this->giftCardCartsScheduledForDeletion as $giftCardCart) {
-                        // need to save related object because we set the relation to null
-                        $giftCardCart->save($con);
-                    }
+                    \TheliaGiftCard\Model\GiftCardCartQuery::create()
+                        ->filterByPrimaryKeys($this->giftCardCartsScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
                     $this->giftCardCartsScheduledForDeletion = null;
                 }
             }
@@ -971,10 +970,9 @@ abstract class GiftCard implements ActiveRecordInterface
 
             if ($this->giftCardOrdersScheduledForDeletion !== null) {
                 if (!$this->giftCardOrdersScheduledForDeletion->isEmpty()) {
-                    foreach ($this->giftCardOrdersScheduledForDeletion as $giftCardOrder) {
-                        // need to save related object because we set the relation to null
-                        $giftCardOrder->save($con);
-                    }
+                    \TheliaGiftCard\Model\GiftCardOrderQuery::create()
+                        ->filterByPrimaryKeys($this->giftCardOrdersScheduledForDeletion->getPrimaryKeys(false))
+                        ->delete($con);
                     $this->giftCardOrdersScheduledForDeletion = null;
                 }
             }

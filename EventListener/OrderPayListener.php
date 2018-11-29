@@ -6,17 +6,13 @@
 
 namespace TheliaGiftCard\EventListener;
 
-
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\HttpFoundation\Request;
-use Thelia\Model\Cart;
 use Thelia\Model\CartItem;
 use Thelia\Model\Order;
-use Thelia\Model\ProductQuery;
-use Thelia\Model\ProductSaleElements;
 use Thelia\Model\ProductSaleElementsQuery;
 use TheliaGiftCard\Model\GiftCard;
 use TheliaGiftCard\Model\GiftCardCartQuery;
@@ -57,19 +53,27 @@ class OrderPayListener implements EventSubscriberInterface
 
                 if (in_array($productId, TheliaGiftCard::CODES_GIFT_CARD_PRODUCT)) {
 
-                    $orederId =  $order->getId();
+                    $orederId = $order->getId();
+
+                    $price = $orderProduct->getPrice();
+
+                    $orderProductTaxes= $orderProduct->getOrderProductTaxes()->getData();
+
+                    foreach ($orderProductTaxes as $orderProductTax){
+                        $TaxAmount = $orderProductTax->getAmount();
+                    }
 
                     $giftCard = GiftCardQuery::create()
                         ->filterByOrderId($order->getId())
                         ->findOne();
 
-                    if(null === $giftCard){
+                    if (null === $giftCard) {
                         $newGiftCard = new GiftCard();
                         $newGiftCard
                             ->setSponsorCustomerId($order->getCustomer()->getId())
                             ->setOrderId($orederId)
                             ->setCode(TheliaGiftCard::GENERATE_CODE())
-                            ->setAmount($orderProduct->getPrice())
+                            ->setAmount($price  + $TaxAmount)
                             ->save();
                     }
                 }
@@ -88,7 +92,9 @@ class OrderPayListener implements EventSubscriberInterface
 
         $dataGC = GiftCardCartQuery::create()->filterByCartId($cart->getId())->findOne();
 
-        $gcservice->setOrderAmountGC($order->getId(), $dataGC->getSpendAmount());
+        if (null != $dataGC) {
+            $gcservice->setOrderAmountGC($order->getId(), $dataGC->getSpendAmount());
+        }
     }
 
     public static function getSubscribedEvents()

@@ -170,10 +170,10 @@ class GiftCardTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Customer', '\\Thelia\\Model\\Customer', RelationMap::MANY_TO_ONE, array('sponsor_customer_id' => 'id', ), 'RESTRICT', 'RESTRICT');
-        $this->addRelation('Order', '\\Thelia\\Model\\Order', RelationMap::MANY_TO_ONE, array('order_id' => 'id', ), 'RESTRICT', 'RESTRICT');
-        $this->addRelation('GiftCardCart', '\\TheliaGiftCard\\Model\\GiftCardCart', RelationMap::ONE_TO_MANY, array('id' => 'gift_card_id', ), 'RESTRICT', 'RESTRICT', 'GiftCardCarts');
-        $this->addRelation('GiftCardOrder', '\\TheliaGiftCard\\Model\\GiftCardOrder', RelationMap::ONE_TO_MANY, array('id' => 'gift_card_id', ), 'RESTRICT', 'RESTRICT', 'GiftCardOrders');
+        $this->addRelation('Customer', '\\Thelia\\Model\\Customer', RelationMap::MANY_TO_ONE, array('sponsor_customer_id' => 'id', ), 'CASCADE', 'CASCADE');
+        $this->addRelation('Order', '\\Thelia\\Model\\Order', RelationMap::MANY_TO_ONE, array('order_id' => 'id', ), 'CASCADE', 'CASCADE');
+        $this->addRelation('GiftCardCart', '\\TheliaGiftCard\\Model\\GiftCardCart', RelationMap::ONE_TO_MANY, array('id' => 'gift_card_id', ), 'CASCADE', 'CASCADE', 'GiftCardCarts');
+        $this->addRelation('GiftCardOrder', '\\TheliaGiftCard\\Model\\GiftCardOrder', RelationMap::ONE_TO_MANY, array('id' => 'gift_card_id', ), 'CASCADE', 'CASCADE', 'GiftCardOrders');
     } // buildRelations()
 
     /**
@@ -188,6 +188,16 @@ class GiftCardTableMap extends TableMap
             'timestampable' => array('create_column' => 'created_at', 'update_column' => 'updated_at', ),
         );
     } // getBehaviors()
+    /**
+     * Method to invalidate the instance pool of all tables related to gift_card     * by a foreign key with ON DELETE CASCADE
+     */
+    public static function clearRelatedInstancePool()
+    {
+        // Invalidate objects in ".$this->getClassNameFromBuilder($joinedTableTableMapBuilder)." instance pool,
+        // since one or more of them may be deleted by ON DELETE CASCADE/SETNULL rule.
+                GiftCardCartTableMap::clearInstancePool();
+                GiftCardOrderTableMap::clearInstancePool();
+            }
 
     /**
      * Retrieves a string version of the primary key from the DB resultset row that can be used to uniquely identify a row in this table.

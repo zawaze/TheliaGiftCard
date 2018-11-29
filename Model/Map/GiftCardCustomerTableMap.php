@@ -164,7 +164,7 @@ class GiftCardCustomerTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Customer', '\\Thelia\\Model\\Customer', RelationMap::MANY_TO_ONE, array('customer_id' => 'id', ), 'RESTRICT', 'RESTRICT');
+        $this->addRelation('Customer', '\\Thelia\\Model\\Customer', RelationMap::MANY_TO_ONE, array('customer_id' => 'id', ), 'CASCADE', 'CASCADE');
     } // buildRelations()
 
     /**

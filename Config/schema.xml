@@ -10,11 +10,11 @@
         <column name="code" required="true" size="100" type="VARCHAR" />
         <column name="amount" scale="6" size="16" type="DECIMAL" />
 
-        <foreign-key foreignTable="customer" name="fk_card_gift_sponsor_customer" onDelete="RESTRICT" onUpdate="RESTRICT">
+        <foreign-key foreignTable="customer" name="fk_card_gift_sponsor_customer" onDelete="CASCADE" onUpdate="CASCADE">
             <reference foreign="id" local="sponsor_customer_id" />
         </foreign-key>
 
-        <foreign-key foreignTable="order" name="fk_gift_card_order" onDelete="RESTRICT" onUpdate="RESTRICT">
+        <foreign-key foreignTable="order" name="fk_gift_card_order" onDelete="CASCADE" onUpdate="CASCADE">
             <reference foreign="id" local="order_id" />
         </foreign-key>
 
@@ -28,7 +28,7 @@
         <column name="card_id" required="true" size="50" type="INTEGER" />
         <column name="used_amount" scale="6" size="16" type="DECIMAL" />
 
-        <foreign-key foreignTable="customer" name="fk_card_gift_customer" onDelete="RESTRICT" onUpdate="RESTRICT">
+        <foreign-key foreignTable="customer" name="fk_card_gift_customer" onDelete="CASCADE" onUpdate="CASCADE">
             <reference foreign="id" local="customer_id" />
         </foreign-key>
 
@@ -42,11 +42,11 @@
         <column name="cart_id" required="true" type="INTEGER" />
         <column name="spend_amount" scale="6" size="16" type="DECIMAL" />
 
-        <foreign-key foreignTable="cart" name="fk_card_gift_cart" onDelete="UPDATE" onUpdate="UPDATE">
+        <foreign-key foreignTable="cart" name="fk_card_gift_cart" onDelete="CASCADE" onUpdate="CASCADE">
             <reference foreign="id" local="cart_id" />
         </foreign-key>
 
-        <foreign-key foreignTable="gift_card" name="fk_card_gift_cart_cg" onDelete="RESTRICT" onUpdate="RESTRICT">
+        <foreign-key foreignTable="gift_card" name="fk_card_gift_cart_cg" onDelete="CASCADE" onUpdate="CASCADE">
             <reference foreign="id" local="gift_card_id" />
         </foreign-key>
 
@@ -60,11 +60,11 @@
         <column name="order_id" required="true" type="INTEGER" />
         <column name="spend_amount" scale="6" size="16" type="DECIMAL" />
 
-        <foreign-key foreignTable="order" name="fk_card_gift_order" onDelete="RESTRICT" onUpdate="RESTRICT">
+        <foreign-key foreignTable="order" name="fk_card_gift_order" onDelete="CASCADE" onUpdate="CASCADE">
             <reference foreign="id" local="order_id" />
         </foreign-key>
 
-        <foreign-key foreignTable="gift_card" name="fk_card_gift_order_cg" onDelete="RESTRICT" onUpdate="RESTRICT">
+        <foreign-key foreignTable="gift_card" name="fk_card_gift_order_cg" onDelete="CASCADE" onUpdate="CASCADE">
             <reference foreign="id" local="gift_card_id" />
         </foreign-key>
 

@@ -164,8 +164,8 @@ class GiftCardOrderTableMap extends TableMap
      */
     public function buildRelations()
     {
-        $this->addRelation('Order', '\\Thelia\\Model\\Order', RelationMap::MANY_TO_ONE, array('order_id' => 'id', ), 'RESTRICT', 'RESTRICT');
-        $this->addRelation('GiftCard', '\\TheliaGiftCard\\Model\\GiftCard', RelationMap::MANY_TO_ONE, array('gift_card_id' => 'id', ), 'RESTRICT', 'RESTRICT');
+        $this->addRelation('Order', '\\Thelia\\Model\\Order', RelationMap::MANY_TO_ONE, array('order_id' => 'id', ), 'CASCADE', 'CASCADE');
+        $this->addRelation('GiftCard', '\\TheliaGiftCard\\Model\\GiftCard', RelationMap::MANY_TO_ONE, array('gift_card_id' => 'id', ), 'CASCADE', 'CASCADE');
     } // buildRelations()
 
     /**

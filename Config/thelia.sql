@@ -24,13 +24,13 @@ CREATE TABLE `gift_card`
     CONSTRAINT `fk_card_gift_sponsor_customer`
         FOREIGN KEY (`sponsor_customer_id`)
         REFERENCES `customer` (`id`)
-        ON UPDATE RESTRICT
-        ON DELETE RESTRICT,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     CONSTRAINT `fk_gift_card_order`
         FOREIGN KEY (`order_id`)
         REFERENCES `order` (`id`)
-        ON UPDATE RESTRICT
-        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -52,8 +52,8 @@ CREATE TABLE `gift_card_customer`
     CONSTRAINT `fk_card_gift_customer`
         FOREIGN KEY (`customer_id`)
         REFERENCES `customer` (`id`)
-        ON UPDATE RESTRICT
-        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -76,13 +76,13 @@ CREATE TABLE `gift_card_cart`
     CONSTRAINT `fk_card_gift_cart`
         FOREIGN KEY (`cart_id`)
         REFERENCES `cart` (`id`)
-        ON UPDATE UPDATE
-        ON DELETE UPDATE,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     CONSTRAINT `fk_card_gift_cart_cg`
         FOREIGN KEY (`gift_card_id`)
         REFERENCES `gift_card` (`id`)
-        ON UPDATE RESTRICT
-        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
@@ -105,13 +105,13 @@ CREATE TABLE `gift_card_order`
     CONSTRAINT `fk_card_gift_order`
         FOREIGN KEY (`order_id`)
         REFERENCES `order` (`id`)
-        ON UPDATE RESTRICT
-        ON DELETE RESTRICT,
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     CONSTRAINT `fk_card_gift_order_cg`
         FOREIGN KEY (`gift_card_id`)
         REFERENCES `gift_card` (`id`)
-        ON UPDATE RESTRICT
-        ON DELETE RESTRICT
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 # This restores the fkey checks, after having unset them earlier
