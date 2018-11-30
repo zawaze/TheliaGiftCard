@@ -78,26 +78,30 @@ class GiftCardCartController extends BaseFrontController
 
     public function SpendAmountAction()
     {
-        $form = $this->createForm('spend.amount.card.gift');
+        $this->checkAuth();
 
+        $form = $this->createForm('spend.amount.card.gift');
 
         try {
             $amountForm = $this->validateForm($form);
 
             $amount = $amountForm->get('amount_used')->getData();
+            $code = $amountForm->get('gift_card_code')->getData();
 
             /** @var GiftCardAmountSpendService $gifCardService */
             $gifCardService = $this->container->get('giftcard.amount.spend.service');
 
             $order = $this->getSession()->getOrder();
 
-            if (null == $order) {
+            $customerId =$this->getSession()->getCustomerUser()->getId();
+
+            if (null == $order || null  == $customerId) {
                 return;
             }
 
-            $postageBase = $this->getDelivery($order);
+            $this->getDelivery($order);
 
-            $gifCardService->applyGiftCardDiscountInCartAndOrder($amount, $this->getSession(), $this->getDispatcher());
+            $gifCardService->applyGiftCardDiscountInCartAndOrder($amount, $code,$customerId, $this->getSession(), $this->getDispatcher());
 
             return $this->generateRedirectFromRoute('order.invoice');
 
@@ -109,7 +113,7 @@ class GiftCardCartController extends BaseFrontController
                 ->addForm($form)
                 ->setGeneralError($error_message);
 
-            return $this->generateErrorRedirect($form);
+            return $this->generateRedirectFromRoute('order.invoice');
         }
     }
 

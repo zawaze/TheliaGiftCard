@@ -35,7 +35,7 @@ class AddAmountCGForm extends BaseForm
                     ]
                 ])
             ->add(
-                'gift_card_id',
+                'gift_card_code',
                 TextType::class,
                 [
                     'label' => $this->translator->trans('FORM_LIST_CARD_GIFT', [], TheliaGiftCard::DOMAIN_NAME),

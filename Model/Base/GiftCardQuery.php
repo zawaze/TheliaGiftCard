@@ -17,6 +17,7 @@ use TheliaGiftCard\Model\GiftCardQuery as ChildGiftCardQuery;
 use TheliaGiftCard\Model\Map\GiftCardTableMap;
 use Thelia\Model\Customer;
 use Thelia\Model\Order;
+use Thelia\Model\Product;
 
 /**
  * Base class that represents a query for the 'gift_card' table.
@@ -26,6 +27,7 @@ use Thelia\Model\Order;
  * @method     ChildGiftCardQuery orderById($order = Criteria::ASC) Order by the id column
  * @method     ChildGiftCardQuery orderBySponsorCustomerId($order = Criteria::ASC) Order by the sponsor_customer_id column
  * @method     ChildGiftCardQuery orderByOrderId($order = Criteria::ASC) Order by the order_id column
+ * @method     ChildGiftCardQuery orderByProductId($order = Criteria::ASC) Order by the product_id column
  * @method     ChildGiftCardQuery orderByCode($order = Criteria::ASC) Order by the code column
  * @method     ChildGiftCardQuery orderByAmount($order = Criteria::ASC) Order by the amount column
  * @method     ChildGiftCardQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
@@ -34,6 +36,7 @@ use Thelia\Model\Order;
  * @method     ChildGiftCardQuery groupById() Group by the id column
  * @method     ChildGiftCardQuery groupBySponsorCustomerId() Group by the sponsor_customer_id column
  * @method     ChildGiftCardQuery groupByOrderId() Group by the order_id column
+ * @method     ChildGiftCardQuery groupByProductId() Group by the product_id column
  * @method     ChildGiftCardQuery groupByCode() Group by the code column
  * @method     ChildGiftCardQuery groupByAmount() Group by the amount column
  * @method     ChildGiftCardQuery groupByCreatedAt() Group by the created_at column
@@ -50,6 +53,10 @@ use Thelia\Model\Order;
  * @method     ChildGiftCardQuery leftJoinOrder($relationAlias = null) Adds a LEFT JOIN clause to the query using the Order relation
  * @method     ChildGiftCardQuery rightJoinOrder($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Order relation
  * @method     ChildGiftCardQuery innerJoinOrder($relationAlias = null) Adds a INNER JOIN clause to the query using the Order relation
+ *
+ * @method     ChildGiftCardQuery leftJoinProduct($relationAlias = null) Adds a LEFT JOIN clause to the query using the Product relation
+ * @method     ChildGiftCardQuery rightJoinProduct($relationAlias = null) Adds a RIGHT JOIN clause to the query using the Product relation
+ * @method     ChildGiftCardQuery innerJoinProduct($relationAlias = null) Adds a INNER JOIN clause to the query using the Product relation
  *
  * @method     ChildGiftCardQuery leftJoinGiftCardCustomer($relationAlias = null) Adds a LEFT JOIN clause to the query using the GiftCardCustomer relation
  * @method     ChildGiftCardQuery rightJoinGiftCardCustomer($relationAlias = null) Adds a RIGHT JOIN clause to the query using the GiftCardCustomer relation
@@ -69,6 +76,7 @@ use Thelia\Model\Order;
  * @method     ChildGiftCard findOneById(int $id) Return the first ChildGiftCard filtered by the id column
  * @method     ChildGiftCard findOneBySponsorCustomerId(int $sponsor_customer_id) Return the first ChildGiftCard filtered by the sponsor_customer_id column
  * @method     ChildGiftCard findOneByOrderId(int $order_id) Return the first ChildGiftCard filtered by the order_id column
+ * @method     ChildGiftCard findOneByProductId(int $product_id) Return the first ChildGiftCard filtered by the product_id column
  * @method     ChildGiftCard findOneByCode(string $code) Return the first ChildGiftCard filtered by the code column
  * @method     ChildGiftCard findOneByAmount(string $amount) Return the first ChildGiftCard filtered by the amount column
  * @method     ChildGiftCard findOneByCreatedAt(string $created_at) Return the first ChildGiftCard filtered by the created_at column
@@ -77,6 +85,7 @@ use Thelia\Model\Order;
  * @method     array findById(int $id) Return ChildGiftCard objects filtered by the id column
  * @method     array findBySponsorCustomerId(int $sponsor_customer_id) Return ChildGiftCard objects filtered by the sponsor_customer_id column
  * @method     array findByOrderId(int $order_id) Return ChildGiftCard objects filtered by the order_id column
+ * @method     array findByProductId(int $product_id) Return ChildGiftCard objects filtered by the product_id column
  * @method     array findByCode(string $code) Return ChildGiftCard objects filtered by the code column
  * @method     array findByAmount(string $amount) Return ChildGiftCard objects filtered by the amount column
  * @method     array findByCreatedAt(string $created_at) Return ChildGiftCard objects filtered by the created_at column
@@ -169,7 +178,7 @@ abstract class GiftCardQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT ID, SPONSOR_CUSTOMER_ID, ORDER_ID, CODE, AMOUNT, CREATED_AT, UPDATED_AT FROM gift_card WHERE ID = :p0';
+        $sql = 'SELECT ID, SPONSOR_CUSTOMER_ID, ORDER_ID, PRODUCT_ID, CODE, AMOUNT, CREATED_AT, UPDATED_AT FROM gift_card WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -383,6 +392,49 @@ abstract class GiftCardQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(GiftCardTableMap::ORDER_ID, $orderId, $comparison);
+    }
+
+    /**
+     * Filter the query on the product_id column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByProductId(1234); // WHERE product_id = 1234
+     * $query->filterByProductId(array(12, 34)); // WHERE product_id IN (12, 34)
+     * $query->filterByProductId(array('min' => 12)); // WHERE product_id > 12
+     * </code>
+     *
+     * @see       filterByProduct()
+     *
+     * @param     mixed $productId The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildGiftCardQuery The current query, for fluid interface
+     */
+    public function filterByProductId($productId = null, $comparison = null)
+    {
+        if (is_array($productId)) {
+            $useMinMax = false;
+            if (isset($productId['min'])) {
+                $this->addUsingAlias(GiftCardTableMap::PRODUCT_ID, $productId['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($productId['max'])) {
+                $this->addUsingAlias(GiftCardTableMap::PRODUCT_ID, $productId['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(GiftCardTableMap::PRODUCT_ID, $productId, $comparison);
     }
 
     /**
@@ -689,6 +741,81 @@ abstract class GiftCardQuery extends ModelCriteria
         return $this
             ->joinOrder($relationAlias, $joinType)
             ->useQuery($relationAlias ? $relationAlias : 'Order', '\Thelia\Model\OrderQuery');
+    }
+
+    /**
+     * Filter the query by a related \Thelia\Model\Product object
+     *
+     * @param \Thelia\Model\Product|ObjectCollection $product The related object(s) to use as filter
+     * @param string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildGiftCardQuery The current query, for fluid interface
+     */
+    public function filterByProduct($product, $comparison = null)
+    {
+        if ($product instanceof \Thelia\Model\Product) {
+            return $this
+                ->addUsingAlias(GiftCardTableMap::PRODUCT_ID, $product->getId(), $comparison);
+        } elseif ($product instanceof ObjectCollection) {
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+
+            return $this
+                ->addUsingAlias(GiftCardTableMap::PRODUCT_ID, $product->toKeyValue('PrimaryKey', 'Id'), $comparison);
+        } else {
+            throw new PropelException('filterByProduct() only accepts arguments of type \Thelia\Model\Product or Collection');
+        }
+    }
+
+    /**
+     * Adds a JOIN clause to the query using the Product relation
+     *
+     * @param     string $relationAlias optional alias for the relation
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return ChildGiftCardQuery The current query, for fluid interface
+     */
+    public function joinProduct($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        $tableMap = $this->getTableMap();
+        $relationMap = $tableMap->getRelation('Product');
+
+        // create a ModelJoin object for this join
+        $join = new ModelJoin();
+        $join->setJoinType($joinType);
+        $join->setRelationMap($relationMap, $this->useAliasInSQL ? $this->getModelAlias() : null, $relationAlias);
+        if ($previousJoin = $this->getPreviousJoin()) {
+            $join->setPreviousJoin($previousJoin);
+        }
+
+        // add the ModelJoin to the current object
+        if ($relationAlias) {
+            $this->addAlias($relationAlias, $relationMap->getRightTable()->getName());
+            $this->addJoinObject($join, $relationAlias);
+        } else {
+            $this->addJoinObject($join, 'Product');
+        }
+
+        return $this;
+    }
+
+    /**
+     * Use the Product relation Product object
+     *
+     * @see useQuery()
+     *
+     * @param     string $relationAlias optional alias for the relation,
+     *                                   to be used as main alias in the secondary query
+     * @param     string $joinType Accepted values are null, 'left join', 'right join', 'inner join'
+     *
+     * @return   \Thelia\Model\ProductQuery A secondary query class using the current class as primary query
+     */
+    public function useProductQuery($relationAlias = null, $joinType = Criteria::INNER_JOIN)
+    {
+        return $this
+            ->joinProduct($relationAlias, $joinType)
+            ->useQuery($relationAlias ? $relationAlias : 'Product', '\Thelia\Model\ProductQuery');
     }
 
     /**

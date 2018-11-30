@@ -7,6 +7,7 @@
 
         <column name="sponsor_customer_id" required="true" type="INTEGER" />
         <column name="order_id" required="true" type="INTEGER" />
+        <column name="product_id" required="true" type="INTEGER" />
         <column name="code" required="true" size="100" type="VARCHAR" />
         <column name="amount" scale="6" size="16" type="DECIMAL" />
 
@@ -16,6 +17,10 @@
 
         <foreign-key foreignTable="order" name="fk_gift_card_order" onDelete="CASCADE" onUpdate="CASCADE">
             <reference foreign="id" local="order_id" />
+        </foreign-key>
+
+        <foreign-key foreignTable="product" name="fk_gift_card_product" onDelete="RESTRICT" onUpdate="RESTRICT">
+            <reference foreign="id" local="product_id" />
         </foreign-key>
 
         <behavior name="timestampable" />

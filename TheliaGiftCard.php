@@ -24,12 +24,12 @@ class TheliaGiftCard extends BaseModule
     /** @var string */
     const MODULE_CODE = 'theliagiftcard';
 
-    const CODES_GIFT_CARD_PRODUCT = [31];
+    const CODES_GIFT_CARD_PRODUCT = [31,32];
     const ORDER_STATUS_PAID = 2;
 
     const GIFT_CARD_MESSAGE_NAME = 'send_gift_card';
 
-    const STRING_CODE = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+    const STRING_CODE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
 
     public static function GENERATE_CODE()
     {

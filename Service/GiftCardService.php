@@ -11,30 +11,42 @@ namespace TheliaGiftCard\Service;
 
 use TheliaGiftCard\Model\GiftCardCart;
 use TheliaGiftCard\Model\GiftCardCartQuery;
+use TheliaGiftCard\Model\GiftCardCustomer;
+use TheliaGiftCard\Model\GiftCardCustomerQuery;
 use TheliaGiftCard\Model\GiftCardOrder;
 use TheliaGiftCard\Model\GiftCardOrderQuery;
+use TheliaGiftCard\Model\GiftCardQuery;
 
 class GiftCardService
 {
-    public function setCardOnCart($cart_id, $amount)
+    public function setCardOnCart($cart_id,$amount,$amountDelivery, $cardId)
     {
-        $giftCardCart = GiftCardCartQuery::create()
-            ->filterByCartId($cart_id)
-            ->findOne();
-
-        if (null === $giftCardCart) {
             $newGiftCardCart = new GiftCardCart();
 
             $newGiftCardCart
+                ->setGiftCardId($cardId)
                 ->setCartId($cart_id)
                 ->setSpendAmount($amount)
+                ->setSpendDelivery($amountDelivery)
                 ->save();
 
             return true;
+    }
 
-        } else {
-            $giftCardCart
+    public function setOrderAmountGC($orderId, $amount,$cardId, $customerId)
+    {
+        $cardCustomer= GiftCardCustomerQuery::create()
+            ->filterByCustomerId($customerId)
+            ->filterByCardId($cardId)
+            ->findOne();
+
+        if ( null !== $cardCustomer) {
+            $newGiftCardOrder = new GiftCardOrder();
+
+            $newGiftCardOrder
+                ->setOrderId($orderId)
                 ->setSpendAmount($amount)
+                ->setGiftCardId($cardId)
                 ->save();
             return true;
         }
@@ -42,21 +54,15 @@ class GiftCardService
         return false;
     }
 
-    public function setOrderAmountGC($orderId, $amount)
+    public function setGiftCardAmount($cardId,$amount,$customerId)
     {
-        $giftCardOrder = GiftCardOrderQuery::create()
-            ->filterByOrderId($orderId)
+        $cardCustomer= GiftCardCustomerQuery::create()
+            ->filterByCustomerId($customerId)
+            ->filterByCardId($cardId)
             ->findOne();
 
-        if (null === $giftCardOrder) {
-            $newGiftCardOrder = new GiftCardOrder();
-
-            $newGiftCardOrder
-                ->setOrderId($orderId)
-                ->setSpendAmount($amount)
-                ->save();
-
-            return true;
+        if(null !== $cardCustomer){
+            $cardCustomer->setUsedAmount($cardCustomer->getUsedAmount()+$amount)->save();
         }
 
         return false;

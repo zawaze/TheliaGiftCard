@@ -15,6 +15,7 @@ use Thelia\Model\CartItem;
 use Thelia\Model\Order;
 use Thelia\Model\ProductSaleElementsQuery;
 use TheliaGiftCard\Model\GiftCard;
+use TheliaGiftCard\Model\GiftCardCart;
 use TheliaGiftCard\Model\GiftCardCartQuery;
 use TheliaGiftCard\Model\GiftCardQuery;
 use TheliaGiftCard\Service\GiftCardService;
@@ -45,6 +46,8 @@ class OrderPayListener implements EventSubscriberInterface
             /** @var Order $order */
             $order = $event->getOrder();
 
+            $countMaxbyAmount = $this->getCountGiftCards($order->getOrderProducts());
+
             /** @var  CartItem $item */
             foreach ($order->getOrderProducts() as $orderProduct) {
                 $pse = ProductSaleElementsQuery::create()->findPk($orderProduct->getProductSaleElementsId());
@@ -57,24 +60,29 @@ class OrderPayListener implements EventSubscriberInterface
 
                     $price = $orderProduct->getPrice();
 
-                    $orderProductTaxes= $orderProduct->getOrderProductTaxes()->getData();
+                    $orderProductTaxes = $orderProduct->getOrderProductTaxes()->getData();
 
-                    foreach ($orderProductTaxes as $orderProductTax){
+                    foreach ($orderProductTaxes as $orderProductTax) {
                         $TaxAmount = $orderProductTax->getAmount();
                     }
 
-                    $giftCard = GiftCardQuery::create()
-                        ->filterByOrderId($order->getId())
-                        ->findOne();
+                    for ($i = 1; $i <= $orderProduct->getQuantity(); $i++) {
 
-                    if (null === $giftCard) {
-                        $newGiftCard = new GiftCard();
-                        $newGiftCard
-                            ->setSponsorCustomerId($order->getCustomer()->getId())
-                            ->setOrderId($orederId)
-                            ->setCode(TheliaGiftCard::GENERATE_CODE())
-                            ->setAmount($price  + $TaxAmount)
-                            ->save();
+                        $giftCards = GiftCardQuery::create()
+                            ->filterByOrderId($order->getId())
+                            ->filterByProductId($productId)
+                            ->find();
+
+                        if ($giftCards->count() < $countMaxbyAmount[$productId]) {
+                            $newGiftCard = new GiftCard();
+                            $newGiftCard
+                                ->setProductId($productId)
+                                ->setSponsorCustomerId($order->getCustomer()->getId())
+                                ->setOrderId($orederId)
+                                ->setCode(TheliaGiftCard::GENERATE_CODE())
+                                ->setAmount($price + $TaxAmount)
+                                ->save();
+                        }
                     }
                 }
             }
@@ -90,10 +98,12 @@ class OrderPayListener implements EventSubscriberInterface
 
         $order = $event->getPlacedOrder();
 
-        $dataGC = GiftCardCartQuery::create()->filterByCartId($cart->getId())->findOne();
+        $datasGC = GiftCardCartQuery::create()->filterByCartId($cart->getId())->find();
 
-        if (null != $dataGC) {
-            $gcservice->setOrderAmountGC($order->getId(), $dataGC->getSpendAmount());
+        /** @var GiftCardCart $dataGC */
+        foreach ($datasGC as $dataGC) {
+            $gcservice->setOrderAmountGC($order->getId(), $dataGC->getSpendAmount() + $dataGC->getSpendDelivery(), $dataGC->getGiftCardId(), $cart->getCustomer()->getId());
+            $gcservice->setGiftCardAmount($dataGC->getGiftCardId(),$dataGC->getSpendAmount() + $dataGC->getSpendDelivery(),$cart->getCustomer()->getId());
         }
     }
 
@@ -103,5 +113,22 @@ class OrderPayListener implements EventSubscriberInterface
             TheliaEvents::ORDER_UPDATE_STATUS => ['creatCodeGiftCard', 128],
             TheliaEvents::ORDER_PAY => ['setCardAmountOnOrder', 128],
         ];
+    }
+
+    private function getCountGiftCards($orderProducts)
+    {
+        $cpt = [];
+
+        foreach ($orderProducts as $orderProduct) {
+            $pse = ProductSaleElementsQuery::create()->findPk($orderProduct->getProductSaleElementsId());
+
+            $productId = $pse->getProduct()->getId();
+
+            if (in_array($productId, TheliaGiftCard::CODES_GIFT_CARD_PRODUCT)) {
+                $cpt[$productId] += $orderProduct->getQuantity();
+            }
+        }
+
+        return $cpt;
     }
 }

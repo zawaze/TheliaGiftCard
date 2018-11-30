@@ -14,6 +14,7 @@ CREATE TABLE `gift_card`
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `sponsor_customer_id` INTEGER NOT NULL,
     `order_id` INTEGER NOT NULL,
+    `product_id` INTEGER NOT NULL,
     `code` VARCHAR(100) NOT NULL,
     `amount` DECIMAL(16,6),
     `created_at` DATETIME,
@@ -21,6 +22,7 @@ CREATE TABLE `gift_card`
     PRIMARY KEY (`id`),
     INDEX `FI_card_gift_sponsor_customer` (`sponsor_customer_id`),
     INDEX `FI_gift_card_order` (`order_id`),
+    INDEX `FI_gift_card_product` (`product_id`),
     CONSTRAINT `fk_card_gift_sponsor_customer`
         FOREIGN KEY (`sponsor_customer_id`)
         REFERENCES `customer` (`id`)
@@ -30,7 +32,12 @@ CREATE TABLE `gift_card`
         FOREIGN KEY (`order_id`)
         REFERENCES `order` (`id`)
         ON UPDATE CASCADE
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT `fk_gift_card_product`
+        FOREIGN KEY (`product_id`)
+        REFERENCES `product` (`id`)
+        ON UPDATE RESTRICT
+        ON DELETE RESTRICT
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------

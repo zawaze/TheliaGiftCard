@@ -10,6 +10,9 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Thelia\Core\HttpFoundation\Session\Session;
 use Thelia\TaxEngine\TaxEngine;
+use TheliaGiftCard\Model\GiftCard;
+use TheliaGiftCard\Model\GiftCardQuery;
+use TheliaGiftCard\Model\Map\GiftCardCustomerTableMap;
 use TheliaGiftCard\Service\GiftCardService;
 
 class GiftCardAmountSpendService
@@ -32,40 +35,76 @@ class GiftCardAmountSpendService
 
     }
 
-    public function applyGiftCardDiscountInCartAndOrder($amount, Session $session, EventDispatcher $dispatcher)
+    public function applyGiftCardDiscountInCartAndOrder($amount, $code, $customerId, Session $session, EventDispatcher $dispatcher)
     {
         $cart = $session->getSessionCart($dispatcher);
         $order = $session->getOrder();
 
-        $taxCountry = $this->taxEngine->getDeliveryCountry();
-        /** @noinspection MissingService */
-        $taxState = $this->taxEngine->getDeliveryState();
+        /** @var GiftCard $giftCard */
+        $giftCard = GiftCardQuery::create()->findOneByCode($code);
 
-        $totalCart = $cart->getTaxedAmount($taxCountry, false, $taxState);
+        $currentGiftCard = GiftCardQuery::create()
+            ->filterbyCode($code)
+            ->useGiftCardCustomerQuery()
+            ->filterByCustomerId($customerId)
+            ->endUse()
+            ->withColumn(GiftCardCustomerTableMap::TABLE_NAME . '.' . 'used_amount', 'used_amount')
+            ->findOne();
 
-        $rest = 0;
-
-        if ($totalCart <= $amount) {
-
-            $amountDelevryDiscount = $amount - $totalCart;
-
-            $postage = $order->getPostage();
-            $postage = $postage - $amountDelevryDiscount;
-
-            if ($postage < 0) {
-                $rest = $amountDelevryDiscount - ($postage * -1);
-                $postage = 0;
-            }
-
-            $order->setPostage($postage);
+        /** @var $currentGiftCard GiftCard */
+        if (null === $currentGiftCard) {
+            return;
         }
 
-        $order->setDiscount($amount - $rest);
+        $initialAmount = $currentGiftCard->getAmount();
+        $usedAmount = $currentGiftCard->getVirtualColumn('used_amount');
 
-        //update cart
-        $cart->setDiscount($amount - $rest);
-        $cart->save();
+        $usableAmount = $initialAmount - $usedAmount;
 
-        $this->giftCardService->setCardOnCart($cart->getId(), $amount - $rest);
+        if ($usableAmount > 0 && $usableAmount >= $amount) {
+            $taxCountry = $this->taxEngine->getDeliveryCountry();
+            /** @noinspection MissingService */
+            $taxState = $this->taxEngine->getDeliveryState();
+
+            $totalCart = $cart->getTaxedAmount($taxCountry, false, $taxState);
+
+            $rest = 0;
+
+            if ($totalCart <= $amount) {
+
+                $amountDelta = $amount - $totalCart;
+
+                $postage = $order->getPostage();
+
+                if ($postage <= $amountDelta) {
+
+                    $amoutDiscountPostage = $postage;
+                    $amount = $amount - $amoutDiscountPostage;
+
+                    $postage = 0;
+
+                } else {
+
+                    $amoutDiscountPostage = $amountDelta;
+                    $amount = $amount - $amoutDiscountPostage;
+                    $postage = $postage - $amountDelta;
+
+                }
+
+                $order->setPostage($postage);
+            }
+
+            $discountBeforeGiftCard = $cart->getDiscount();
+
+            $order
+                ->setDiscount($discountBeforeGiftCard + $amount);
+
+            //update cart
+            $cart
+                ->setDiscount($discountBeforeGiftCard + $amount)
+                ->save();
+
+            $this->giftCardService->setCardOnCart($cart->getId(), $amount, $amoutDiscountPostage, $giftCard->getId());
+        }
     }
 }
