@@ -125,7 +125,12 @@ class OrderPayListener implements EventSubscriberInterface
             $productId = $pse->getProduct()->getId();
 
             if (in_array($productId, TheliaGiftCard::CODES_GIFT_CARD_PRODUCT)) {
-                $cpt[$productId] += $orderProduct->getQuantity();
+
+                if(isset($cpt[$productId])){
+                    $cpt[$productId] += $orderProduct->getQuantity();
+                } else{
+                    $cpt[$productId] = $orderProduct->getQuantity();
+                }
             }
         }
 

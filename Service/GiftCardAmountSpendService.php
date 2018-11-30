@@ -64,7 +64,7 @@ class GiftCardAmountSpendService
 
         $amountCurrentOnCart = 0;
 
-        foreach($currentGiftCardCarts as  $currentGiftCardCart){
+        foreach ($currentGiftCardCarts as $currentGiftCardCart) {
             $amountCurrentOnCart += $currentGiftCardCart->getSpendAmount() + $currentGiftCardCart->getSpendDelivery();
         }
 
@@ -80,6 +80,8 @@ class GiftCardAmountSpendService
             $taxCountry = $this->taxEngine->getDeliveryCountry();
             /** @noinspection MissingService */
             $taxState = $this->taxEngine->getDeliveryState();
+
+            $amoutDiscountPostage = 0;
 
             $totalCart = $cart->getTaxedAmount($taxCountry, false, $taxState) - $discountBeforeGiftCard;
 
