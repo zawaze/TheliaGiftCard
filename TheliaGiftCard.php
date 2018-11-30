@@ -7,6 +7,7 @@
 namespace TheliaGiftCard;
 
 use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Core\Template\TemplateDefinition;
 use Thelia\Core\Translation\Translator;
 use Thelia\Install\Database;
 use Thelia\Model\LangQuery;
@@ -108,5 +109,28 @@ class TheliaGiftCard extends BaseModule
         }
 
         return $this->translator->trans($id, $parameters, self::DOMAIN_NAME, $locale);
+    }
+
+    public function getHooks()
+    {
+        return array(
+            array(
+                "type" => TemplateDefinition::FRONT_OFFICE,
+                "code" => "order-invoice.giftcard-form",
+                "title" => array(
+                    "fr_FR" => "Gift Card invoice Hook",
+                    "en_US" => "Gift Card invoice Hook",
+                ),
+                "description" => array(
+                    "fr_FR" => "Gift Card invoice Hook",
+                    "en_US" => "Gift Card invoice Hook",
+                ),
+                "chapo" => array(
+                    "fr_FR" => "Gift Card invoice Hookr",
+                    "en_US" => "Gift Card invoice Hook",
+                ),
+                "active" => true
+            )
+        );
     }
 }
