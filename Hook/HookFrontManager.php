@@ -9,20 +9,19 @@ namespace TheliaGiftCard\Hook;
 use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Core\Hook\BaseHook;
 
-class HookManager extends BaseHook
+class HookFrontManager extends BaseHook
 {
-
-    public function cardGiftAccountUsageInOrder(HookRenderEvent $event)
+    public function onAccountBottom(HookRenderEvent $event)
     {
         $event->add(
-            $this->render("gift-card-usage-on-order.html", [ 'order_id' => $event->getArgument('order_id') ])
+            $this->render("account-gift-card.html")
         );
     }
 
-    public function orderInvoiceForm(HookRenderEvent $event)
+    public function onOrderInvoiceBottom(HookRenderEvent $event)
     {
         $event->add(
-            $this->render("order-invoice-form.html")
+            $this->render("order-invoice-gift-card.html")
         );
     }
 }

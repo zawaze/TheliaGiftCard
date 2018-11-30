@@ -1,0 +1,117 @@
+<div class="panel panel-default account-gift-card">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#account" href="#account-gift-card">
+                {intl l="Gift Card"}
+            </a>
+        </h4>
+    </div>
+    <div id="account-gift-card">
+        <div class="panel-body table-responsive">
+
+            {form name="add.code.card.gift"}
+            <form action="{url path='/card-gift/add-code'}" method="post">
+                {if $form_error_message}
+                <div class="alert alert-danger">
+                    {$form_error_message}
+                </div>
+                {/if}
+
+                {form_field field='success_url'}
+                <input type="hidden" name="{$name}" value="{url path="/account"}" />
+                {/form_field}
+
+                {form_field field='error_url'}
+                <input type="hidden" name="{$name}" value="{url path="/account"}" />
+                {/form_field}
+
+                {form_hidden_fields form=$form}
+
+                {form_field form=$form field="code_gift_card"}
+                <div class="form-group{if $error} has-error{/if}">
+                    <label class="control-label danger" for="{$label_attr.for}">{intl l=$label}</label>
+                    <input id="{$label_attr.for}" class="form-control" type="text" name="{$name}" value="{$value}">
+                </div>
+                {/form_field}
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary" type="submit"><span class="glyphicon glyphicon-check"></span> {intl l="Add Gift Card"}</button>
+                </div>
+            </form>
+            {/form}
+            <hr>
+            {ifloop rel="customer.card.gift"}
+            <table class="table table-orders table-bordered table-hover" summary="{intl l="List of Gift Card"}">
+            <thead>
+            <tr>{intl l="Yours Gift Cards"}</tr>
+            <tr>
+                <th>{intl l="Code"}</th>
+                <th>{intl l="From"}</th>
+                <th>{intl l="Activation Date"}</th>
+                <th>{intl l="Amount"}</th>
+                <th>{intl l="Amount spend"}</th>
+                <th>{intl l="Status"}</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            {loop type="list.card.gift" name="customer.card.gift" customer_id=current}
+            <tr>
+                <td>{$CODE}</td>
+                <td>{$SPONSOR_NAME}</td>
+                <td>{$DATE}</td>
+                <td>{$INIT_AMOUNT}</td>
+                <td>{$USED_AMOUNT}</td>
+                <td>
+                    {if $INIT_AMOUNT> $USED_AMOUNT}
+                    {intl l="Activate"}
+                    {else}
+                    {intl l="Expired"}
+                    {/if}
+                </td>
+            </tr>
+            {/loop}
+            </tbody>
+            </table>
+            {/ifloop}
+            {elseloop rel="customer.card.gift"}
+            <div class="alert alert-warning">
+                <strong>{intl l="Warning"}!</strong> {intl l="You don't have Gift Card yet."}
+            </div>
+            {/elseloop}
+
+            <hr>
+
+            {ifloop rel="sponsor.card.gift"}
+            <table class="table table-orders table-bordered table-hover" summary="{intl l="List of Gift Card"}">
+            <thead>
+            <tr>{intl l="Yours Gift Cards bought"}</tr>
+            <tr>
+                <th>{intl l="Code"}</th>
+                <th>{intl l="Amount"}</th>
+                <th>{intl l="Beneficiary"}</th>
+                <th>{intl l="Status"}</th>
+                <th>{intl l="Action"}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {loop type="sponsor.list.card.gift" name="sponsor.card.gift" customer_id=current}
+            <tr>
+                <td>{$CODE}</td>
+                <td>{$AMOUNT}</td>
+                <td>{if $USER_NAME}{$USER_NAME}{/if}</td>
+                <th>{if $USER_NAME}{intl l="Active"}{else}{intl l="Pending"}{/if}</th>
+                <td>{if !$USER_NAME}<a>{intl l="Send Card Gift"}</a>{/if}</td>
+            </tr>
+            {/loop}
+            </tbody>
+            </table>
+            {/ifloop}
+            {elseloop rel="sponsor.card.gift"}
+            <div class="alert alert-warning">
+                <strong>{intl l="Warning"}!</strong> {intl l="You don't have Gift Card yet."}
+            </div>
+            {/elseloop}
+        </div>
+    </div>
+</div>
