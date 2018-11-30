@@ -11,6 +11,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Thelia\Core\HttpFoundation\Session\Session;
 use Thelia\TaxEngine\TaxEngine;
 use TheliaGiftCard\Model\GiftCard;
+use TheliaGiftCard\Model\GiftCardCartQuery;
 use TheliaGiftCard\Model\GiftCardQuery;
 use TheliaGiftCard\Model\Map\GiftCardCustomerTableMap;
 use TheliaGiftCard\Service\GiftCardService;
@@ -56,19 +57,31 @@ class GiftCardAmountSpendService
             return;
         }
 
+        $currentGiftCardCarts = GiftCardCartQuery::create()
+            ->filterByGiftCardId($giftCard->getId())
+            ->filterByCartId($cart->getId())
+            ->find();
+
+        $amountCurrentOnCart = 0;
+
+        foreach($currentGiftCardCarts as  $currentGiftCardCart){
+            $amountCurrentOnCart += $currentGiftCardCart->getSpendAmount() + $currentGiftCardCart->getSpendDelivery();
+        }
+
         $initialAmount = $currentGiftCard->getAmount();
         $usedAmount = $currentGiftCard->getVirtualColumn('used_amount');
 
         $usableAmount = $initialAmount - $usedAmount;
 
-        if ($usableAmount > 0 && $usableAmount >= $amount) {
+        if ($usableAmount > 0 && $usableAmount >= $amount + $amountCurrentOnCart) {
+
+            $discountBeforeGiftCard = $cart->getDiscount();
+
             $taxCountry = $this->taxEngine->getDeliveryCountry();
             /** @noinspection MissingService */
             $taxState = $this->taxEngine->getDeliveryState();
 
-            $totalCart = $cart->getTaxedAmount($taxCountry, false, $taxState);
-
-            $rest = 0;
+            $totalCart = $cart->getTaxedAmount($taxCountry, false, $taxState) - $discountBeforeGiftCard;
 
             if ($totalCart <= $amount) {
 
@@ -94,15 +107,8 @@ class GiftCardAmountSpendService
                 $order->setPostage($postage);
             }
 
-            $discountBeforeGiftCard = $cart->getDiscount();
-
-            $order
-                ->setDiscount($discountBeforeGiftCard + $amount);
-
-            //update cart
-            $cart
-                ->setDiscount($discountBeforeGiftCard + $amount)
-                ->save();
+            $cart->setDiscount($discountBeforeGiftCard + $amount)->save();
+            $order->setDiscount($discountBeforeGiftCard + $amount);
 
             $this->giftCardService->setCardOnCart($cart->getId(), $amount, $amoutDiscountPostage, $giftCard->getId());
         }
