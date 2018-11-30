@@ -114,7 +114,7 @@ class TheliaGiftCard extends BaseModule
     public function getHooks()
     {
         return array(
-            array(
+            [
                 "type" => TemplateDefinition::FRONT_OFFICE,
                 "code" => "order-invoice.giftcard-form",
                 "title" => array(
@@ -126,11 +126,28 @@ class TheliaGiftCard extends BaseModule
                     "en_US" => "Gift Card invoice Hook",
                 ),
                 "chapo" => array(
-                    "fr_FR" => "Gift Card invoice Hookr",
+                    "fr_FR" => "Gift Card invoice Hook",
                     "en_US" => "Gift Card invoice Hook",
                 ),
                 "active" => true
-            )
+            ],
+            [
+                "type" => TemplateDefinition::FRONT_OFFICE,
+                "code" => "order-invoice.cart-giftcard-form",
+                "title" => array(
+                    "fr_FR" => "Gift Card invoice cart Hook",
+                    "en_US" => "Gift Card invoice cart Hook",
+                ),
+                "description" => array(
+                    "fr_FR" => "Gift Card invoice cart Hook",
+                    "en_US" => "Gift Card invoice cart Hook",
+                ),
+                "chapo" => array(
+                    "fr_FR" => "Gift Card invoice cart Hook",
+                    "en_US" => "Gift Card invoice cart Hook",
+                ),
+                "active" => true
+            ]
         );
     }
 }

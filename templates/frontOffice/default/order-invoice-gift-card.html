@@ -11,7 +11,7 @@
 
             {form_field field='gift_card_code'}
             <label class="control-label" for="{$label_attr.for}">{intl l=$label}</label>
-            <select class="form-control" name="{$name}">
+            <select class="form-control" name="{$name}" required>
                 <option value="" disabled selected>{intl l="Select your Gift Card"}</option>
                 {loop type="list.card.gift" name="customer.card.gift" customer_id=current}
                 <option value="{$CODE}">{$CODE} : {format_money number=$USED_AMOUNT currency_id=$CURRENCY} / {format_money number=$INIT_AMOUNT currency_id=$CURRENCY}</option>
@@ -24,9 +24,9 @@
             <input id="spend_amount_card_gift" class="form-control" type="text" name="{$name}" value="{$value}" placeholder="{intl l='Use Card gift amount'}" required>
 
             {/form_field}
-            <span class="input-group-btn">
-                                    <button type="submit" class="btn btn-default">{intl l="Ok"}</button>
-                                </span>
+                <span class="input-group-btn">
+                    <button type="submit" class="btn btn-default">{intl l="Ok"}</button>
+                </span>
             </form>
             {/form}
         </td>

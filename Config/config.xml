@@ -8,6 +8,7 @@
         <loop name="used.amount.card.gift" class="TheliaGiftCard\Loop\GiftCArdOrderUseLoop" />
         <loop name="list.card.gift" class="TheliaGiftCard\Loop\GiftCArdList" />
         <loop name="sponsor.list.card.gift" class="TheliaGiftCard\Loop\GiftCArdListSponsor" />
+        <loop name="sponsor.list.card.gift" class="TheliaGiftCard\Loop\GiftCArdCartUseLoop" />
     </loops>
 
     <forms>
@@ -15,7 +16,7 @@
         <form name="delete.amount.card.gift" class="TheliaGiftCard\Form\DelAmountCGForm" />
         <form name="add.code.card.gift" class="TheliaGiftCard\Form\AddCardGiftCustomerForm" />
         <form name="add.code.card.gift" class="TheliaGiftCard\Form\AddCardGiftCustomerForm" />
-        <form name="send.code.card.gift" class="TheliaGiftCard\Form\SendCodeCGForm" />
+        <form name="spend.cart.card.gift" class="TheliaGiftCard\Form\SendCodeCGForm" />
     </forms>
 
     <commands>
@@ -47,6 +48,7 @@
         <hook id="theliagiftcard.front.account.hook" class="TheliaGiftCard\Hook\HookFrontManager">
             <tag name="hook.event_listener" event="account.bottom" type="front" method="onAccountBottom" />
             <tag name="hook.event_listener" event="order-invoice.giftcard-form" type="front" method="onOrderInvoiceBottom" />
+            <tag name="hook.event_listener" event="order-invoice.cart-giftcard-form" type="front" method="onCartInvoiceBottom" />
         </hook>
     </hooks>
 </config>
