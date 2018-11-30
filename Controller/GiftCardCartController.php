@@ -13,8 +13,10 @@ use Thelia\Core\Event\Delivery\DeliveryPostageEvent;
 use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Form\Exception\FormValidationException;
+use Thelia\Mailer\MailerFactory;
 use Thelia\Model\AddressQuery;
 use Thelia\Model\AreaDeliveryModuleQuery;
+use Thelia\Model\Customer;
 use Thelia\Model\ModuleQuery;
 use Thelia\Module\Exception\DeliveryException;
 use TheliaGiftCard\Model\GiftCardCustomer;
@@ -76,7 +78,7 @@ class GiftCardCartController extends BaseFrontController
 
     }
 
-    public function SpendAmountAction()
+    public function spendAmountAction()
     {
         $this->checkAuth();
 
@@ -93,15 +95,15 @@ class GiftCardCartController extends BaseFrontController
 
             $order = $this->getSession()->getOrder();
 
-            $customerId =$this->getSession()->getCustomerUser()->getId();
+            $customerId = $this->getSession()->getCustomerUser()->getId();
 
-            if (null == $order || null  == $customerId) {
+            if (null == $order || null == $customerId) {
                 return;
             }
 
             $this->getDelivery($order);
 
-            $gifCardService->applyGiftCardDiscountInCartAndOrder($amount, $code,$customerId, $this->getSession(), $this->getDispatcher());
+            $gifCardService->applyGiftCardDiscountInCartAndOrder($amount, $code, $customerId, $this->getSession(), $this->getDispatcher());
 
             return $this->generateRedirectFromRoute('order.invoice');
 
@@ -117,7 +119,7 @@ class GiftCardCartController extends BaseFrontController
         }
     }
 
-    public function DeleteAmountAction()
+    public function deleteAmountAction()
     {
 
     }
@@ -184,8 +186,36 @@ class GiftCardCartController extends BaseFrontController
         $this->getDispatcher()->dispatch(TheliaEvents::ORDER_SET_POSTAGE, $orderEvent);
     }
 
-    public function sendEmail($email, $cardId, $message = null)
+    public function sendEmailGiftCardAction()
     {
+        $this->checkAuth();
+        $form = $this->createForm('send.code.card.gift');
 
+        try {
+            $sendForm = $this->validateForm($form);
+
+            $email = $sendForm->get('email')->getData();
+            $code = $sendForm->get('code-to-send')->getData();
+
+            /** @var Customer $customer */
+            $customer = $this->getSession()->getCustomerUser();
+
+            /** @var MailerFactory $mailer */
+            $mailer = $this->getContainer()->get('mailer');
+            $mailer->sendEmailMessage(
+                'mail_giftcard',
+                [$customer->getEmail() => $customer->getLastname() . ' ' . $customer->getFirstname()],
+                [$email => $email],
+                [
+                    'CODE' => $code,
+                ]
+            );
+
+        } catch (FormValidationException $error_message) {
+
+            $form->setErrorMessage($error_message);
+        }
+
+        return $this->generateRedirectFromRoute('customer.home');
     }
 }

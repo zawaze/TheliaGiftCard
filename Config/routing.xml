@@ -8,9 +8,12 @@
         <default key="_controller">TheliaGiftCard\Controller\GiftCardCartController::addGiftCardAction</default>
     </route>
     <route id="spend.amount.card.gift.route" path="/card-gift/spend">
-        <default key="_controller">TheliaGiftCard\Controller\GiftCardCartController::SpendAmountAction</default>
+        <default key="_controller">TheliaGiftCard\Controller\GiftCardCartController::spendAmountAction</default>
     </route>
     <route id="delete.amount.card.gift.route" path="/card-gift/delete">
-        <default key="_controller">TheliaGiftCard\Controller\GiftCardCartController::DeleteAmountAction</default>
+        <default key="_controller">TheliaGiftCard\Controller\GiftCardCartController::deleteAmountAction</default>
+    </route>
+    <route id="send.code.card.gift.route" path="/card-gift/send-code">
+        <default key="_controller">TheliaGiftCard\Controller\GiftCardCartController::sendEmailGiftCardAction</default>
     </route>
 </routes>

@@ -83,6 +83,11 @@
             <hr>
 
             {ifloop rel="sponsor.card.gift"}
+
+            {form name="send.code.card.gift"}
+
+            <form action="{url path='/card-gift/send-code'}" method="post">
+                {form_hidden_fields form=$form}
             <table class="table table-orders table-bordered table-hover" summary="{intl l="List of Gift Card"}">
             <thead>
             <tr>{intl l="Yours Gift Cards bought"}</tr>
@@ -99,13 +104,27 @@
             <tr>
                 <td>{$CODE}</td>
                 <td>{$AMOUNT}</td>
-                <td>{if $USER_NAME}{$USER_NAME}{/if}</td>
+                <td>
+                    {if $USER_NAME}
+                        {$USER_NAME}
+                    {else}
+                    {form_field field='email'}
+                        <input id="email-send-{$ID}" type="text" name="{$name}" value="{$value}">
+                    {/form_field}
+
+                    {form_field field='code-to-send'}
+                         <input type="hidden" name="{$name}" value="{$CODE}">
+                    {/form_field}
+                    {/if}
+                </td>
                 <th>{if $USER_NAME}{intl l="Active"}{else}{intl l="Pending"}{/if}</th>
-                <td>{if !$USER_NAME}<a>{intl l="Send Card Gift"}</a>{/if}</td>
+                <td>{if !$USER_NAME}<button class="btn btn-primary" type="submit">{intl l="Send Card Gift"}</button>{/if}</td>
             </tr>
             {/loop}
             </tbody>
             </table>
+            </form>
+            {/form}
             {/ifloop}
             {elseloop rel="sponsor.card.gift"}
             <div class="alert alert-warning">
