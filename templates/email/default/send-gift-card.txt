@@ -1,0 +1,14 @@
+{intl l="Bonjour"},
+
+{intl l="Nous avons les plaisir de vous transmettre votre code pour benificier de votre carte cadeau"}
+
+{intl l="Rendez-vous dons votre espace client et entrez le code suivant : "}
+{loop type="list.card.gift" name="customer.card.gift" customer_id=$customer_id}
+    {$CODE}
+{/loop}
+
+{$MESSAGE}
+
+{intl l="N'hesitez pas à nous contacter pour de plus amples informations"}</p>
+
+{intl l="Salutations."}

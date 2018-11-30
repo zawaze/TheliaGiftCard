@@ -7,7 +7,9 @@
 namespace TheliaGiftCard;
 
 use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Core\Translation\Translator;
 use Thelia\Install\Database;
+use Thelia\Model\LangQuery;
 use Thelia\Model\Message;
 use Thelia\Model\MessageQuery;
 use Thelia\Module\BaseModule;
@@ -18,6 +20,9 @@ use TheliaGiftCard\Model\GiftCardQuery;
 
 class TheliaGiftCard extends BaseModule
 {
+    /** @var Translator */
+    protected $translator;
+
     /** @var string */
     const DOMAIN_NAME = 'theliagiftcard';
 
@@ -30,6 +35,8 @@ class TheliaGiftCard extends BaseModule
     const GIFT_CARD_MESSAGE_NAME = 'send_gift_card';
 
     const STRING_CODE = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+
+
 
     public static function GENERATE_CODE()
     {
@@ -65,24 +72,41 @@ class TheliaGiftCard extends BaseModule
             $database->insertSql(null, [__DIR__ . "/Config/thelia.sql"]);
         }
 
-
-        if (null === MessageQuery::create()->findOneByName(self::GIFT_CARD_MESSAGE_NAME)) {
+        if (null === MessageQuery::create()->findOneByName('mail_giftcard')) {
             $message = new Message();
-            $email_templates_dir = __DIR__.DS.'templates'.DS.'email'.DS.'default'.DS.'email-gift_card';
             $message
-                ->setName(self::GIFT_CARD_MESSAGE_NAME)
-                ->setLocale('en_US')
-                ->setTitle('GIFT CARD')
-                ->setSubject('Gift Card for order {$order_ref}')
-                ->setHtmlMessage(file_get_contents($email_templates_dir.'en.html'))
-                ->setTextMessage(file_get_contents($email_templates_dir.'en.txt'))
-                ->setLocale('fr_FR')
-                ->setTitle('Carte Cadeau')
-                ->setSubject('Carte cadeau pour votre commande {$order_ref}')
-                ->setHtmlMessage(file_get_contents($email_templates_dir.'fr.html'))
-                ->setTextMessage(file_get_contents($email_templates_dir.'fr.txt'))
-                ->save()
-            ;
+                ->setName('mail_giftcard')
+                ->setHtmlTemplateFileName('email-gift_card.html')
+                ->setHtmlLayoutFileName('')
+                ->setTextTemplateFileName('email-gift_card.txt')
+                ->setTextLayoutFileName('')
+                ->setSecured(0);
+
+            $languages = LangQuery::create()->find();
+
+            foreach ($languages as $language) {
+                $locale = $language->getLocale();
+
+                $message->setLocale($locale);
+
+                $message->setSubject(
+                    $this->trans('Your Gift Card.', [], $locale)
+                );
+                $message->setTitle(
+                    $this->trans('Gift Card', [], $locale)
+                );
+            }
+
+            $message->save();
         }
+    }
+
+    protected function trans($id, $parameters = [], $locale = null)
+    {
+        if (null === $this->translator) {
+            $this->translator = Translator::getInstance();
+        }
+
+        return $this->translator->trans($id, $parameters, self::DOMAIN_NAME, $locale);
     }
 }

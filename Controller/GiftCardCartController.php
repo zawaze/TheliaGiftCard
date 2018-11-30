@@ -183,4 +183,9 @@ class GiftCardCartController extends BaseFrontController
         $this->getDispatcher()->dispatch(TheliaEvents::ORDER_SET_DELIVERY_MODULE, $orderEvent);
         $this->getDispatcher()->dispatch(TheliaEvents::ORDER_SET_POSTAGE, $orderEvent);
     }
+
+    public function sendEmail($email, $cardId, $message = null)
+    {
+
+    }
 }

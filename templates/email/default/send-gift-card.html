@@ -1,0 +1,23 @@
+{default_translation_domain domain="virtualproductdelivery.email.default"}
+{default_locale locale={$locale}}
+
+<p>{intl l="Bonjour"},</p>
+
+<p>
+    {intl l="Nous avons les plaisir de vous transmettre votre code pour benificier de votre carte cadeau"}
+</p>
+
+<p>
+    {intl l="Rendez-vous dons votre espace client et entrez le code suivant : "}
+    {loop type="list.card.gift" name="customer.card.gift" customer_id=$customer_id}
+        {$CODE}
+    {/loop}
+</p>
+
+<p>
+    {$MESSAGE}
+</p>
+
+<p>{intl l="N'hesitez pas à nous contacter pour de plus amples informations"}</p>
+
+<p>{intl l="Salutations."}</p>
