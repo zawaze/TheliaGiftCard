@@ -1,1 +1,10 @@
-plop
+{ifloop rel="cart.card.gift"}
+<th class="gift-card">{intl l="Gift Card Used"}</th>
+<td>
+    {loop type="cart.list.card.gift" name="cart.card.gift"}
+    {assign "total" 0}
+        <p>{$PRODUCT} : {format_money number=$SPEND_AMOUNT currency_id=$CURRENCY}</p>
+    {/loop}
+    <p><b>Total : {getGitCardTotal}</b></p>
+</td>
+{/ifloop}

@@ -16,6 +16,7 @@ use Thelia\Core\Template\Element\PropelSearchLoopInterface;
 use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 use Thelia\Model\CustomerQuery;
+use Thelia\Model\Map\ProductI18nTableMap;
 use TheliaGiftCard\Model\GiftCard;
 use TheliaGiftCard\Model\GiftCardCustomer;
 use TheliaGiftCard\Model\GiftCardCustomerQuery;
@@ -39,30 +40,18 @@ class GiftCArdList extends BaseLoop implements PropelSearchLoopInterface
         $customerId = $this->getCustomerId();
         $cardId = $this->getCardId();
 
-        $search = GiftCardCustomerQuery::create();
+        $search = GiftCardCustomerQuery::create()
+            ->useGiftCardQuery()
+                ->useProductQuery()
+                    ->useProductI18nQuery()
+                    ->endUse()
+                ->endUse()
+            ->endUse();
 
-        $cardGiftJoin = new Join(
-            GiftCardCustomerTableMap::CARD_ID,
-            GiftCardTableMap::ID,
-            Criteria::JOIN
-        );
-
-        $search->addJoinObject($cardGiftJoin, 'cardGiftJoin');
-
-        $search->withColumn(
-            GiftCardTableMap::TABLE_NAME . '.' . 'amount','amount'
-
-        );
-
-        $search->withColumn(
-            GiftCardTableMap::TABLE_NAME . '.' . 'code','code'
-
-        );
-
-        $search->withColumn(
-            GiftCardTableMap::TABLE_NAME . '.' . 'sponsor_customer_id','sponsor_customer_id'
-
-        );
+        $search->withColumn(GiftCardTableMap::TABLE_NAME . '.' . 'amount','amount');
+        $search->withColumn(GiftCardTableMap::TABLE_NAME . '.' . 'code','code');
+        $search->withColumn(GiftCardTableMap::TABLE_NAME . '.' . 'sponsor_customer_id','sponsor_customer_id');
+        $search->withColumn(ProductI18nTableMap::TABLE_NAME . '.' . 'title','product_title');
 
         if ($customerId === 'current') {
             $currentCustomer = $this->securityContext->getCustomerUser();
@@ -97,7 +86,8 @@ class GiftCArdList extends BaseLoop implements PropelSearchLoopInterface
                 ->set('USED_AMOUNT', $giftCard->getUsedAmount())
                 ->set('DATE', $date->format('d-m-Y'))
                 ->set('INIT_AMOUNT', $giftCard->getVirtualColumn('amount'))
-                ->set('CODE', $giftCard->getVirtualColumn('code'));;
+                ->set('CODE', $giftCard->getVirtualColumn('code'))
+                ->set('PRODUCT', $giftCard->getVirtualColumn('product_title'));
 
             $sponsorCustomerID = $giftCard->getVirtualColumn('sponsor_customer_id');
             $sponsorCustomer = CustomerQuery::create()->findPk($sponsorCustomerID);

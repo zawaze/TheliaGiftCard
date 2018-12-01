@@ -13,11 +13,14 @@ use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Element\PropelSearchLoopInterface;
 use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
+use Thelia\Model\Map\ProductI18nTableMap;
+use Thelia\Model\Map\ProductTableMap;
 use TheliaGiftCard\Model\GiftCardCart;
 use TheliaGiftCard\Model\GiftCardCartQuery;
+use TheliaGiftCard\Model\Map\GiftCardTableMap;
 
 
-class GiftCArdCartUseLoop extends BaseLoop implements PropelSearchLoopInterface
+class GiftCardCartUseLoop extends BaseLoop implements PropelSearchLoopInterface
 {
     protected function getArgDefinitions()
     {
@@ -30,10 +33,20 @@ class GiftCArdCartUseLoop extends BaseLoop implements PropelSearchLoopInterface
     {
         $cartId = $this->getCartId();
 
-        $search = GiftCardCartQuery::create();
+        $search = GiftCardCartQuery::create()
+        ->useGiftCardQuery()
+            ->useProductQuery()
+                ->useProductI18nQuery()
+                ->endUse()
+            ->endUse()
+        ->endUse()
+        ->withColumn(ProductI18nTableMap::TABLE_NAME . '.' . 'title','product_title');
 
         if ($cartId !== null) {
             $search->filterByCartId($cartId);
+        }  else {
+            $cart = $this->getCurrentRequest()->getSession()->getSessionCart($this->getDispatcher());
+            $search->filterByCartId($cart->getId());
         }
 
         return $search;
@@ -46,6 +59,7 @@ class GiftCArdCartUseLoop extends BaseLoop implements PropelSearchLoopInterface
 
             $loopResultRow = (new LoopResultRow($cgCart))
                 ->set('ID', $cgCart->getId())
+                ->set('PRODUCT', $cgCart->getVirtualColumn("product_title"))
                 ->set('CARD_ID', $cgCart->getGiftCardId())
                 ->set('CART_ID', $cgCart->getCartId())
                 ->set('SPEND_AMOUNT', $cgCart->getSpendAmount() + $cgCart->getSpendDelivery());
@@ -54,5 +68,10 @@ class GiftCArdCartUseLoop extends BaseLoop implements PropelSearchLoopInterface
         }
 
         return $loopResult;
+    }
+
+    public function getDispatcher()
+    {
+        return $this->dispatcher;
     }
 }
