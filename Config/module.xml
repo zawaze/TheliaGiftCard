@@ -20,11 +20,7 @@
             <email>btourlonias@openstudio.fr</email>
         </author>
     </authors>
-    <type>classic</type>
-    <required>
-        <module>FreeOrder</module>
-    </required>
-
+    <type>payment</type>
     <thelia>2.3.4</thelia>
     <stability>other</stability>
     <mandatory>0</mandatory>

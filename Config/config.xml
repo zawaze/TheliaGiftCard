@@ -26,8 +26,6 @@
     </commands>
 
     <services>
-        <service id="giftcard.service" class="TheliaGiftCard\Service\GiftCardAmountSpendService">
-        </service>
         <service id="giftcard.service" class="TheliaGiftCard\Service\GiftCardService">
         </service>
         <service id="giftcard.order.listener" class="TheliaGiftCard\EventListener\OrderPayListener">

@@ -11,6 +11,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Thelia\Core\HttpFoundation\Session\Session;
 use Thelia\TaxEngine\TaxEngine;
 use TheliaGiftCard\Model\GiftCard;
+use TheliaGiftCard\Model\GiftCardCart;
 use TheliaGiftCard\Model\GiftCardCartQuery;
 use TheliaGiftCard\Model\GiftCardQuery;
 use TheliaGiftCard\Model\Map\GiftCardCustomerTableMap;
@@ -74,45 +75,48 @@ class GiftCardAmountSpendService
         $usableAmount = $initialAmount - $usedAmount;
 
         if ($usableAmount > 0 && $usableAmount >= $amount + $amountCurrentOnCart) {
+            $amoutDiscountPostage=0;
 
-            $discountBeforeGiftCard = $cart->getDiscount();
+            $discountBeforeGiftCard = $cart->getDiscount() + $this->calculTotalGCDelievery($cart);
 
-            $taxCountry = $this->taxEngine->getDeliveryCountry();
-            /** @noinspection MissingService */
-            $taxState = $this->taxEngine->getDeliveryState();
+            $totalCart = $this->getTotalPriceOrder($cart, $order);
+            $totalCart = ($totalCart - $discountBeforeGiftCard)+$order->getPostage();
 
-            $amoutDiscountPostage = 0;
+            if ($totalCart < $amount) {
+                $delta =  $amount - $totalCart;
 
-            $totalCart = $cart->getTaxedAmount($taxCountry, false, $taxState) - $discountBeforeGiftCard;
-
-            if ($totalCart <= $amount) {
-
-                $amountDelta = $amount - $totalCart;
-
-                $postage = $order->getPostage();
-
-                if ($postage <= $amountDelta) {
-
-                    $amoutDiscountPostage = $postage;
-                    $amount = $amount - $amoutDiscountPostage;
-
-                    $postage = 0;
-
-                } else {
-
-                    $amoutDiscountPostage = $amountDelta;
-                    $amount = $amount - $amoutDiscountPostage;
-                    $postage = $postage - $amountDelta;
-
-                }
-
-                $order->setPostage($postage);
+                $amount = $amount - $delta;
             }
-
-            $cart->setDiscount($discountBeforeGiftCard + $amount)->save();
-            $order->setDiscount($discountBeforeGiftCard + $amount);
 
             $this->giftCardService->setCardOnCart($cart->getId(), $amount, $amoutDiscountPostage, $giftCard->getId());
         }
+    }
+
+    public function calculTotalGCDelievery($cart)
+    {
+        $cartId = $cart->getId();
+
+        $giftCardsCart = GiftCardCartQuery::create()
+            ->filterByCartId($cartId)
+            ->find();
+
+        $totalGCamount = 0;
+
+        /** @var  GiftCardCart $giftCardCart */
+        foreach ($giftCardsCart as $giftCardCart) {
+            $amount = $giftCardCart->getSpendAmount();
+
+            $totalGCamount += $amount;
+        }
+
+        return $totalGCamount;
+    }
+
+    public function getTotalPriceOrder($cart)
+    {
+        $taxCountry = $this->taxEngine->getDeliveryCountry();
+        $taxState = $this->taxEngine->getDeliveryState();
+
+        return $totalCart = $cart->getTaxedAmount($taxCountry, false, $taxState);
     }
 }

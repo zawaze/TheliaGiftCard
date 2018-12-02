@@ -19,8 +19,14 @@ use TheliaGiftCard\Model\GiftCardQuery;
 
 class GiftCardService
 {
-    public function setCardOnCart($cart_id,$amount,$amountDelivery, $cardId)
+    public function setCardOnCart($cart_id, $amount, $amountDelivery, $cardId)
     {
+        $giftCart = GiftCardCartQuery::create()
+            ->filterByCartId($cart_id)
+            ->filterByCartId($cardId)
+            ->findOne();
+
+        if (null == $giftCart) {
             $newGiftCardCart = new GiftCardCart();
 
             $newGiftCardCart
@@ -31,16 +37,22 @@ class GiftCardService
                 ->save();
 
             return true;
+        } else {
+            $giftCart
+                ->setSpendAmount($amount)
+                ->setSpendDelivery($amountDelivery)
+                ->save();
+        }
     }
 
-    public function setOrderAmountGC($orderId, $amount,$cardId, $customerId)
+    public function setOrderAmountGC($orderId, $amount, $cardId, $customerId)
     {
-        $cardCustomer= GiftCardCustomerQuery::create()
+        $cardCustomer = GiftCardCustomerQuery::create()
             ->filterByCustomerId($customerId)
             ->filterByCardId($cardId)
             ->findOne();
 
-        if ( null !== $cardCustomer) {
+        if (null !== $cardCustomer) {
             $newGiftCardOrder = new GiftCardOrder();
 
             $newGiftCardOrder
@@ -54,15 +66,15 @@ class GiftCardService
         return false;
     }
 
-    public function setGiftCardAmount($cardId,$amount,$customerId)
+    public function setGiftCardAmount($cardId, $amount, $customerId)
     {
-        $cardCustomer= GiftCardCustomerQuery::create()
+        $cardCustomer = GiftCardCustomerQuery::create()
             ->filterByCustomerId($customerId)
             ->filterByCardId($cardId)
             ->findOne();
 
-        if(null !== $cardCustomer){
-            $cardCustomer->setUsedAmount($cardCustomer->getUsedAmount()+$amount)->save();
+        if (null !== $cardCustomer) {
+            $cardCustomer->setUsedAmount($cardCustomer->getUsedAmount() + $amount)->save();
         }
 
         return false;

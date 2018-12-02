@@ -9,9 +9,11 @@ namespace TheliaGiftCard\EventListener;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Core\Event\Order\OrderEvent;
+use Thelia\Core\Event\Order\OrderPaymentEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Model\CartItem;
+use Thelia\Model\CartQuery;
 use Thelia\Model\Order;
 use Thelia\Model\ProductSaleElementsQuery;
 use TheliaGiftCard\Model\GiftCard;
@@ -102,8 +104,48 @@ class OrderPayListener implements EventSubscriberInterface
 
         /** @var GiftCardCart $dataGC */
         foreach ($datasGC as $dataGC) {
+
             $gcservice->setOrderAmountGC($order->getId(), $dataGC->getSpendAmount() + $dataGC->getSpendDelivery(), $dataGC->getGiftCardId(), $cart->getCustomer()->getId());
-            $gcservice->setGiftCardAmount($dataGC->getGiftCardId(),$dataGC->getSpendAmount() + $dataGC->getSpendDelivery(),$cart->getCustomer()->getId());
+
+            if($order->getStatusId() == TheliaGiftCard::ORDER_STATUS_PAID) {
+                $gcservice->setGiftCardAmount($dataGC->getGiftCardId(), $dataGC->getSpendAmount() + $dataGC->getSpendDelivery(), $cart->getCustomer()->getId());
+            }
+        }
+
+    }
+
+    public function setAmountOnOrder(OrderEvent $event)
+    {
+        $order = $event->getOrder();
+        $cart = CartQuery::create()->findPk($order->getCartId());
+
+        if ($cart) {
+
+            $giftCardService = $this->container->get('giftcard.amount.spend.service');
+            $totalGiftCardAmount = $giftCardService->calculTotalGCDelievery($this->request->getSession()->getCart());
+
+            if (0 < $totalGiftCardAmount) {
+
+                $totalPriceCart = $giftCardService->getTotalPriceOrder($cart);
+                $totalOrderPrice = $totalPriceCart + $order->getPostage() - $order->getDiscount();
+
+                if ($totalGiftCardAmount == $totalOrderPrice) {
+                    $order->setPostage(0);
+                    $order->setDiscount($totalGiftCardAmount);
+                } else {
+                    if ($totalGiftCardAmount <= $totalPriceCart) {
+                        $order->setDiscount($totalGiftCardAmount);
+                    } else {
+                        $delta = $totalGiftCardAmount - $totalPriceCart;
+                        $order->setDiscount($totalPriceCart);
+                        $order->setPostage($order->getPostage() - $delta);
+                    }
+                }
+
+                $order->save();
+
+                return $order;
+            }
         }
     }
 
@@ -112,6 +154,7 @@ class OrderPayListener implements EventSubscriberInterface
         return [
             TheliaEvents::ORDER_UPDATE_STATUS => ['creatCodeGiftCard', 128],
             TheliaEvents::ORDER_PAY => ['setCardAmountOnOrder', 128],
+            TheliaEvents::ORDER_BEFORE_PAYMENT => ['setAmountOnOrder', 128],
         ];
     }
 
@@ -126,9 +169,9 @@ class OrderPayListener implements EventSubscriberInterface
 
             if (in_array($productId, TheliaGiftCard::CODES_GIFT_CARD_PRODUCT)) {
 
-                if(isset($cpt[$productId])){
+                if (isset($cpt[$productId])) {
                     $cpt[$productId] += $orderProduct->getQuantity();
-                } else{
+                } else {
                     $cpt[$productId] = $orderProduct->getQuantity();
                 }
             }

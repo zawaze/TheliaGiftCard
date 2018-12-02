@@ -7,19 +7,25 @@
 namespace TheliaGiftCard;
 
 use Propel\Runtime\Connection\ConnectionInterface;
+use Thelia\Core\Event\Order\OrderEvent;
+use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Template\TemplateDefinition;
 use Thelia\Core\Translation\Translator;
 use Thelia\Install\Database;
 use Thelia\Model\LangQuery;
 use Thelia\Model\Message;
 use Thelia\Model\MessageQuery;
+use Thelia\Model\Order;
+use Thelia\Model\OrderStatusQuery;
 use Thelia\Module\BaseModule;
+use Thelia\Module\PaymentModuleInterface;
 use TheliaGiftCard\Model\GiftCardCartQuery;
 use TheliaGiftCard\Model\GiftCardCustomerQuery;
 use TheliaGiftCard\Model\GiftCardOrderQuery;
 use TheliaGiftCard\Model\GiftCardQuery;
+use TheliaGiftCard\Service\GiftCardService;
 
-class TheliaGiftCard extends BaseModule
+class TheliaGiftCard extends BaseModule implements PaymentModuleInterface
 {
     /** @var Translator */
     protected $translator;
@@ -31,7 +37,7 @@ class TheliaGiftCard extends BaseModule
     const MODULE_CODE = 'theliagiftcard';
 
     // TO DO EN CONFIG //
-    const CODES_GIFT_CARD_PRODUCT = [31,32];
+    const CODES_GIFT_CARD_PRODUCT = [31, 32];
     const ORDER_STATUS_PAID = 2;
     //---------------------------------------///
 
@@ -149,5 +155,38 @@ class TheliaGiftCard extends BaseModule
                 "active" => true
             ]
         );
+    }
+
+    public function isValidPayment()
+    {
+        if (false !== $this->calculDeltaOrderGiftCard()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function pay(Order $order)
+    {
+        $event = new OrderEvent($order);
+        $event->setStatus(OrderStatusQuery::getPaidStatus()->getId());
+        $this->getDispatcher()->dispatch(TheliaEvents::ORDER_UPDATE_STATUS, $event);
+    }
+
+    public function manageStockOnCreation()
+    {
+        return false;
+    }
+
+    private function calculDeltaOrderGiftCard()
+    {
+        $giftCardService = $this->getContainer()->get('giftcard.amount.spend.service');
+        $totalGiftCardAmount = $giftCardService->calculTotalGCDelievery($this->getRequest()->getSession()->getCart());
+
+        if ($totalGiftCardAmount >= $this->getCurrentOrderTotalAmount()) {
+            return $totalGiftCardAmount - $this->getCurrentOrderTotalAmount();
+        }
+
+        return false;
     }
 }
