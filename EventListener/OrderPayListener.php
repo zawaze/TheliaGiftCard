@@ -14,7 +14,10 @@ use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Model\CartItem;
 use Thelia\Model\CartQuery;
+use Thelia\Model\CategoryQuery;
 use Thelia\Model\Order;
+use Thelia\Model\ProductCategory;
+use Thelia\Model\ProductCategoryQuery;
 use Thelia\Model\ProductSaleElementsQuery;
 use TheliaGiftCard\Model\GiftCard;
 use TheliaGiftCard\Model\GiftCardCart;
@@ -56,7 +59,9 @@ class OrderPayListener implements EventSubscriberInterface
 
                 $productId = $pse->getProduct()->getId();
 
-                if (in_array($productId, TheliaGiftCard::CODES_GIFT_CARD_PRODUCT)) {
+                $tabProductGiftCard =  $this->getGiftCardProductList();
+
+                if (in_array($productId, $tabProductGiftCard)) {
 
                     $orederId = $order->getId();
 
@@ -167,7 +172,9 @@ class OrderPayListener implements EventSubscriberInterface
 
             $productId = $pse->getProduct()->getId();
 
-            if (in_array($productId, TheliaGiftCard::CODES_GIFT_CARD_PRODUCT)) {
+            $tabProductGiftCard =  $this->getGiftCardProductList();
+
+            if (in_array($productId, $tabProductGiftCard)) {
 
                 if (isset($cpt[$productId])) {
                     $cpt[$productId] += $orderProduct->getQuantity();
@@ -178,5 +185,25 @@ class OrderPayListener implements EventSubscriberInterface
         }
 
         return $cpt;
+    }
+
+    private function getGiftCardProductList()
+    {
+        $tab =[];
+
+        $category =  CategoryQuery::create()->findPk(TheliaGiftCard::getGiftCardCategoryId());
+
+        if(null !== $category){
+            $products = ProductCategoryQuery::create()
+                ->filterByCategoryId($category->getId())
+                ->find();
+
+            /** @var ProductCategory $product */
+            foreach ($products as $product){
+                $tab [] = $product->getProductId();
+            }
+        }
+
+        return $tab;
     }
 }

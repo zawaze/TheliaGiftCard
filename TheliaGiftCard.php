@@ -40,7 +40,6 @@ class TheliaGiftCard extends BaseModule implements PaymentModuleInterface
     const GIFT_CARD_CATEGORY_CONF_NAME  =  'gift_card_category';
 
     // TO DO EN CONFIG //
-    const CODES_GIFT_CARD_PRODUCT = [31, 32];
     const ORDER_STATUS_PAID = 2;
     //---------------------------------------///
 
