@@ -7,8 +7,13 @@
 namespace TheliaGiftCard\Controller;
 
 use Thelia\Controller\Front\BaseFrontController;
+use Thelia\Core\Event\PdfEvent;
+use Thelia\Core\Event\TheliaEvents;
+use Thelia\Exception\TheliaProcessException;
 use Thelia\Form\Exception\FormValidationException;
+use Thelia\Log\Tlog;
 use Thelia\Model\ConfigQuery;
+use Thelia\Model\CustomerQuery;
 use TheliaGiftCard\TheliaGiftCard;
 
 class GiftCardConfigController extends BaseFrontController
@@ -52,7 +57,31 @@ class GiftCardConfigController extends BaseFrontController
         try {
             $configPdfForm = $this->validateForm($form);
 
-            
+
+            $customerId = $configPdfForm->get('sponsor')->getData();
+            $customer = CustomerQuery::create()->findPk($customerId);
+
+
+
+            $html = $this->renderRaw(
+                'giftCard',
+                array(
+                    'message' => 'fsqd qsfdq sdf qsdfqsd ',
+                    'code' => $configPdfForm->get('code-to-send')->getData(),
+                    'FIRSTNAME' => 'Bertrand',
+                    'LASTNAME' => 'Tourlonias'
+                ),
+                $this->getTemplateHelper()->getActivePdfTemplate()
+            );
+
+                $pdfEvent = new PdfEvent($html);
+
+                $this->dispatch(TheliaEvents::GENERATE_PDF, $pdfEvent);
+
+                if ($pdfEvent->hasPdf()) {
+                    return $this->pdfResponse($pdfEvent->getPdf(), 'command_list_'.$pickingDay, 200, true);
+                }
+
 
         } catch (FormValidationException $error_message) {
 

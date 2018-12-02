@@ -28,16 +28,14 @@ class SendCodeCGForm extends BaseForm
                 'email',
                 TextType::class,
                 [
-                    'constraints' => [
-                        new Assert\NotBlank
-                    ]
+                    'required' => false,
                 ])
             ->add(
                 'message',
                 TextareaType::class,[
                 'label' => Translator::getInstance()->trans("Your message"),
                 'label_attr' => array(
-                    'for' => 'sample_category' ),
+                    'for' => 'message' ),
                 'required' => false,
                 ])
             ->add(
