@@ -17,6 +17,7 @@ CREATE TABLE `gift_card`
     `product_id` INTEGER NOT NULL,
     `code` VARCHAR(100) NOT NULL,
     `amount` DECIMAL(16,6),
+    `status` INTEGER(1),
     `created_at` DATETIME,
     `updated_at` DATETIME,
     PRIMARY KEY (`id`),

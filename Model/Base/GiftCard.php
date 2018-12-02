@@ -104,6 +104,12 @@ abstract class GiftCard implements ActiveRecordInterface
     protected $amount;
 
     /**
+     * The value for the status field.
+     * @var        int
+     */
+    protected $status;
+
+    /**
      * The value for the created_at field.
      * @var        string
      */
@@ -499,6 +505,17 @@ abstract class GiftCard implements ActiveRecordInterface
     }
 
     /**
+     * Get the [status] column value.
+     *
+     * @return   int
+     */
+    public function getStatus()
+    {
+
+        return $this->status;
+    }
+
+    /**
      * Get the [optionally formatted] temporal [created_at] column value.
      *
      *
@@ -677,6 +694,27 @@ abstract class GiftCard implements ActiveRecordInterface
     } // setAmount()
 
     /**
+     * Set the value of [status] column.
+     *
+     * @param      int $v new value
+     * @return   \TheliaGiftCard\Model\GiftCard The current object (for fluent API support)
+     */
+    public function setStatus($v)
+    {
+        if ($v !== null) {
+            $v = (int) $v;
+        }
+
+        if ($this->status !== $v) {
+            $this->status = $v;
+            $this->modifiedColumns[GiftCardTableMap::STATUS] = true;
+        }
+
+
+        return $this;
+    } // setStatus()
+
+    /**
      * Sets the value of [created_at] column to a normalized version of the date/time value specified.
      *
      * @param      mixed $v string, integer (timestamp), or \DateTime value.
@@ -773,13 +811,16 @@ abstract class GiftCard implements ActiveRecordInterface
             $col = $row[TableMap::TYPE_NUM == $indexType ? 5 + $startcol : GiftCardTableMap::translateFieldName('Amount', TableMap::TYPE_PHPNAME, $indexType)];
             $this->amount = (null !== $col) ? (string) $col : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : GiftCardTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 6 + $startcol : GiftCardTableMap::translateFieldName('Status', TableMap::TYPE_PHPNAME, $indexType)];
+            $this->status = (null !== $col) ? (int) $col : null;
+
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : GiftCardTableMap::translateFieldName('CreatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
             $this->created_at = (null !== $col) ? PropelDateTime::newInstance($col, null, '\DateTime') : null;
 
-            $col = $row[TableMap::TYPE_NUM == $indexType ? 7 + $startcol : GiftCardTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
+            $col = $row[TableMap::TYPE_NUM == $indexType ? 8 + $startcol : GiftCardTableMap::translateFieldName('UpdatedAt', TableMap::TYPE_PHPNAME, $indexType)];
             if ($col === '0000-00-00 00:00:00') {
                 $col = null;
             }
@@ -792,7 +833,7 @@ abstract class GiftCard implements ActiveRecordInterface
                 $this->ensureConsistency();
             }
 
-            return $startcol + 8; // 8 = GiftCardTableMap::NUM_HYDRATE_COLUMNS.
+            return $startcol + 9; // 9 = GiftCardTableMap::NUM_HYDRATE_COLUMNS.
 
         } catch (Exception $e) {
             throw new PropelException("Error populating \TheliaGiftCard\Model\GiftCard object", 0, $e);
@@ -1125,6 +1166,9 @@ abstract class GiftCard implements ActiveRecordInterface
         if ($this->isColumnModified(GiftCardTableMap::AMOUNT)) {
             $modifiedColumns[':p' . $index++]  = 'AMOUNT';
         }
+        if ($this->isColumnModified(GiftCardTableMap::STATUS)) {
+            $modifiedColumns[':p' . $index++]  = 'STATUS';
+        }
         if ($this->isColumnModified(GiftCardTableMap::CREATED_AT)) {
             $modifiedColumns[':p' . $index++]  = 'CREATED_AT';
         }
@@ -1159,6 +1203,9 @@ abstract class GiftCard implements ActiveRecordInterface
                         break;
                     case 'AMOUNT':
                         $stmt->bindValue($identifier, $this->amount, PDO::PARAM_STR);
+                        break;
+                    case 'STATUS':
+                        $stmt->bindValue($identifier, $this->status, PDO::PARAM_INT);
                         break;
                     case 'CREATED_AT':
                         $stmt->bindValue($identifier, $this->created_at ? $this->created_at->format("Y-m-d H:i:s") : null, PDO::PARAM_STR);
@@ -1247,9 +1294,12 @@ abstract class GiftCard implements ActiveRecordInterface
                 return $this->getAmount();
                 break;
             case 6:
-                return $this->getCreatedAt();
+                return $this->getStatus();
                 break;
             case 7:
+                return $this->getCreatedAt();
+                break;
+            case 8:
                 return $this->getUpdatedAt();
                 break;
             default:
@@ -1287,8 +1337,9 @@ abstract class GiftCard implements ActiveRecordInterface
             $keys[3] => $this->getProductId(),
             $keys[4] => $this->getCode(),
             $keys[5] => $this->getAmount(),
-            $keys[6] => $this->getCreatedAt(),
-            $keys[7] => $this->getUpdatedAt(),
+            $keys[6] => $this->getStatus(),
+            $keys[7] => $this->getCreatedAt(),
+            $keys[8] => $this->getUpdatedAt(),
         );
         $virtualColumns = $this->virtualColumns;
         foreach ($virtualColumns as $key => $virtualColumn) {
@@ -1367,9 +1418,12 @@ abstract class GiftCard implements ActiveRecordInterface
                 $this->setAmount($value);
                 break;
             case 6:
-                $this->setCreatedAt($value);
+                $this->setStatus($value);
                 break;
             case 7:
+                $this->setCreatedAt($value);
+                break;
+            case 8:
                 $this->setUpdatedAt($value);
                 break;
         } // switch()
@@ -1402,8 +1456,9 @@ abstract class GiftCard implements ActiveRecordInterface
         if (array_key_exists($keys[3], $arr)) $this->setProductId($arr[$keys[3]]);
         if (array_key_exists($keys[4], $arr)) $this->setCode($arr[$keys[4]]);
         if (array_key_exists($keys[5], $arr)) $this->setAmount($arr[$keys[5]]);
-        if (array_key_exists($keys[6], $arr)) $this->setCreatedAt($arr[$keys[6]]);
-        if (array_key_exists($keys[7], $arr)) $this->setUpdatedAt($arr[$keys[7]]);
+        if (array_key_exists($keys[6], $arr)) $this->setStatus($arr[$keys[6]]);
+        if (array_key_exists($keys[7], $arr)) $this->setCreatedAt($arr[$keys[7]]);
+        if (array_key_exists($keys[8], $arr)) $this->setUpdatedAt($arr[$keys[8]]);
     }
 
     /**
@@ -1421,6 +1476,7 @@ abstract class GiftCard implements ActiveRecordInterface
         if ($this->isColumnModified(GiftCardTableMap::PRODUCT_ID)) $criteria->add(GiftCardTableMap::PRODUCT_ID, $this->product_id);
         if ($this->isColumnModified(GiftCardTableMap::CODE)) $criteria->add(GiftCardTableMap::CODE, $this->code);
         if ($this->isColumnModified(GiftCardTableMap::AMOUNT)) $criteria->add(GiftCardTableMap::AMOUNT, $this->amount);
+        if ($this->isColumnModified(GiftCardTableMap::STATUS)) $criteria->add(GiftCardTableMap::STATUS, $this->status);
         if ($this->isColumnModified(GiftCardTableMap::CREATED_AT)) $criteria->add(GiftCardTableMap::CREATED_AT, $this->created_at);
         if ($this->isColumnModified(GiftCardTableMap::UPDATED_AT)) $criteria->add(GiftCardTableMap::UPDATED_AT, $this->updated_at);
 
@@ -1491,6 +1547,7 @@ abstract class GiftCard implements ActiveRecordInterface
         $copyObj->setProductId($this->getProductId());
         $copyObj->setCode($this->getCode());
         $copyObj->setAmount($this->getAmount());
+        $copyObj->setStatus($this->getStatus());
         $copyObj->setCreatedAt($this->getCreatedAt());
         $copyObj->setUpdatedAt($this->getUpdatedAt());
 
@@ -2462,6 +2519,7 @@ abstract class GiftCard implements ActiveRecordInterface
         $this->product_id = null;
         $this->code = null;
         $this->amount = null;
+        $this->status = null;
         $this->created_at = null;
         $this->updated_at = null;
         $this->alreadyInSave = false;

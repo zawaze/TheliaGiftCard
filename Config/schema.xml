@@ -10,6 +10,7 @@
         <column name="product_id" required="true" type="INTEGER" />
         <column name="code" required="true" size="100" type="VARCHAR" />
         <column name="amount" scale="6" size="16" type="DECIMAL" />
+        <column name="status"  size="1" type="INTEGER" />
 
         <foreign-key foreignTable="customer" name="fk_card_gift_sponsor_customer" onDelete="CASCADE" onUpdate="CASCADE">
             <reference foreign="id" local="sponsor_customer_id" />

@@ -30,6 +30,7 @@ use Thelia\Model\Product;
  * @method     ChildGiftCardQuery orderByProductId($order = Criteria::ASC) Order by the product_id column
  * @method     ChildGiftCardQuery orderByCode($order = Criteria::ASC) Order by the code column
  * @method     ChildGiftCardQuery orderByAmount($order = Criteria::ASC) Order by the amount column
+ * @method     ChildGiftCardQuery orderByStatus($order = Criteria::ASC) Order by the status column
  * @method     ChildGiftCardQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildGiftCardQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
@@ -39,6 +40,7 @@ use Thelia\Model\Product;
  * @method     ChildGiftCardQuery groupByProductId() Group by the product_id column
  * @method     ChildGiftCardQuery groupByCode() Group by the code column
  * @method     ChildGiftCardQuery groupByAmount() Group by the amount column
+ * @method     ChildGiftCardQuery groupByStatus() Group by the status column
  * @method     ChildGiftCardQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildGiftCardQuery groupByUpdatedAt() Group by the updated_at column
  *
@@ -79,6 +81,7 @@ use Thelia\Model\Product;
  * @method     ChildGiftCard findOneByProductId(int $product_id) Return the first ChildGiftCard filtered by the product_id column
  * @method     ChildGiftCard findOneByCode(string $code) Return the first ChildGiftCard filtered by the code column
  * @method     ChildGiftCard findOneByAmount(string $amount) Return the first ChildGiftCard filtered by the amount column
+ * @method     ChildGiftCard findOneByStatus(int $status) Return the first ChildGiftCard filtered by the status column
  * @method     ChildGiftCard findOneByCreatedAt(string $created_at) Return the first ChildGiftCard filtered by the created_at column
  * @method     ChildGiftCard findOneByUpdatedAt(string $updated_at) Return the first ChildGiftCard filtered by the updated_at column
  *
@@ -88,6 +91,7 @@ use Thelia\Model\Product;
  * @method     array findByProductId(int $product_id) Return ChildGiftCard objects filtered by the product_id column
  * @method     array findByCode(string $code) Return ChildGiftCard objects filtered by the code column
  * @method     array findByAmount(string $amount) Return ChildGiftCard objects filtered by the amount column
+ * @method     array findByStatus(int $status) Return ChildGiftCard objects filtered by the status column
  * @method     array findByCreatedAt(string $created_at) Return ChildGiftCard objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return ChildGiftCard objects filtered by the updated_at column
  *
@@ -178,7 +182,7 @@ abstract class GiftCardQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT ID, SPONSOR_CUSTOMER_ID, ORDER_ID, PRODUCT_ID, CODE, AMOUNT, CREATED_AT, UPDATED_AT FROM gift_card WHERE ID = :p0';
+        $sql = 'SELECT ID, SPONSOR_CUSTOMER_ID, ORDER_ID, PRODUCT_ID, CODE, AMOUNT, STATUS, CREATED_AT, UPDATED_AT FROM gift_card WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -505,6 +509,47 @@ abstract class GiftCardQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(GiftCardTableMap::AMOUNT, $amount, $comparison);
+    }
+
+    /**
+     * Filter the query on the status column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByStatus(1234); // WHERE status = 1234
+     * $query->filterByStatus(array(12, 34)); // WHERE status IN (12, 34)
+     * $query->filterByStatus(array('min' => 12)); // WHERE status > 12
+     * </code>
+     *
+     * @param     mixed $status The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildGiftCardQuery The current query, for fluid interface
+     */
+    public function filterByStatus($status = null, $comparison = null)
+    {
+        if (is_array($status)) {
+            $useMinMax = false;
+            if (isset($status['min'])) {
+                $this->addUsingAlias(GiftCardTableMap::STATUS, $status['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($status['max'])) {
+                $this->addUsingAlias(GiftCardTableMap::STATUS, $status['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(GiftCardTableMap::STATUS, $status, $comparison);
     }
 
     /**
