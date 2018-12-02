@@ -17,6 +17,7 @@
         <form name="add.code.card.gift" class="TheliaGiftCard\Form\AddCardGiftCustomerForm" />
         <form name="add.code.card.gift" class="TheliaGiftCard\Form\AddCardGiftCustomerForm" />
         <form name="send.code.card.gift" class="TheliaGiftCard\Form\SendCodeCGForm" />
+        <form name="config.card.gift" class="TheliaGiftCard\Form\GiftCardConfigForm" />
     </forms>
 
     <commands>
@@ -52,6 +53,9 @@
             <tag name="hook.event_listener" event="account.bottom" type="front" method="onAccountBottom" />
             <tag name="hook.event_listener" event="order-invoice.giftcard-form" type="front" method="onOrderInvoiceBottom" />
             <tag name="hook.event_listener" event="order-invoice.cart-giftcard-form" type="front" method="onCartInvoiceBottom" />
+        </hook>
+        <hook id="giftcard.hook.config.back" >
+            <tag name="hook.event_listener" event="module.configuration" type="back" templates="render:gift-cad-config.html" />
         </hook>
     </hooks>
 </config>

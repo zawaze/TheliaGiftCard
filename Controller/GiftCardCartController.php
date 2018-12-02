@@ -6,7 +6,6 @@
 
 namespace TheliaGiftCard\Controller;
 
-use CreditAccount\GiftCardAmountApendService;
 use Front\Front;
 use Thelia\Controller\Front\BaseFrontController;
 use Thelia\Core\Event\Delivery\DeliveryPostageEvent;
@@ -17,14 +16,11 @@ use Thelia\Mailer\MailerFactory;
 use Thelia\Model\AddressQuery;
 use Thelia\Model\AreaDeliveryModuleQuery;
 use Thelia\Model\Customer;
-use Thelia\Model\ModuleQuery;
 use Thelia\Module\Exception\DeliveryException;
 use TheliaGiftCard\Model\GiftCardCustomer;
 use TheliaGiftCard\Model\GiftCardCustomerQuery;
 use TheliaGiftCard\Model\GiftCardQuery;
 use TheliaGiftCard\Service\GiftCardAmountSpendService;
-use TheliaGiftCard\Service\GiftCardService;
-use TheliaGiftCard\TheliaGiftCard;
 
 class GiftCardCartController extends BaseFrontController
 {

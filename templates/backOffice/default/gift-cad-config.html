@@ -1,0 +1,51 @@
+<div class="col-md-12 general-block-decorator">
+    <div class="row">
+        <div class="col-md-12 title title-without-tabs">
+            {intl l="Gift Card configuration"}
+        </div>
+    </div>
+    <div class="form-container">
+        <div class="row inner-toolbar"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="title title-without-tabs">{intl l="Configuration"}</div>
+                {form name="config.card.gift"}
+                <form method="POST" id="pages-form" action="{url path="/admin/module/theliagiftcard/config/edit/giftcard"}" {form_enctype} class="clearfix">
+                <div class="row general-block-decorator">
+                    <div class="col-md-12">
+                        {form_hidden_fields}
+
+                        {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
+
+                        {form_field form=$form field='success_url'}
+                        <input type="hidden" name="{$name}" value="{url path={navigate to="current"}}"/>
+                        {/form_field}
+
+
+
+                        {render_form_field field="gift_card_category"}
+                        <div style="clear:left;">
+                            {include
+                            hide_flags = true
+                            hide_submit_buttons = true
+                            file = "includes/inner-form-toolbar.html"
+                            page_url   = {url path='/admin/module/ProductUpsell'}
+                            }
+                        </div>
+                        <div style="clear:left;">
+                            {include
+                            hide_flags = true
+                            file = "includes/inner-form-toolbar.html"
+                            page_url   = {url path='/admin/module/ProductUpsell'}
+                            close_url = {url path='/admin/module'}
+                            }
+                        </div>
+
+                    </div>
+                </div>
+                </form>
+                {/form}
+            </div>
+        </div>
+    </div>
+</div>

@@ -12,6 +12,7 @@ use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Template\TemplateDefinition;
 use Thelia\Core\Translation\Translator;
 use Thelia\Install\Database;
+use Thelia\Model\ConfigQuery;
 use Thelia\Model\LangQuery;
 use Thelia\Model\Message;
 use Thelia\Model\MessageQuery;
@@ -35,6 +36,8 @@ class TheliaGiftCard extends BaseModule implements PaymentModuleInterface
 
     /** @var string */
     const MODULE_CODE = 'theliagiftcard';
+
+    const GIFT_CARD_CATEGORY_CONF_NAME  =  'gift_card_category';
 
     // TO DO EN CONFIG //
     const CODES_GIFT_CARD_PRODUCT = [31, 32];
@@ -177,6 +180,13 @@ class TheliaGiftCard extends BaseModule implements PaymentModuleInterface
     {
         return false;
     }
+
+    public static function getGiftCardCategoryId()
+    {
+        $categoryIdLabel = ConfigQuery::read(TheliaGiftCard::GIFT_CARD_CATEGORY_CONF_NAME, '');
+        return intval($categoryIdLabel);
+    }
+
 
     private function calculDeltaOrderGiftCard()
     {
