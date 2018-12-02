@@ -25,11 +25,13 @@ class GiftCardConfigForm extends BaseForm
 
     protected $selectedGiftCardCategory;
     protected $selectedGiftCardOrderStatus;
+    protected $selectedGiftCardMode;
 
     protected function buildForm()
     {
         $this->selectedGiftCardCategory = TheliaGiftCard::getGiftCardCategoryId();
         $this->selectedGiftCardOrderStatus = TheliaGiftCard::getGiftCardOrderStatusId();
+        $this->selectedGiftCardMode  = TheliaGiftCard::getGiftCardModeId();
 
         $this->formBuilder
             ->add(
@@ -56,6 +58,21 @@ class GiftCardConfigForm extends BaseForm
                     ),
                     'choices' => $this->getAllOrderStatus(),
                     'data' => $this->selectedGiftCardOrderStatus,
+                    'constraints' => [
+                        new Assert\NotBlank
+                    ],
+                    'choices_as_values' => true,
+                ]
+            )
+            ->add(
+                'gift_card_mode',
+                ChoiceType::class, [
+                    'label' => Translator::getInstance()->trans("Mode of utilisation the Gift Cards"),
+                    'label_attr' => array(
+                        'for' => 'sample_category'
+                    ),
+                    'choices' => ['Auto' => 0, 'Manuel' => 1],
+                    'data' => $this->selectedGiftCardMode,
                     'constraints' => [
                         new Assert\NotBlank
                     ],
