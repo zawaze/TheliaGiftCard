@@ -49,5 +49,58 @@
                 {/form}
             </div>
         </div>
+        <div class="row inner-toolbar"></div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="title title-without-tabs">{intl l="Gift Card List"}</div>
+            </div>
+            <div class="row general-block-decorator">
+                <table class="table table-orders table-bordered table-hover" summary="{intl l="List of Gift Card"}">
+                <thead>
+                <tr>{intl l="Yours Gift Cards"}</tr>
+                <tr>
+                    <th>{intl l="Code"}</th>
+                    <th>{intl l="From"}</th>
+                    <th>{intl l="Amount"}</th>
+                    <th>{intl l="Amount spend"}</th>
+                    <th>{intl l="Status"}</th>
+                    <th>{intl l="Action"}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {loop type="sponsor.list.card.gift" name="loop.card.gift"}
+                <tr>
+                    <td>{$CODE}</td>
+                    <td>{$FIRSTNAME} {$LASTNAME}</td>
+                    <td>{$AMOUNT}</td>
+                    <td>{$USED_AMOUNT}</td>
+                    <td>
+                        {if $STATUS}
+                            Activate
+                        {else}
+                            Not Activate
+                        {/if}
+                    </td>
+                    <td>
+                        {if $STATUS}
+                            <a class="btn btn-default" data-toggle="modal" href="#generatePdf{$ID}" title="{intl l="GENERATE_PDF_GIFT_CARD"}" target="_blank"><span class="glyphicon 	glyphicon glyphicon-send"></span></a>
+                        {else}
+                            <a class="btn btn-success btn-default" href="" title="{intl l="Activate_GIFT_CARD"}"><span class="glyphicon glyphicon glyphicon-off"></span></a>
+                        {/if}
+
+                        {include file="modal/confirmation-generate-pdf-giftcard.html"
+                            id_card={$ID}
+                            code={$CODE}
+                            custumer_id={$CUSTOMER_ID}
+                        }
+                    </td>
+                </tr>
+                {/loop}
+                </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
+
+

@@ -13,7 +13,7 @@
             <label class="control-label" for="{$label_attr.for}">{intl l=$label}</label>
             <select class="form-control" name="{$name}" required>
                 <option value="" disabled selected>{intl l="Select your Gift Card"}</option>
-                {loop type="list.card.gift" name="customer.card.gift" customer_id=current}
+                {loop type="list.card.customer.gift" name="customer.card.gift" customer_id=current}
                 <option value="{$CODE}">{$PRODUCT} : {format_money number=$USED_AMOUNT currency_id=$CURRENCY} / {format_money number=$INIT_AMOUNT currency_id=$CURRENCY}</option>
                 {/loop}
             </select>

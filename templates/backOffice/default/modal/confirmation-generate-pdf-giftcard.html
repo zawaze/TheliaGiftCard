@@ -1,0 +1,37 @@
+<div id="generatePdf{$id_card}" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <form class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span></button>
+                <h3>
+                    {url path='/admin/module/theliagiftcard/pdf/'}{$id_card}
+                </h3>
+            </div>
+            {form name="send.code.card.gift"}
+            <form method="POST" id="pages-form" action="{url path="/admin/module/theliagiftcard/config/send/pdf/giftcard"}" {form_enctype} class="clearfix">
+            {form_hidden_fields}
+
+            {if $form_error}<div class="alert alert-danger">{$form_error_message}</div>{/if}
+
+                {form_field form=$form field='success_url'}
+                <input type="hidden" name="{$name}" value="{url path={navigate to="current"}}"/>
+                {/form_field}
+
+                {render_form_field field="message"}
+
+                {form_field form=$form field='sponsor'}
+                    <input type="hidden" name="{$name}" value="{$custumer_id}"/>
+                {/form_field}
+
+                {form_field form=$form field='code-to-send'}
+                    <input type="hidden" name="{$name}" value="{$code}"/>
+                {/form_field}
+            <div class="modal-footer">
+                <button class="btn btn-default" type="button" data-dismiss="modal"><span class="glyphicon glyphicon-remove"></span> {intl l="Cancel"}</button>
+                <button class="btn btn-primary" type="submit">{intl l="Generate Card Gift"}</button>
+            </div>
+            </form>
+            {/form}
+        </div>
+    </div>
+</div>

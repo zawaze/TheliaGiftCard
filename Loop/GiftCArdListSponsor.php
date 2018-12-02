@@ -16,6 +16,7 @@ use Thelia\Core\Template\Element\PropelSearchLoopInterface;
 use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 use Thelia\Model\CustomerQuery;
+use Thelia\Model\Map\CustomerTableMap;
 use TheliaGiftCard\Model\GiftCard;
 use TheliaGiftCard\Model\GiftCardCustomer;
 use TheliaGiftCard\Model\GiftCardCustomerQuery;
@@ -52,6 +53,14 @@ class GiftCArdListSponsor extends BaseLoop implements PropelSearchLoopInterface
 
         $search->addJoinObject($cardGiftCustomerJoin, 'cardGiftCustomerJoin');
 
+        $customerJoin = new Join(
+            GiftCardTableMap::SPONSOR_CUSTOMER_ID,
+            CustomerTableMap::ID,
+            Criteria::LEFT_JOIN
+        );
+
+        $search->addJoinObject($customerJoin, 'customerJoin');
+
         $search->withColumn(
             GiftCardCustomerTableMap::TABLE_NAME . '.' . 'used_amount', 'used_amount'
 
@@ -59,6 +68,16 @@ class GiftCArdListSponsor extends BaseLoop implements PropelSearchLoopInterface
 
         $search->withColumn(
             GiftCardCustomerTableMap::TABLE_NAME . '.' . 'customer_id', 'customer_id'
+
+        );
+
+        $search->withColumn(
+            CustomerTableMap::TABLE_NAME . '.' . 'firstname', 'sponsor_firstname'
+
+        );
+
+        $search->withColumn(
+            CustomerTableMap::TABLE_NAME . '.' . 'lastname', 'sponsor_lastname'
 
         );
 
@@ -96,7 +115,11 @@ class GiftCArdListSponsor extends BaseLoop implements PropelSearchLoopInterface
                 ->set('ID', $giftCard->getId())
                 ->set('AMOUNT', $giftCard->getAmount())
                 ->set('USED_AMOUNT', $giftCard->getVirtualColumn('used_amount'))
-                ->set('CODE', $giftCard->getCode());
+                ->set('CODE', $giftCard->getCode())
+                ->set('FIRSTNAME', $giftCard->getCustomer()->getFirstname())
+                ->set('LASTNAME', $giftCard->getCustomer()->getLastname())
+                ->set('STATUS',$giftCard->getStatus())
+                ->set('CUSTOMER_ID',$giftCard->getVirtualColumn('customer_id'));
 
 
             if ($customerID = $giftCard->getVirtualColumn('customer_id')) {

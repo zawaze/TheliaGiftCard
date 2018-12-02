@@ -42,4 +42,27 @@ class GiftCardConfigController extends BaseFrontController
 
         return $this->generateRedirect('/admin/module/TheliaGiftCard');
     }
+
+    public function generatePdfAction()
+    {
+        $this->checkAuth();
+
+        $form = $this->createForm('send.code.card.gift');
+
+        try {
+            $configPdfForm = $this->validateForm($form);
+
+            
+
+        } catch (FormValidationException $error_message) {
+
+            $error_message = $error_message->getMessage();
+            $form->setErrorMessage($error_message);
+            $this->getParserContext()
+                ->addForm($form)
+                ->setGeneralError($error_message);
+        }
+
+        return $this->generateRedirect('/admin/module/TheliaGiftCard');
+    }
 }

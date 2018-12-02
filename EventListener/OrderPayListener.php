@@ -116,12 +116,8 @@ class OrderPayListener implements EventSubscriberInterface
 
         /** @var GiftCardCart $dataGC */
         foreach ($datasGC as $dataGC) {
-
             $gcservice->setOrderAmountGC($order->getId(), $dataGC->getSpendAmount() + $dataGC->getSpendDelivery(), $dataGC->getGiftCardId(), $cart->getCustomer()->getId());
-
-            if($order->getStatusId() == TheliaGiftCard::getGiftCardOrderStatusId()) {
-                $gcservice->setGiftCardAmount($dataGC->getGiftCardId(), $dataGC->getSpendAmount() + $dataGC->getSpendDelivery(), $cart->getCustomer()->getId());
-            }
+            $gcservice->setGiftCardAmount($dataGC->getGiftCardId(), $dataGC->getSpendAmount() + $dataGC->getSpendDelivery(), $cart->getCustomer()->getId());
         }
     }
 

@@ -6,9 +6,10 @@
 
     <loops>
         <loop name="used.amount.card.gift" class="TheliaGiftCard\Loop\GiftCArdOrderUseLoop" />
-        <loop name="list.card.gift" class="TheliaGiftCard\Loop\GiftCArdList" />
+        <loop name="list.card.customer.gift" class="TheliaGiftCard\Loop\GiftCardCustomerList" />
         <loop name="sponsor.list.card.gift" class="TheliaGiftCard\Loop\GiftCArdListSponsor" />
         <loop name="cart.list.card.gift" class="TheliaGiftCard\Loop\GiftCardCartUseLoop" />
+        <loop name="list.card.gift" class="TheliaGiftCard\Loop\GiftCardList" />
     </loops>
 
     <forms>
@@ -55,7 +56,7 @@
             <tag name="hook.event_listener" event="order-invoice.cart-giftcard-form" type="front" method="onCartInvoiceBottom" />
         </hook>
         <hook id="giftcard.hook.config.back" >
-            <tag name="hook.event_listener" event="module.configuration" type="back" templates="render:gift-cad-config.html" />
+            <tag name="hook.event_listener" event="module.configuration" type="back" templates="render:gift-card-config.html" />
         </hook>
     </hooks>
 </config>

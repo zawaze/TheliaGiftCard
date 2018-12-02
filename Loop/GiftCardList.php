@@ -6,9 +6,6 @@
 
 namespace TheliaGiftCard\Loop;
 
-
-use Propel\Runtime\ActiveQuery\Criteria;
-use Propel\Runtime\ActiveQuery\Join;
 use Thelia\Core\Template\Element\BaseLoop;
 use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\LoopResultRow;
@@ -16,58 +13,33 @@ use Thelia\Core\Template\Element\PropelSearchLoopInterface;
 use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
 use Thelia\Model\CustomerQuery;
-use Thelia\Model\Map\ProductI18nTableMap;
-use TheliaGiftCard\Model\GiftCard;
-use TheliaGiftCard\Model\GiftCardCustomer;
-use TheliaGiftCard\Model\GiftCardCustomerQuery;
-use TheliaGiftCard\Model\GiftCardOrder;
-use TheliaGiftCard\Model\Map\GiftCardCustomerTableMap;
-use TheliaGiftCard\Model\Map\GiftCardTableMap;
+use TheliaGiftCard\Model\GiftCardQuery;
 
-
-class GiftCArdList extends BaseLoop implements PropelSearchLoopInterface
+class GiftCardList extends BaseLoop implements PropelSearchLoopInterface
 {
     protected function getArgDefinitions()
     {
         return new ArgumentCollection(
-            Argument::createAlphaNumStringTypeArgument('customer_id', null),
+            Argument::createIntTypeArgument('status', null),
             Argument::createIntTypeArgument('card_id', null)
         );
     }
 
     public function buildModelCriteria()
     {
-        $customerId = $this->getCustomerId();
+        $status = $this->getStatus();
         $cardId = $this->getCardId();
 
-        $search = GiftCardCustomerQuery::create()
-            ->useGiftCardQuery()
-                ->useProductQuery()
-                    ->useProductI18nQuery()
-                    ->endUse()
-                ->endUse()
-            ->endUse();
+        $search = GiftCardQuery::create()
+                    ->useGiftCardCustomerQuery()
+                    ->endUse();
 
-        $search->withColumn(GiftCardTableMap::TABLE_NAME . '.' . 'amount','amount');
-        $search->withColumn(GiftCardTableMap::TABLE_NAME . '.' . 'code','code');
-        $search->withColumn(GiftCardTableMap::TABLE_NAME . '.' . 'sponsor_customer_id','sponsor_customer_id');
-        $search->withColumn(ProductI18nTableMap::TABLE_NAME . '.' . 'title','product_title');
-
-        if ($customerId === 'current') {
-            $currentCustomer = $this->securityContext->getCustomerUser();
-            if (null === $currentCustomer) {
-                return null;
-            } else {
-                $search->filterByCustomerId($currentCustomer->getId(), Criteria::EQUAL);
-            }
-        } else {
-            if ($customerId !== null) {
-                $search->filterByCustomerId($customerId);
-            }
+        if($status){
+            $search->filterByStatus($status);
         }
 
-        if ($cardId !== null) {
-            $search->filterByCardId($cardId);
+        if($cardId){
+            $search->filterById($cardId);
         }
 
         return $search;
