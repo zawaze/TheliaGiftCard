@@ -6,10 +6,8 @@
 
 namespace TheliaGiftCard\Controller;
 
-use Front\Front;
 use Thelia\Controller\Front\BaseFrontController;
 use Thelia\Form\Exception\FormValidationException;
-use Thelia\Model\CategoryQuery;
 use Thelia\Model\ConfigQuery;
 use TheliaGiftCard\TheliaGiftCard;
 

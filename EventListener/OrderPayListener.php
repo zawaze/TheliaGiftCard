@@ -87,8 +87,15 @@ class OrderPayListener implements EventSubscriberInterface
                                 ->setSponsorCustomerId($order->getCustomer()->getId())
                                 ->setOrderId($orederId)
                                 ->setCode(TheliaGiftCard::GENERATE_CODE())
-                                ->setAmount($price + $TaxAmount)
-                                ->save();
+                                ->setAmount($price + $TaxAmount);
+
+                            if(0 == TheliaGiftCard::getGiftCardModeId()){
+                                $newGiftCard->setStatus(1);
+                            }  else {
+                                $newGiftCard->setStatus(0);
+                            }
+
+                            $newGiftCard->save();
                         }
                     }
                 }

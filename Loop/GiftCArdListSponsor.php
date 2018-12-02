@@ -31,7 +31,8 @@ class GiftCArdListSponsor extends BaseLoop implements PropelSearchLoopInterface
     {
         return new ArgumentCollection(
             Argument::createAlphaNumStringTypeArgument('customer_id', null),
-            Argument::createIntTypeArgument('card_id', null)
+            Argument::createIntTypeArgument('card_id', null),
+            Argument::createIntTypeArgument('status', null)
         );
     }
 
@@ -39,6 +40,7 @@ class GiftCArdListSponsor extends BaseLoop implements PropelSearchLoopInterface
     {
         $customerId = $this->getCustomerId();
         $cardId = $this->getCardId();
+        $status = $this->getStatus();
 
         $search = GiftCardQuery::create();
 
@@ -75,6 +77,10 @@ class GiftCArdListSponsor extends BaseLoop implements PropelSearchLoopInterface
 
         if ($cardId !== null) {
             $search->filterById($cardId);
+        }
+
+        if($status !==  null){
+            $search->filterByStatus($status);
         }
 
         return $search;
