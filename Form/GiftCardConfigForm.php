@@ -17,16 +17,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Thelia\Model\Category;
 use Thelia\Model\CategoryQuery;
 use Thelia\Model\Lang;
+use Thelia\Model\OrderStatusQuery;
 use TheliaGiftCard\TheliaGiftCard;
 
 class GiftCardConfigForm extends BaseForm
 {
 
     protected $selectedGiftCardCategory;
+    protected $selectedGiftCardOrderStatus;
 
     protected function buildForm()
     {
         $this->selectedGiftCardCategory = TheliaGiftCard::getGiftCardCategoryId();
+        $this->selectedGiftCardOrderStatus = TheliaGiftCard::getGiftCardOrderStatusId();
 
         $this->formBuilder
             ->add(
@@ -38,6 +41,21 @@ class GiftCardConfigForm extends BaseForm
                     ),
                     'choices' => $this->getAllCategories(),
                     'data' => $this->selectedGiftCardCategory,
+                    'constraints' => [
+                        new Assert\NotBlank
+                    ],
+                    'choices_as_values' => true,
+                ]
+            )
+            ->add(
+                'gift_card_paid_status',
+                ChoiceType::class, [
+                    'label' => Translator::getInstance()->trans("Order Status where order is paid"),
+                    'label_attr' => array(
+                        'for' => 'sample_category'
+                    ),
+                    'choices' => $this->getAllOrderStatus(),
+                    'data' => $this->selectedGiftCardOrderStatus,
                     'constraints' => [
                         new Assert\NotBlank
                     ],
@@ -60,6 +78,25 @@ class GiftCardConfigForm extends BaseForm
         /** @var Category $category */
         foreach ($categories as $category) {
             $tabData[$category->getTitle()] = $category->getId();
+        }
+
+        return $tabData;
+    }
+
+    public function getAllOrderStatus()
+    {
+        /** @var Lang $lang */
+        $lang = $this->request->getSession() ? $this->request->getSession()->getLang(true) : $this->request->lang = Lang::getDefaultLanguage();
+
+        $ordersStatus = OrderStatusQuery::create()
+            ->joinWithI18n($lang->getLocale(), Criteria::INNER_JOIN)
+            ->find();
+
+        $tabData = [];
+
+        /** @var Category $category */
+        foreach ($ordersStatus as $orderStatus) {
+            $tabData[$orderStatus->getTitle()] = $orderStatus->getId();
         }
 
         return $tabData;

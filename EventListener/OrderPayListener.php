@@ -46,7 +46,7 @@ class OrderPayListener implements EventSubscriberInterface
 
     public function creatCodeGiftCard(OrderEvent $event)
     {
-        if ($event->getOrder()->getStatusId() == TheliaGiftCard::ORDER_STATUS_PAID) {
+        if ($event->getOrder()->getStatusId() == TheliaGiftCard::getGiftCardOrderStatusId()) {
 
             /** @var Order $order */
             $order = $event->getOrder();
@@ -112,11 +112,10 @@ class OrderPayListener implements EventSubscriberInterface
 
             $gcservice->setOrderAmountGC($order->getId(), $dataGC->getSpendAmount() + $dataGC->getSpendDelivery(), $dataGC->getGiftCardId(), $cart->getCustomer()->getId());
 
-            if($order->getStatusId() == TheliaGiftCard::ORDER_STATUS_PAID) {
+            if($order->getStatusId() == TheliaGiftCard::getGiftCardOrderStatusId()) {
                 $gcservice->setGiftCardAmount($dataGC->getGiftCardId(), $dataGC->getSpendAmount() + $dataGC->getSpendDelivery(), $cart->getCustomer()->getId());
             }
         }
-
     }
 
     public function setAmountOnOrder(OrderEvent $event)

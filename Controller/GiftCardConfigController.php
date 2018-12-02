@@ -26,8 +26,10 @@ class GiftCardConfigController extends BaseFrontController
             $configForm = $this->validateForm($form);
 
             $categoryId = $configForm->get('gift_card_category')->getData();
+            $orderStatusId = $configForm->get('gift_card_paid_status')->getData();
 
             ConfigQuery::write(TheliaGiftCard::GIFT_CARD_CATEGORY_CONF_NAME, $categoryId, false, true);
+            ConfigQuery::write(TheliaGiftCard::GIFT_CARD_ORDER_STATUS_CONF_NAME, $orderStatusId, false, true);
 
         } catch (FormValidationException $error_message) {
 

@@ -38,6 +38,7 @@ class TheliaGiftCard extends BaseModule implements PaymentModuleInterface
     const MODULE_CODE = 'theliagiftcard';
 
     const GIFT_CARD_CATEGORY_CONF_NAME  =  'gift_card_category';
+    const GIFT_CARD_ORDER_STATUS_CONF_NAME  = 'gift_card_order_status';
 
     // TO DO EN CONFIG //
     const ORDER_STATUS_PAID = 2;
@@ -182,8 +183,14 @@ class TheliaGiftCard extends BaseModule implements PaymentModuleInterface
 
     public static function getGiftCardCategoryId()
     {
-        $categoryIdLabel = ConfigQuery::read(TheliaGiftCard::GIFT_CARD_CATEGORY_CONF_NAME, '');
-        return intval($categoryIdLabel);
+        $categoryId = ConfigQuery::read(TheliaGiftCard::GIFT_CARD_CATEGORY_CONF_NAME, '');
+        return intval($categoryId);
+    }
+
+    public static function getGiftCardOrderStatusId()
+    {
+        $osId = ConfigQuery::read(TheliaGiftCard::GIFT_CARD_ORDER_STATUS_CONF_NAME, '');
+        return intval($osId);
     }
 
 
