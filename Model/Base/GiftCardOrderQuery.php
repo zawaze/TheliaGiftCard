@@ -26,6 +26,8 @@ use Thelia\Model\Order;
  * @method     ChildGiftCardOrderQuery orderByGiftCardId($order = Criteria::ASC) Order by the gift_card_id column
  * @method     ChildGiftCardOrderQuery orderByOrderId($order = Criteria::ASC) Order by the order_id column
  * @method     ChildGiftCardOrderQuery orderBySpendAmount($order = Criteria::ASC) Order by the spend_amount column
+ * @method     ChildGiftCardOrderQuery orderByInitialDiscount($order = Criteria::ASC) Order by the initial_discount column
+ * @method     ChildGiftCardOrderQuery orderByInitialPostage($order = Criteria::ASC) Order by the initial_postage column
  * @method     ChildGiftCardOrderQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
  * @method     ChildGiftCardOrderQuery orderByUpdatedAt($order = Criteria::ASC) Order by the updated_at column
  *
@@ -33,6 +35,8 @@ use Thelia\Model\Order;
  * @method     ChildGiftCardOrderQuery groupByGiftCardId() Group by the gift_card_id column
  * @method     ChildGiftCardOrderQuery groupByOrderId() Group by the order_id column
  * @method     ChildGiftCardOrderQuery groupBySpendAmount() Group by the spend_amount column
+ * @method     ChildGiftCardOrderQuery groupByInitialDiscount() Group by the initial_discount column
+ * @method     ChildGiftCardOrderQuery groupByInitialPostage() Group by the initial_postage column
  * @method     ChildGiftCardOrderQuery groupByCreatedAt() Group by the created_at column
  * @method     ChildGiftCardOrderQuery groupByUpdatedAt() Group by the updated_at column
  *
@@ -55,6 +59,8 @@ use Thelia\Model\Order;
  * @method     ChildGiftCardOrder findOneByGiftCardId(int $gift_card_id) Return the first ChildGiftCardOrder filtered by the gift_card_id column
  * @method     ChildGiftCardOrder findOneByOrderId(int $order_id) Return the first ChildGiftCardOrder filtered by the order_id column
  * @method     ChildGiftCardOrder findOneBySpendAmount(string $spend_amount) Return the first ChildGiftCardOrder filtered by the spend_amount column
+ * @method     ChildGiftCardOrder findOneByInitialDiscount(string $initial_discount) Return the first ChildGiftCardOrder filtered by the initial_discount column
+ * @method     ChildGiftCardOrder findOneByInitialPostage(string $initial_postage) Return the first ChildGiftCardOrder filtered by the initial_postage column
  * @method     ChildGiftCardOrder findOneByCreatedAt(string $created_at) Return the first ChildGiftCardOrder filtered by the created_at column
  * @method     ChildGiftCardOrder findOneByUpdatedAt(string $updated_at) Return the first ChildGiftCardOrder filtered by the updated_at column
  *
@@ -62,6 +68,8 @@ use Thelia\Model\Order;
  * @method     array findByGiftCardId(int $gift_card_id) Return ChildGiftCardOrder objects filtered by the gift_card_id column
  * @method     array findByOrderId(int $order_id) Return ChildGiftCardOrder objects filtered by the order_id column
  * @method     array findBySpendAmount(string $spend_amount) Return ChildGiftCardOrder objects filtered by the spend_amount column
+ * @method     array findByInitialDiscount(string $initial_discount) Return ChildGiftCardOrder objects filtered by the initial_discount column
+ * @method     array findByInitialPostage(string $initial_postage) Return ChildGiftCardOrder objects filtered by the initial_postage column
  * @method     array findByCreatedAt(string $created_at) Return ChildGiftCardOrder objects filtered by the created_at column
  * @method     array findByUpdatedAt(string $updated_at) Return ChildGiftCardOrder objects filtered by the updated_at column
  *
@@ -152,7 +160,7 @@ abstract class GiftCardOrderQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT ID, GIFT_CARD_ID, ORDER_ID, SPEND_AMOUNT, CREATED_AT, UPDATED_AT FROM gift_card_order WHERE ID = :p0';
+        $sql = 'SELECT ID, GIFT_CARD_ID, ORDER_ID, SPEND_AMOUNT, INITIAL_DISCOUNT, INITIAL_POSTAGE, CREATED_AT, UPDATED_AT FROM gift_card_order WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -407,6 +415,88 @@ abstract class GiftCardOrderQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(GiftCardOrderTableMap::SPEND_AMOUNT, $spendAmount, $comparison);
+    }
+
+    /**
+     * Filter the query on the initial_discount column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByInitialDiscount(1234); // WHERE initial_discount = 1234
+     * $query->filterByInitialDiscount(array(12, 34)); // WHERE initial_discount IN (12, 34)
+     * $query->filterByInitialDiscount(array('min' => 12)); // WHERE initial_discount > 12
+     * </code>
+     *
+     * @param     mixed $initialDiscount The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildGiftCardOrderQuery The current query, for fluid interface
+     */
+    public function filterByInitialDiscount($initialDiscount = null, $comparison = null)
+    {
+        if (is_array($initialDiscount)) {
+            $useMinMax = false;
+            if (isset($initialDiscount['min'])) {
+                $this->addUsingAlias(GiftCardOrderTableMap::INITIAL_DISCOUNT, $initialDiscount['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($initialDiscount['max'])) {
+                $this->addUsingAlias(GiftCardOrderTableMap::INITIAL_DISCOUNT, $initialDiscount['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(GiftCardOrderTableMap::INITIAL_DISCOUNT, $initialDiscount, $comparison);
+    }
+
+    /**
+     * Filter the query on the initial_postage column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByInitialPostage(1234); // WHERE initial_postage = 1234
+     * $query->filterByInitialPostage(array(12, 34)); // WHERE initial_postage IN (12, 34)
+     * $query->filterByInitialPostage(array('min' => 12)); // WHERE initial_postage > 12
+     * </code>
+     *
+     * @param     mixed $initialPostage The value to use as filter.
+     *              Use scalar values for equality.
+     *              Use array values for in_array() equivalent.
+     *              Use associative array('min' => $minValue, 'max' => $maxValue) for intervals.
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildGiftCardOrderQuery The current query, for fluid interface
+     */
+    public function filterByInitialPostage($initialPostage = null, $comparison = null)
+    {
+        if (is_array($initialPostage)) {
+            $useMinMax = false;
+            if (isset($initialPostage['min'])) {
+                $this->addUsingAlias(GiftCardOrderTableMap::INITIAL_POSTAGE, $initialPostage['min'], Criteria::GREATER_EQUAL);
+                $useMinMax = true;
+            }
+            if (isset($initialPostage['max'])) {
+                $this->addUsingAlias(GiftCardOrderTableMap::INITIAL_POSTAGE, $initialPostage['max'], Criteria::LESS_EQUAL);
+                $useMinMax = true;
+            }
+            if ($useMinMax) {
+                return $this;
+            }
+            if (null === $comparison) {
+                $comparison = Criteria::IN;
+            }
+        }
+
+        return $this->addUsingAlias(GiftCardOrderTableMap::INITIAL_POSTAGE, $initialPostage, $comparison);
     }
 
     /**

@@ -9,6 +9,8 @@
         <column name="order_id" required="true" type="INTEGER" />
         <column name="product_id" required="true" type="INTEGER" />
         <column name="code" required="true" size="100" type="VARCHAR" />
+        <column name="to_name" size="100" type="VARCHAR" />
+        <column name="to_message" size="100" type="VARCHAR" />
         <column name="amount" scale="6" size="16" type="DECIMAL" />
         <column name="status"  size="1" type="INTEGER" />
 
@@ -70,6 +72,8 @@
         <column name="gift_card_id" type="INTEGER" />
         <column name="order_id" required="true" type="INTEGER" />
         <column name="spend_amount" scale="6" size="16" type="DECIMAL" />
+        <column name="initial_discount" scale="6" size="16" type="DECIMAL" />
+        <column name="initial_postage" scale="6" size="16" type="DECIMAL" />
 
         <foreign-key foreignTable="order" name="fk_card_gift_order" onDelete="CASCADE" onUpdate="CASCADE">
             <reference foreign="id" local="order_id" />

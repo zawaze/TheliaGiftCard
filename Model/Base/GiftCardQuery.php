@@ -29,6 +29,8 @@ use Thelia\Model\Product;
  * @method     ChildGiftCardQuery orderByOrderId($order = Criteria::ASC) Order by the order_id column
  * @method     ChildGiftCardQuery orderByProductId($order = Criteria::ASC) Order by the product_id column
  * @method     ChildGiftCardQuery orderByCode($order = Criteria::ASC) Order by the code column
+ * @method     ChildGiftCardQuery orderByToName($order = Criteria::ASC) Order by the to_name column
+ * @method     ChildGiftCardQuery orderByToMessage($order = Criteria::ASC) Order by the to_message column
  * @method     ChildGiftCardQuery orderByAmount($order = Criteria::ASC) Order by the amount column
  * @method     ChildGiftCardQuery orderByStatus($order = Criteria::ASC) Order by the status column
  * @method     ChildGiftCardQuery orderByCreatedAt($order = Criteria::ASC) Order by the created_at column
@@ -39,6 +41,8 @@ use Thelia\Model\Product;
  * @method     ChildGiftCardQuery groupByOrderId() Group by the order_id column
  * @method     ChildGiftCardQuery groupByProductId() Group by the product_id column
  * @method     ChildGiftCardQuery groupByCode() Group by the code column
+ * @method     ChildGiftCardQuery groupByToName() Group by the to_name column
+ * @method     ChildGiftCardQuery groupByToMessage() Group by the to_message column
  * @method     ChildGiftCardQuery groupByAmount() Group by the amount column
  * @method     ChildGiftCardQuery groupByStatus() Group by the status column
  * @method     ChildGiftCardQuery groupByCreatedAt() Group by the created_at column
@@ -80,6 +84,8 @@ use Thelia\Model\Product;
  * @method     ChildGiftCard findOneByOrderId(int $order_id) Return the first ChildGiftCard filtered by the order_id column
  * @method     ChildGiftCard findOneByProductId(int $product_id) Return the first ChildGiftCard filtered by the product_id column
  * @method     ChildGiftCard findOneByCode(string $code) Return the first ChildGiftCard filtered by the code column
+ * @method     ChildGiftCard findOneByToName(string $to_name) Return the first ChildGiftCard filtered by the to_name column
+ * @method     ChildGiftCard findOneByToMessage(string $to_message) Return the first ChildGiftCard filtered by the to_message column
  * @method     ChildGiftCard findOneByAmount(string $amount) Return the first ChildGiftCard filtered by the amount column
  * @method     ChildGiftCard findOneByStatus(int $status) Return the first ChildGiftCard filtered by the status column
  * @method     ChildGiftCard findOneByCreatedAt(string $created_at) Return the first ChildGiftCard filtered by the created_at column
@@ -90,6 +96,8 @@ use Thelia\Model\Product;
  * @method     array findByOrderId(int $order_id) Return ChildGiftCard objects filtered by the order_id column
  * @method     array findByProductId(int $product_id) Return ChildGiftCard objects filtered by the product_id column
  * @method     array findByCode(string $code) Return ChildGiftCard objects filtered by the code column
+ * @method     array findByToName(string $to_name) Return ChildGiftCard objects filtered by the to_name column
+ * @method     array findByToMessage(string $to_message) Return ChildGiftCard objects filtered by the to_message column
  * @method     array findByAmount(string $amount) Return ChildGiftCard objects filtered by the amount column
  * @method     array findByStatus(int $status) Return ChildGiftCard objects filtered by the status column
  * @method     array findByCreatedAt(string $created_at) Return ChildGiftCard objects filtered by the created_at column
@@ -182,7 +190,7 @@ abstract class GiftCardQuery extends ModelCriteria
      */
     protected function findPkSimple($key, $con)
     {
-        $sql = 'SELECT ID, SPONSOR_CUSTOMER_ID, ORDER_ID, PRODUCT_ID, CODE, AMOUNT, STATUS, CREATED_AT, UPDATED_AT FROM gift_card WHERE ID = :p0';
+        $sql = 'SELECT ID, SPONSOR_CUSTOMER_ID, ORDER_ID, PRODUCT_ID, CODE, TO_NAME, TO_MESSAGE, AMOUNT, STATUS, CREATED_AT, UPDATED_AT FROM gift_card WHERE ID = :p0';
         try {
             $stmt = $con->prepare($sql);
             $stmt->bindValue(':p0', $key, PDO::PARAM_INT);
@@ -468,6 +476,64 @@ abstract class GiftCardQuery extends ModelCriteria
         }
 
         return $this->addUsingAlias(GiftCardTableMap::CODE, $code, $comparison);
+    }
+
+    /**
+     * Filter the query on the to_name column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByToName('fooValue');   // WHERE to_name = 'fooValue'
+     * $query->filterByToName('%fooValue%'); // WHERE to_name LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $toName The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildGiftCardQuery The current query, for fluid interface
+     */
+    public function filterByToName($toName = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($toName)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $toName)) {
+                $toName = str_replace('*', '%', $toName);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(GiftCardTableMap::TO_NAME, $toName, $comparison);
+    }
+
+    /**
+     * Filter the query on the to_message column
+     *
+     * Example usage:
+     * <code>
+     * $query->filterByToMessage('fooValue');   // WHERE to_message = 'fooValue'
+     * $query->filterByToMessage('%fooValue%'); // WHERE to_message LIKE '%fooValue%'
+     * </code>
+     *
+     * @param     string $toMessage The value to use as filter.
+     *              Accepts wildcards (* and % trigger a LIKE)
+     * @param     string $comparison Operator to use for the column comparison, defaults to Criteria::EQUAL
+     *
+     * @return ChildGiftCardQuery The current query, for fluid interface
+     */
+    public function filterByToMessage($toMessage = null, $comparison = null)
+    {
+        if (null === $comparison) {
+            if (is_array($toMessage)) {
+                $comparison = Criteria::IN;
+            } elseif (preg_match('/[\%\*]/', $toMessage)) {
+                $toMessage = str_replace('*', '%', $toMessage);
+                $comparison = Criteria::LIKE;
+            }
+        }
+
+        return $this->addUsingAlias(GiftCardTableMap::TO_MESSAGE, $toMessage, $comparison);
     }
 
     /**

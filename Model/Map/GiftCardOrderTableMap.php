@@ -58,7 +58,7 @@ class GiftCardOrderTableMap extends TableMap
     /**
      * The total number of columns
      */
-    const NUM_COLUMNS = 6;
+    const NUM_COLUMNS = 8;
 
     /**
      * The number of lazy-loaded columns
@@ -68,7 +68,7 @@ class GiftCardOrderTableMap extends TableMap
     /**
      * The number of columns to hydrate (NUM_COLUMNS - NUM_LAZY_LOAD_COLUMNS)
      */
-    const NUM_HYDRATE_COLUMNS = 6;
+    const NUM_HYDRATE_COLUMNS = 8;
 
     /**
      * the column name for the ID field
@@ -89,6 +89,16 @@ class GiftCardOrderTableMap extends TableMap
      * the column name for the SPEND_AMOUNT field
      */
     const SPEND_AMOUNT = 'gift_card_order.SPEND_AMOUNT';
+
+    /**
+     * the column name for the INITIAL_DISCOUNT field
+     */
+    const INITIAL_DISCOUNT = 'gift_card_order.INITIAL_DISCOUNT';
+
+    /**
+     * the column name for the INITIAL_POSTAGE field
+     */
+    const INITIAL_POSTAGE = 'gift_card_order.INITIAL_POSTAGE';
 
     /**
      * the column name for the CREATED_AT field
@@ -112,12 +122,12 @@ class GiftCardOrderTableMap extends TableMap
      * e.g. self::$fieldNames[self::TYPE_PHPNAME][0] = 'Id'
      */
     protected static $fieldNames = array (
-        self::TYPE_PHPNAME       => array('Id', 'GiftCardId', 'OrderId', 'SpendAmount', 'CreatedAt', 'UpdatedAt', ),
-        self::TYPE_STUDLYPHPNAME => array('id', 'giftCardId', 'orderId', 'spendAmount', 'createdAt', 'updatedAt', ),
-        self::TYPE_COLNAME       => array(GiftCardOrderTableMap::ID, GiftCardOrderTableMap::GIFT_CARD_ID, GiftCardOrderTableMap::ORDER_ID, GiftCardOrderTableMap::SPEND_AMOUNT, GiftCardOrderTableMap::CREATED_AT, GiftCardOrderTableMap::UPDATED_AT, ),
-        self::TYPE_RAW_COLNAME   => array('ID', 'GIFT_CARD_ID', 'ORDER_ID', 'SPEND_AMOUNT', 'CREATED_AT', 'UPDATED_AT', ),
-        self::TYPE_FIELDNAME     => array('id', 'gift_card_id', 'order_id', 'spend_amount', 'created_at', 'updated_at', ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id', 'GiftCardId', 'OrderId', 'SpendAmount', 'InitialDiscount', 'InitialPostage', 'CreatedAt', 'UpdatedAt', ),
+        self::TYPE_STUDLYPHPNAME => array('id', 'giftCardId', 'orderId', 'spendAmount', 'initialDiscount', 'initialPostage', 'createdAt', 'updatedAt', ),
+        self::TYPE_COLNAME       => array(GiftCardOrderTableMap::ID, GiftCardOrderTableMap::GIFT_CARD_ID, GiftCardOrderTableMap::ORDER_ID, GiftCardOrderTableMap::SPEND_AMOUNT, GiftCardOrderTableMap::INITIAL_DISCOUNT, GiftCardOrderTableMap::INITIAL_POSTAGE, GiftCardOrderTableMap::CREATED_AT, GiftCardOrderTableMap::UPDATED_AT, ),
+        self::TYPE_RAW_COLNAME   => array('ID', 'GIFT_CARD_ID', 'ORDER_ID', 'SPEND_AMOUNT', 'INITIAL_DISCOUNT', 'INITIAL_POSTAGE', 'CREATED_AT', 'UPDATED_AT', ),
+        self::TYPE_FIELDNAME     => array('id', 'gift_card_id', 'order_id', 'spend_amount', 'initial_discount', 'initial_postage', 'created_at', 'updated_at', ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
     /**
@@ -127,12 +137,12 @@ class GiftCardOrderTableMap extends TableMap
      * e.g. self::$fieldKeys[self::TYPE_PHPNAME]['Id'] = 0
      */
     protected static $fieldKeys = array (
-        self::TYPE_PHPNAME       => array('Id' => 0, 'GiftCardId' => 1, 'OrderId' => 2, 'SpendAmount' => 3, 'CreatedAt' => 4, 'UpdatedAt' => 5, ),
-        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'giftCardId' => 1, 'orderId' => 2, 'spendAmount' => 3, 'createdAt' => 4, 'updatedAt' => 5, ),
-        self::TYPE_COLNAME       => array(GiftCardOrderTableMap::ID => 0, GiftCardOrderTableMap::GIFT_CARD_ID => 1, GiftCardOrderTableMap::ORDER_ID => 2, GiftCardOrderTableMap::SPEND_AMOUNT => 3, GiftCardOrderTableMap::CREATED_AT => 4, GiftCardOrderTableMap::UPDATED_AT => 5, ),
-        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'GIFT_CARD_ID' => 1, 'ORDER_ID' => 2, 'SPEND_AMOUNT' => 3, 'CREATED_AT' => 4, 'UPDATED_AT' => 5, ),
-        self::TYPE_FIELDNAME     => array('id' => 0, 'gift_card_id' => 1, 'order_id' => 2, 'spend_amount' => 3, 'created_at' => 4, 'updated_at' => 5, ),
-        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, )
+        self::TYPE_PHPNAME       => array('Id' => 0, 'GiftCardId' => 1, 'OrderId' => 2, 'SpendAmount' => 3, 'InitialDiscount' => 4, 'InitialPostage' => 5, 'CreatedAt' => 6, 'UpdatedAt' => 7, ),
+        self::TYPE_STUDLYPHPNAME => array('id' => 0, 'giftCardId' => 1, 'orderId' => 2, 'spendAmount' => 3, 'initialDiscount' => 4, 'initialPostage' => 5, 'createdAt' => 6, 'updatedAt' => 7, ),
+        self::TYPE_COLNAME       => array(GiftCardOrderTableMap::ID => 0, GiftCardOrderTableMap::GIFT_CARD_ID => 1, GiftCardOrderTableMap::ORDER_ID => 2, GiftCardOrderTableMap::SPEND_AMOUNT => 3, GiftCardOrderTableMap::INITIAL_DISCOUNT => 4, GiftCardOrderTableMap::INITIAL_POSTAGE => 5, GiftCardOrderTableMap::CREATED_AT => 6, GiftCardOrderTableMap::UPDATED_AT => 7, ),
+        self::TYPE_RAW_COLNAME   => array('ID' => 0, 'GIFT_CARD_ID' => 1, 'ORDER_ID' => 2, 'SPEND_AMOUNT' => 3, 'INITIAL_DISCOUNT' => 4, 'INITIAL_POSTAGE' => 5, 'CREATED_AT' => 6, 'UPDATED_AT' => 7, ),
+        self::TYPE_FIELDNAME     => array('id' => 0, 'gift_card_id' => 1, 'order_id' => 2, 'spend_amount' => 3, 'initial_discount' => 4, 'initial_postage' => 5, 'created_at' => 6, 'updated_at' => 7, ),
+        self::TYPE_NUM           => array(0, 1, 2, 3, 4, 5, 6, 7, )
     );
 
     /**
@@ -155,6 +165,8 @@ class GiftCardOrderTableMap extends TableMap
         $this->addForeignKey('GIFT_CARD_ID', 'GiftCardId', 'INTEGER', 'gift_card', 'ID', false, null, null);
         $this->addForeignKey('ORDER_ID', 'OrderId', 'INTEGER', 'order', 'ID', true, null, null);
         $this->addColumn('SPEND_AMOUNT', 'SpendAmount', 'DECIMAL', false, 16, null);
+        $this->addColumn('INITIAL_DISCOUNT', 'InitialDiscount', 'DECIMAL', false, 16, null);
+        $this->addColumn('INITIAL_POSTAGE', 'InitialPostage', 'DECIMAL', false, 16, null);
         $this->addColumn('CREATED_AT', 'CreatedAt', 'TIMESTAMP', false, null, null);
         $this->addColumn('UPDATED_AT', 'UpdatedAt', 'TIMESTAMP', false, null, null);
     } // initialize()
@@ -323,6 +335,8 @@ class GiftCardOrderTableMap extends TableMap
             $criteria->addSelectColumn(GiftCardOrderTableMap::GIFT_CARD_ID);
             $criteria->addSelectColumn(GiftCardOrderTableMap::ORDER_ID);
             $criteria->addSelectColumn(GiftCardOrderTableMap::SPEND_AMOUNT);
+            $criteria->addSelectColumn(GiftCardOrderTableMap::INITIAL_DISCOUNT);
+            $criteria->addSelectColumn(GiftCardOrderTableMap::INITIAL_POSTAGE);
             $criteria->addSelectColumn(GiftCardOrderTableMap::CREATED_AT);
             $criteria->addSelectColumn(GiftCardOrderTableMap::UPDATED_AT);
         } else {
@@ -330,6 +344,8 @@ class GiftCardOrderTableMap extends TableMap
             $criteria->addSelectColumn($alias . '.GIFT_CARD_ID');
             $criteria->addSelectColumn($alias . '.ORDER_ID');
             $criteria->addSelectColumn($alias . '.SPEND_AMOUNT');
+            $criteria->addSelectColumn($alias . '.INITIAL_DISCOUNT');
+            $criteria->addSelectColumn($alias . '.INITIAL_POSTAGE');
             $criteria->addSelectColumn($alias . '.CREATED_AT');
             $criteria->addSelectColumn($alias . '.UPDATED_AT');
         }

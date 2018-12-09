@@ -14,6 +14,7 @@ use Thelia\Form\Exception\FormValidationException;
 use Thelia\Log\Tlog;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\CustomerQuery;
+use TheliaGiftCard\Model\GiftCardQuery;
 use TheliaGiftCard\TheliaGiftCard;
 
 class GiftCardConfigController extends BaseFrontController
@@ -62,7 +63,6 @@ class GiftCardConfigController extends BaseFrontController
             $customer = CustomerQuery::create()->findPk($customerId);
 
 
-
             $html = $this->renderRaw(
                 'giftCard',
                 array(
@@ -74,13 +74,13 @@ class GiftCardConfigController extends BaseFrontController
                 $this->getTemplateHelper()->getActivePdfTemplate()
             );
 
-                $pdfEvent = new PdfEvent($html);
+            $pdfEvent = new PdfEvent($html);
 
-                $this->dispatch(TheliaEvents::GENERATE_PDF, $pdfEvent);
+            $this->dispatch(TheliaEvents::GENERATE_PDF, $pdfEvent);
 
-                if ($pdfEvent->hasPdf()) {
-                    return $this->pdfResponse($pdfEvent->getPdf(), 'command_list_'.$pickingDay, 200, true);
-                }
+            if ($pdfEvent->hasPdf()) {
+                return $this->pdfResponse($pdfEvent->getPdf(), 'gift_card', 200, true);
+            }
 
 
         } catch (FormValidationException $error_message) {
@@ -90,6 +90,23 @@ class GiftCardConfigController extends BaseFrontController
             $this->getParserContext()
                 ->addForm($form)
                 ->setGeneralError($error_message);
+        }
+
+        return $this->generateRedirect('/admin/module/TheliaGiftCard');
+    }
+
+    public function activateGiftCardAction($codeGC)
+    {
+        $this->checkAuth();
+
+        $giftCard = GiftCardQuery::create()
+            ->filterByCode($codeGC)
+            ->filterByStatus(0)
+            ->findOne();
+
+        if ($giftCard) {
+            $giftCard->setStatus(1)
+                ->save();
         }
 
         return $this->generateRedirect('/admin/module/TheliaGiftCard');
