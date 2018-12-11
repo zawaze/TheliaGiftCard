@@ -22,7 +22,9 @@ use Thelia\Model\ProductSaleElementsQuery;
 use TheliaGiftCard\Model\GiftCard;
 use TheliaGiftCard\Model\GiftCardCart;
 use TheliaGiftCard\Model\GiftCardCartQuery;
+use TheliaGiftCard\Model\GiftCardOrderQuery;
 use TheliaGiftCard\Model\GiftCardQuery;
+use TheliaGiftCard\Service\GiftCardAmountSpendService;
 use TheliaGiftCard\Service\GiftCardService;
 use TheliaGiftCard\TheliaGiftCard;
 
@@ -112,11 +114,17 @@ class OrderPayListener implements EventSubscriberInterface
 
         $order = $event->getPlacedOrder();
 
+        $orderCardGift = GiftCardOrderQuery::create()->filterByOrderId($order->getId())->findOne();
+
+        $order
+            ->setPostage($orderCardGift->getInitialPostage())
+            ->setDiscount($orderCardGift->getInitialDiscount())
+            ->save();
+
         $datasGC = GiftCardCartQuery::create()->filterByCartId($cart->getId())->find();
 
         /** @var GiftCardCart $dataGC */
         foreach ($datasGC as $dataGC) {
-            $gcservice->setOrderAmountGC($order->getId(), $dataGC->getSpendAmount() + $dataGC->getSpendDelivery(), $dataGC->getGiftCardId(), $cart->getCustomer()->getId());
             $gcservice->setGiftCardAmount($dataGC->getGiftCardId(), $dataGC->getSpendAmount() + $dataGC->getSpendDelivery(), $cart->getCustomer()->getId());
             $datasGC->delete();
         }
@@ -129,13 +137,21 @@ class OrderPayListener implements EventSubscriberInterface
 
         if ($cart) {
 
+            /** @var  GiftCardAmountSpendService $giftCardService */
             $giftCardService = $this->container->get('giftcard.amount.spend.service');
             $totalGiftCardAmount = $giftCardService->calculTotalGCDelievery($this->request->getSession()->getSessionCart());
+
+            /** @var GiftCardService $gcservice */
+            $gcservice = $this->container->get('giftcard.service');
+
 
             if (0 < $totalGiftCardAmount) {
 
                 $totalPriceCart = $giftCardService->getTotalPriceOrder($cart);
                 $totalOrderPrice = $totalPriceCart + $order->getPostage() - $order->getDiscount();
+
+                $initialPostage = $order->getPostage();
+                $initialDiscount = $order->getDiscount();
 
                 if ($totalGiftCardAmount == $totalOrderPrice) {
                     $order->setPostage(0);
@@ -148,6 +164,13 @@ class OrderPayListener implements EventSubscriberInterface
                         $order->setDiscount($totalPriceCart);
                         $order->setPostage($order->getPostage() - $delta);
                     }
+                }
+
+                $datasGC = GiftCardCartQuery::create()->filterByCartId($cart->getId())->find();
+
+                /** @var GiftCardCart $dataGC */
+                foreach ($datasGC as $dataGC) {
+                    $gcservice->setOrderAmountGC($order->getId(), $totalGiftCardAmount, $dataGC->getGiftCardId(), $cart->getCustomer()->getId(),$initialDiscount,$initialPostage);
                 }
 
                 $order->save();

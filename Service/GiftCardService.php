@@ -45,7 +45,7 @@ class GiftCardService
         }
     }
 
-    public function setOrderAmountGC($orderId, $amount, $cardId, $customerId)
+    public function setOrderAmountGC($orderId, $amount, $cardId, $customerId, $initialDicount, $initialPostage)
     {
         $cardCustomer = GiftCardCustomerQuery::create()
             ->filterByCustomerId($customerId)
@@ -59,6 +59,8 @@ class GiftCardService
                 ->setOrderId($orderId)
                 ->setSpendAmount($amount)
                 ->setGiftCardId($cardId)
+                ->setInitialDiscount($initialDicount)
+                ->setInitialPostage($initialPostage)
                 ->save();
             return true;
         }
