@@ -118,6 +118,7 @@ class OrderPayListener implements EventSubscriberInterface
         foreach ($datasGC as $dataGC) {
             $gcservice->setOrderAmountGC($order->getId(), $dataGC->getSpendAmount() + $dataGC->getSpendDelivery(), $dataGC->getGiftCardId(), $cart->getCustomer()->getId());
             $gcservice->setGiftCardAmount($dataGC->getGiftCardId(), $dataGC->getSpendAmount() + $dataGC->getSpendDelivery(), $cart->getCustomer()->getId());
+            $datasGC->delete();
         }
     }
 
@@ -129,7 +130,7 @@ class OrderPayListener implements EventSubscriberInterface
         if ($cart) {
 
             $giftCardService = $this->container->get('giftcard.amount.spend.service');
-            $totalGiftCardAmount = $giftCardService->calculTotalGCDelievery($this->request->getSession()->getCart());
+            $totalGiftCardAmount = $giftCardService->calculTotalGCDelievery($this->request->getSession()->getSessionCart());
 
             if (0 < $totalGiftCardAmount) {
 
