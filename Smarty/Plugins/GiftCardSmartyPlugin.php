@@ -35,7 +35,7 @@ class GiftCardSmartyPlugin extends AbstractSmartyPlugin
 
     public function getGitCardTotalOnCart($params, $smarty)
     {
-        $cart = $this->request->getSession()->getCart();
+        $cart = $this->request->getSession()->getSessionCart();
 
         if (null != $cart) {
             $giftCardsCart = GiftCardCartQuery::create()

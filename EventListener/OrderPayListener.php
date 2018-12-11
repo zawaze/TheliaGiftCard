@@ -105,7 +105,7 @@ class OrderPayListener implements EventSubscriberInterface
 
     public function setCardAmountOnOrder(OrderEvent $event)
     {
-        $cart = $this->request->getSession()->getCart();
+        $cart = $this->request->getSession()->getSessionCart();
 
         /** @var GiftCardService $gcservice */
         $gcservice = $this->container->get('giftcard.service');

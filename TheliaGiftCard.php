@@ -205,7 +205,7 @@ class TheliaGiftCard extends BaseModule implements PaymentModuleInterface
     private function calculDeltaOrderGiftCard()
     {
         $giftCardService = $this->getContainer()->get('giftcard.amount.spend.service');
-        $totalGiftCardAmount = $giftCardService->calculTotalGCDelievery($this->getRequest()->getSession()->getCart());
+        $totalGiftCardAmount = $giftCardService->calculTotalGCDelievery($this->getRequest()->getSession()->getSessionCart());
 
         if ($totalGiftCardAmount >= $this->getCurrentOrderTotalAmount()) {
             return $totalGiftCardAmount - $this->getCurrentOrderTotalAmount();
