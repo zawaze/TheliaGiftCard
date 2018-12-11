@@ -1,10 +1,19 @@
 {ifloop rel="cart.card.gift"}
-<th class="gift-card">{intl l="Gift Card Used"}</th>
-<td>
-    {loop type="cart.list.card.gift" name="cart.card.gift"}
-    {assign "total" 0}
-        <p>{$PRODUCT} : {format_money number=$SPEND_AMOUNT currency_id=$CURRENCY}</p>
-    {/loop}
-    <p><b>Total : {getGitCardTotal}</b></p>
-</td>
+{assign 'cumulGiftCard' {getGitCardTotal}}
+<tr>
+    <th class="gift-card">{intl l="Gift Card Used"}</th>
+    <td>
+        {loop type="cart.list.card.gift" name="cart.card.gift"}
+        {assign "total" 0}
+            <p>{$PRODUCT} : {format_money number=$SPEND_AMOUNT currency_id=$CURRENCY}</p>
+        {/loop}
+        <p><b>Total : {$cumulGiftCard}</b></p>
+    </td>
+</tr>
+<tr>
+    <th class="total gift-card">{intl l="Total"}</th>
+    <td class="total gift-card total-with-card">
+        {format_money number={$total_without_giftcard - $cumulGiftCard} currency_id=$CURRENCY}
+    </td>
+</tr>
 {/ifloop}

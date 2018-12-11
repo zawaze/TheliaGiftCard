@@ -28,7 +28,7 @@ class HookFrontManager extends BaseHook
     public function onCartInvoiceBottom(HookRenderEvent $event)
     {
         $event->add(
-            $this->render("cart-invoice-gift-card.html")
+            $this->render("cart-invoice-gift-card.html", ['total_without_giftcard' =>  $event->getArgument('total')])
         );
     }
 }
