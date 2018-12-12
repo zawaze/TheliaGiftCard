@@ -12,12 +12,15 @@ use Thelia\Core\Event\TheliaEvents;
 use Thelia\Core\Template\TemplateDefinition;
 use Thelia\Core\Translation\Translator;
 use Thelia\Install\Database;
+use Thelia\Model\CategoryQuery;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\LangQuery;
 use Thelia\Model\Message;
 use Thelia\Model\MessageQuery;
 use Thelia\Model\Order;
 use Thelia\Model\OrderStatusQuery;
+use Thelia\Model\ProductCategory;
+use Thelia\Model\ProductCategoryQuery;
 use Thelia\Module\BaseModule;
 use Thelia\Module\PaymentModuleInterface;
 use TheliaGiftCard\Model\GiftCardCartQuery;
@@ -212,5 +215,25 @@ class TheliaGiftCard extends BaseModule implements PaymentModuleInterface
         }
 
         return false;
+    }
+
+    public static function getGiftCardProductList()
+    {
+        $tab =[];
+
+        $category =  CategoryQuery::create()->findPk(TheliaGiftCard::getGiftCardCategoryId());
+
+        if(null !== $category){
+            $products = ProductCategoryQuery::create()
+                ->filterByCategoryId($category->getId())
+                ->find();
+
+            /** @var ProductCategory $product */
+            foreach ($products as $product){
+                $tab [] = $product->getProductId();
+            }
+        }
+
+        return $tab;
     }
 }

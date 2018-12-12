@@ -61,7 +61,7 @@ class OrderPayListener implements EventSubscriberInterface
 
                 $productId = $pse->getProduct()->getId();
 
-                $tabProductGiftCard =  $this->getGiftCardProductList();
+                $tabProductGiftCard =  TheliaGiftCard::getGiftCardProductList();
 
                 if (in_array($productId, $tabProductGiftCard)) {
 
@@ -116,10 +116,12 @@ class OrderPayListener implements EventSubscriberInterface
 
         $orderCardGift = GiftCardOrderQuery::create()->filterByOrderId($order->getId())->findOne();
 
-        $order
-            ->setPostage($orderCardGift->getInitialPostage())
-            ->setDiscount($orderCardGift->getInitialDiscount())
-            ->save();
+        if($orderCardGift) {
+            $order
+                ->setPostage($orderCardGift->getInitialPostage())
+                ->setDiscount($orderCardGift->getInitialDiscount())
+                ->save();
+        }
 
         $datasGC = GiftCardCartQuery::create()->filterByCartId($cart->getId())->find();
 
@@ -198,7 +200,7 @@ class OrderPayListener implements EventSubscriberInterface
 
             $productId = $pse->getProduct()->getId();
 
-            $tabProductGiftCard =  $this->getGiftCardProductList();
+            $tabProductGiftCard =  TheliaGiftCard::getGiftCardProductList();
 
             if (in_array($productId, $tabProductGiftCard)) {
 
@@ -211,25 +213,5 @@ class OrderPayListener implements EventSubscriberInterface
         }
 
         return $cpt;
-    }
-
-    private function getGiftCardProductList()
-    {
-        $tab =[];
-
-        $category =  CategoryQuery::create()->findPk(TheliaGiftCard::getGiftCardCategoryId());
-
-        if(null !== $category){
-            $products = ProductCategoryQuery::create()
-                ->filterByCategoryId($category->getId())
-                ->find();
-
-            /** @var ProductCategory $product */
-            foreach ($products as $product){
-                $tab [] = $product->getProductId();
-            }
-        }
-
-        return $tab;
     }
 }

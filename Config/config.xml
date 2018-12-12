@@ -52,6 +52,7 @@
         </hook>
         <hook id="theliagiftcard.front.account.hook" class="TheliaGiftCard\Hook\HookFrontManager">
             <tag name="hook.event_listener" event="account.bottom" type="front" method="onAccountBottom" />
+            <tag name="hook.event_listener" event="product.bottom" type="front" method="onProductAdditional" />
             <tag name="hook.event_listener" event="order-invoice.giftcard-form" type="front" method="onOrderInvoiceBottom" />
             <tag name="hook.event_listener" event="order-invoice.cart-giftcard-form" type="front" method="onCartInvoiceBottom" />
         </hook>
