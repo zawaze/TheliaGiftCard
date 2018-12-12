@@ -73,6 +73,37 @@ CREATE TABLE `gift_card_customer`
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
+-- gift_card_info_cart
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `gift_card_info_cart`;
+
+CREATE TABLE `gift_card_info_cart`
+(
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `order_product_id` INTEGER,
+    `gift_card_id` INTEGER,
+    `cart_id` INTEGER NOT NULL,
+    `cart_item_id` INTEGER NOT NULL,
+    `sponsor_name` VARCHAR(16),
+    `beneficiary_name` VARCHAR(16),
+    `beneficiary_message` VARCHAR(16),
+    PRIMARY KEY (`id`),
+    INDEX `FI_gift_card_info_cart` (`cart_id`),
+    INDEX `FI_gift_card_info_cart_item` (`cart_item_id`),
+    CONSTRAINT `fk_gift_card_info_cart`
+        FOREIGN KEY (`cart_id`)
+        REFERENCES `cart` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT `fk_gift_card_info_cart_item`
+        FOREIGN KEY (`cart_item_id`)
+        REFERENCES `cart_item` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
 -- gift_card_cart
 -- ---------------------------------------------------------------------
 

@@ -8,6 +8,7 @@ namespace TheliaGiftCard\Smarty\Plugins;
 
 use TheliaGiftCard\Model\GiftCardCart;
 use TheliaGiftCard\Model\GiftCardCartQuery;
+use TheliaGiftCard\Model\GiftCardInfoCartQuery;
 use TheliaGiftCard\TheliaGiftCard;
 use TheliaSmarty\Template\AbstractSmartyPlugin;
 use TheliaSmarty\Template\SmartyPluginDescriptor;
@@ -30,6 +31,7 @@ class GiftCardSmartyPlugin extends AbstractSmartyPlugin
         return array(
             new SmartyPluginDescriptor('function', 'getGitCardTotal', $this, 'getGitCardTotalOnCart'),
             new SmartyPluginDescriptor('function', 'getGitCardMode', $this, 'getGitCardMode'),
+            new SmartyPluginDescriptor('function', 'getGitCardInfo', $this, 'getGitCardInfo'),
         );
     }
 
@@ -53,9 +55,32 @@ class GiftCardSmartyPlugin extends AbstractSmartyPlugin
         }
     }
 
+    public function getGitCardInfo($params, $smarty)
+    {
+        $cart = $this->request->getSession()->getSessionCart();
+
+        $cartItemId = $params['cart_item_id'];
+
+        $infoGiftCard = GiftCardInfoCartQuery::create()
+            ->filterByCartId($cart->getId())
+            ->filterByCartItemId($cartItemId)
+            ->findOne();
+
+        if ($infoGiftCard) {
+            $smarty->assign(['sponsor_name' => $infoGiftCard->getSponsorName()]);
+            $smarty->assign(['beneficiary_name' => $infoGiftCard->getBeneficiaryName()]);
+            $smarty->assign(['beneficiary_message' => $infoGiftCard->getBeneficiaryMessage()]);
+        } else {
+            $smarty->assign(['sponsor_name' => ""]);
+            $smarty->assign(['beneficiary_name' => ""]);
+            $smarty->assign(['beneficiary_message' => ""]);
+        }
+
+    }
+
     public function getGitCardMode()
     {
-        if(TheliaGiftCard::getGiftCardModeId()){
+        if (TheliaGiftCard::getGiftCardModeId()) {
             return false;
         }
         return true;

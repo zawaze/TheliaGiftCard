@@ -47,6 +47,25 @@
         <behavior name="timestampable" />
     </table>
 
+    <table name="gift_card_info_cart" namespace="TheliaGiftCard\Model">
+        <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
+        <column name="order_product_id" type="INTEGER"/>
+        <column name="gift_card_id" type="INTEGER" />
+        <column name="cart_id" required="true" type="INTEGER" />
+        <column name="cart_item_id" required="true" type="INTEGER" />
+        <column name="sponsor_name" size="16" type="VARCHAR" />
+        <column name="beneficiary_name" size="16" type="VARCHAR" />
+        <column name="beneficiary_message" size="16" type="VARCHAR" />
+
+        <foreign-key foreignTable="cart" name="fk_gift_card_info_cart" onDelete="CASCADE" onUpdate="CASCADE">
+            <reference foreign="id" local="cart_id" />
+        </foreign-key>
+
+        <foreign-key foreignTable="cart_item" name="fk_gift_card_info_cart_item" onDelete="CASCADE" onUpdate="CASCADE">
+            <reference foreign="id" local="cart_item_id" />
+        </foreign-key>
+    </table>
+
     <table name="gift_card_cart" namespace="TheliaGiftCard\Model">
         <column autoIncrement="true" name="id" primaryKey="true" required="true" type="INTEGER" />
 

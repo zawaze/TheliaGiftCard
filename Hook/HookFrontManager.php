@@ -30,7 +30,7 @@ class HookFrontManager extends BaseHook
     public function onCartInvoiceBottom(HookRenderEvent $event)
     {
         $event->add(
-            $this->render("cart-invoice-gift-card.html", ['total_without_giftcard' =>  $event->getArgument('total')])
+            $this->render("cart-invoice-gift-card.html", ['total_without_giftcard' => $event->getArgument('total')])
         );
     }
 
@@ -38,11 +38,11 @@ class HookFrontManager extends BaseHook
     {
         $productId = $event->getArgument('product');
 
-        $tabProductGiftCard =  TheliaGiftCard::getGiftCardProductList();
+        $tabProductGiftCard = TheliaGiftCard::getGiftCardProductList();
 
         if (in_array($productId, $tabProductGiftCard)) {
             $event->add(
-                $this->render("product-additional-gift-card.html")
+                $this->render("product-additional-gift-card.html", ['product_id' => $productId])
             );
         }
     }

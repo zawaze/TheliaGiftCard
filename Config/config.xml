@@ -19,6 +19,7 @@
         <form name="add.code.card.gift" class="TheliaGiftCard\Form\AddCardGiftCustomerForm" />
         <form name="send.code.card.gift" class="TheliaGiftCard\Form\SendCodeCGForm" />
         <form name="config.card.gift" class="TheliaGiftCard\Form\GiftCardConfigForm" />
+        <form name="info.card.gift" class="TheliaGiftCard\Form\InfoCGForm" />
     </forms>
 
     <commands>

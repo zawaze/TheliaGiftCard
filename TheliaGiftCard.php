@@ -25,6 +25,7 @@ use Thelia\Module\BaseModule;
 use Thelia\Module\PaymentModuleInterface;
 use TheliaGiftCard\Model\GiftCardCartQuery;
 use TheliaGiftCard\Model\GiftCardCustomerQuery;
+use TheliaGiftCard\Model\GiftCardInfoCartQuery;
 use TheliaGiftCard\Model\GiftCardOrderQuery;
 use TheliaGiftCard\Model\GiftCardQuery;
 use TheliaGiftCard\Service\GiftCardService;
@@ -80,6 +81,7 @@ class TheliaGiftCard extends BaseModule implements PaymentModuleInterface
             GiftCardCartQuery::create()->findOne();
             GiftCardCustomerQuery::create()->findOne();
             GiftCardOrderQuery::create()->findOne();
+            GiftCardInfoCartQuery::create()->findOne();
 
         } catch (\Exception $e) {
             $database = new Database($con);

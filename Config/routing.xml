@@ -16,6 +16,10 @@
     <route id="send.code.card.gift.route" path="/card-gift/send-code">
         <default key="_controller">TheliaGiftCard\Controller\GiftCardCartController::sendEmailGiftCardAction</default>
     </route>
+    <route id="save.info.gift.route" path="/card-gift/save-info">
+        <default key="_controller">TheliaGiftCard\Controller\GiftCardCartController::saveInfoAction</default>
+    </route>
+
     <route id="activate.pdf.card.gift.route" path="/admin/module/theliagiftcard/activate/{codeGC}">
         <default key="_controller">TheliaGiftCard\Controller\GiftCardConfigController::activateGiftCardAction</default>
     </route>
