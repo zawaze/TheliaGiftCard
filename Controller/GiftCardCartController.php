@@ -253,6 +253,19 @@ class GiftCardCartController extends BaseFrontController
             $email = $sendForm->get('email')->getData();
             $code = $sendForm->get('code-to-send')->getData();
 
+            $message = "";
+            $sponsor = "";
+            $beneficiary = "";
+
+            $giftCard = GiftCardQuery::create()->findOneByCode($code);
+            $giftCardInfo = GiftCardInfoCartQuery::create()->findOneByGiftCardId($giftCard->getId());
+
+            if ($giftCardInfo) {
+                $message = $giftCardInfo->getBeneficiaryMessage();
+                $sponsor = $giftCardInfo->getSponsorName();
+                $beneficiary = $giftCardInfo->getBeneficiaryName();
+            }
+
             /** @var Customer $customer */
             $customer = $this->getSession()->getCustomerUser();
 
@@ -264,6 +277,9 @@ class GiftCardCartController extends BaseFrontController
                 [$email => $email],
                 [
                     'CODE' => $code,
+                    "sponsor" => $sponsor,
+                    "message" => $message,
+                    "beneficiary" => $beneficiary
                 ]
             );
 

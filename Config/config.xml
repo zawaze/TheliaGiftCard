@@ -22,12 +22,6 @@
         <form name="info.card.gift" class="TheliaGiftCard\Form\InfoCGForm" />
     </forms>
 
-    <commands>
-        <!--
-        <command class="TheliaGiftCard\Command\MySuperCommand" />
-        -->
-    </commands>
-
     <services>
         <service id="giftcard.service" class="TheliaGiftCard\Service\GiftCardService">
         </service>
@@ -44,7 +38,6 @@
             <tag name="thelia.parser.register_plugin"/>
             <argument type="service" id="request" />
         </service>
-
     </services>
 
     <hooks>

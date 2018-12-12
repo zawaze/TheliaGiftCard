@@ -92,9 +92,9 @@ class TheliaGiftCard extends BaseModule implements PaymentModuleInterface
             $message = new Message();
             $message
                 ->setName('mail_giftcard')
-                ->setHtmlTemplateFileName('email-gift_card.html')
+                ->setHtmlTemplateFileName('send-gift-card.html')
                 ->setHtmlLayoutFileName('')
-                ->setTextTemplateFileName('email-gift_card.txt')
+                ->setTextTemplateFileName('send-gift-card.html')
                 ->setTextLayoutFileName('')
                 ->setSecured(0);
 

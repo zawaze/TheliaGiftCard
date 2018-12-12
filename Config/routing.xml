@@ -4,7 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <route id="add.code..card.gift.route" path="/card-gift/add-code" methods="post">
+    <route id="add.code.card.gift.route" path="/card-gift/add-code" methods="post">
         <default key="_controller">TheliaGiftCard\Controller\GiftCardCartController::addGiftCardAction</default>
     </route>
     <route id="spend.amount.card.gift.route" path="/card-gift/spend">

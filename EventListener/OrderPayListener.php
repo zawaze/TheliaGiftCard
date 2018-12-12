@@ -103,6 +103,16 @@ class OrderPayListener implements EventSubscriberInterface
 
                             $newGiftCard->save();
                         }
+
+                        $giftCardInfo = GiftCardInfoCartQuery::create()
+                                ->filterByOrderProductId($orderProduct->getId())
+                                ->findOne();
+
+                        if($giftCardInfo){
+                            $giftCardInfo
+                                ->setGiftCardId($newGiftCard->getId())
+                                ->save();
+                        }
                     }
                 }
             }
