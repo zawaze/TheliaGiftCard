@@ -14,7 +14,9 @@ use Thelia\Form\Exception\FormValidationException;
 use Thelia\Log\Tlog;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\CustomerQuery;
+use TheliaGiftCard\Model\GiftCardInfoCartQuery;
 use TheliaGiftCard\Model\GiftCardQuery;
+use TheliaGiftCard\Smarty\Plugins\GiftCardSmartyPlugin;
 use TheliaGiftCard\TheliaGiftCard;
 
 class GiftCardConfigController extends BaseFrontController
@@ -49,9 +51,48 @@ class GiftCardConfigController extends BaseFrontController
         return $this->generateRedirect('/admin/module/TheliaGiftCard');
     }
 
-    public function generatePdfAction()
+    public function generatePdfAction($code)
     {
         $this->checkAuth();
+
+        $giftCard = GiftCardQuery::create()->findOneByCode($code);
+
+        if ($giftCard) {
+            $infoGiftCard = GiftCardInfoCartQuery::create()->findOneByGiftCardId($giftCard->getId());
+
+            if ($infoGiftCard) {
+                $sponsor_name = $infoGiftCard->getSponsorName();
+                $beneficiary_name = $infoGiftCard->getBeneficiaryName();
+                $beneficiary_message = $infoGiftCard->getBeneficiaryMessage();
+            } else {
+                $sponsor_name = "";
+                $beneficiary_name = "";
+                $beneficiary_message = "";
+            }
+        }
+
+        $html = $this->renderRaw(
+            'giftCard',
+            [
+                'message' => $beneficiary_message,
+                'code' => $code,
+                'beneficiaryname' => $beneficiary_name,
+                'sponsor' => $sponsor_name,
+            ],
+            $this->getTemplateHelper()->getActivePdfTemplate()
+        );
+
+        $pdfEvent = new PdfEvent($html);
+
+        $this->dispatch(TheliaEvents::GENERATE_PDF, $pdfEvent);
+
+        if ($pdfEvent->hasPdf()) {
+            return $this->pdfResponse($pdfEvent->getPdf(), 'gift_card', 200, true);
+        }
+
+
+
+        /*
 
         $form = $this->createForm('send.code.card.gift');
 
@@ -91,7 +132,7 @@ class GiftCardConfigController extends BaseFrontController
                 ->addForm($form)
                 ->setGeneralError($error_message);
         }
-
+        */
         return $this->generateRedirect('/admin/module/TheliaGiftCard');
     }
 

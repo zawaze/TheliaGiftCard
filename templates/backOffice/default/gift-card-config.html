@@ -83,7 +83,7 @@
                     </td>
                     <td>
                         {if $STATUS}
-                            <a class="btn btn-default" data-toggle="modal" href="#generatePdf{$ID}" title="{intl l="GENERATE_PDF_GIFT_CARD"}" target="_blank"><span class="glyphicon 	glyphicon glyphicon-send"></span></a>
+                            <a class="btn btn-default" data-toggle="modal" href="{url path="/admin/module/theliagiftcard/config/send/pdf/giftcard/"}{$CODE}" title="{intl l="GENERATE_PDF_GIFT_CARD"}" target="_blank"><span class="glyphicon 	glyphicon glyphicon-send"></span></a>
                         {else}
                             <a class="btn btn-success btn-default" href="{url path="/admin/module/theliagiftcard/activate/"}{$CODE}" title="{intl l="Activate_GIFT_CARD"}"><span class="glyphicon glyphicon glyphicon-off"></span></a>
                         {/if}

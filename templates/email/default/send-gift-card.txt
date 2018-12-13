@@ -1,12 +1,16 @@
-{intl l="Bonjour"},
+{intl l="Bonjour "}{if $beneficiary}{$beneficiary}{/if},
 
+{if $sponsor}
 {intl l="Nous avons les plaisir de vous transmettre votre code pour benificier de votre carte cadeau"}
-
+{else}
+    {intl l="Vous avez reçu une carte cadeau de la part de "}
+    {$sponsor}
+    {if $message}
+        {intl l="Pour accompagner cette carte cadeau, on vous a laissé un message : "}
+        "{$message}"
+    {/if}
+{/if}
 {intl l="Rendez-vous dons votre espace client et entrez le code suivant : "}
-    {$CODE}
-
-{$MESSAGE}
-
-{intl l="N'hesitez pas à nous contacter pour de plus amples informations"}</p>
-
+{$CODE}
+{intl l="N'hesitez pas à nous contacter pour de plus amples informations"}
 {intl l="Salutations."}

@@ -26,7 +26,7 @@
     <route id="config.card.gift.route" path="/admin/module/theliagiftcard/config/edit/giftcard">
         <default key="_controller">TheliaGiftCard\Controller\GiftCardConfigController::editConfigAction</default>
     </route>
-    <route id="config.pdf.card.gift.route" path="/admin/module/theliagiftcard/config/send/pdf/giftcard">
+    <route id="config.pdf.card.gift.route" path="/admin/module/theliagiftcard/config/send/pdf/giftcard/{code}">
         <default key="_controller">TheliaGiftCard\Controller\GiftCardConfigController::generatePdfAction</default>
     </route>
 </routes>
