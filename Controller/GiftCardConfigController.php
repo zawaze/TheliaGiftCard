@@ -53,62 +53,23 @@ class GiftCardConfigController extends BaseFrontController
 
     public function generatePdfAction($code)
     {
-        $this->checkAuth();
+        //$this->checkAuth();
 
-        $giftCard = GiftCardQuery::create()->findOneByCode($code);
-
-        if ($giftCard) {
-            $infoGiftCard = GiftCardInfoCartQuery::create()->findOneByGiftCardId($giftCard->getId());
-
-            if ($infoGiftCard) {
-                $sponsor_name = $infoGiftCard->getSponsorName();
-                $beneficiary_name = $infoGiftCard->getBeneficiaryName();
-                $beneficiary_message = $infoGiftCard->getBeneficiaryMessage();
-            } else {
-                $sponsor_name = "";
-                $beneficiary_name = "";
-                $beneficiary_message = "";
-            }
-        }
-
-        $html = $this->renderRaw(
-            'giftCard',
-            [
-                'message' => $beneficiary_message,
-                'code' => $code,
-                'beneficiaryname' => $beneficiary_name,
-                'sponsor' => $sponsor_name,
-            ],
-            $this->getTemplateHelper()->getActivePdfTemplate()
-        );
-
-        $pdfEvent = new PdfEvent($html);
-
-        $this->dispatch(TheliaEvents::GENERATE_PDF, $pdfEvent);
-
-        if ($pdfEvent->hasPdf()) {
-            return $this->pdfResponse($pdfEvent->getPdf(), 'gift_card', 200, true);
-        }
-
-
-
-        /*
-
-        $form = $this->createForm('send.code.card.gift');
+        //$form = $this->createForm('send.code.card.gift');
 
         try {
-            $configPdfForm = $this->validateForm($form);
+            //$configPdfForm = $this->validateForm($form);
 
 
-            $customerId = $configPdfForm->get('sponsor')->getData();
-            $customer = CustomerQuery::create()->findPk($customerId);
+            //$customerId = $configPdfForm->get('sponsor')->getData();
+            //$customer = CustomerQuery::create()->findPk($customerId);
 
 
             $html = $this->renderRaw(
                 'giftCard',
                 array(
-                    'message' => 'fsqd qsfdq sdf qsdfqsd ',
-                    'code' => $configPdfForm->get('code-to-send')->getData(),
+                    'message' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam eget aliquam neque. Curabitur in elit eu felis vestibulum venenatis. Morbi eros sem, tristique nec viverra nec, congue sit amet felis. ',
+                    'code' => 'FSEZRRQF',//$configPdfForm->get('code-to-send')->getData(),
                     'FIRSTNAME' => 'Bertrand',
                     'LASTNAME' => 'Tourlonias'
                 ),
@@ -126,13 +87,12 @@ class GiftCardConfigController extends BaseFrontController
 
         } catch (FormValidationException $error_message) {
 
-            $error_message = $error_message->getMessage();
+            /*$error_message = $error_message->getMessage();
             $form->setErrorMessage($error_message);
             $this->getParserContext()
                 ->addForm($form)
-                ->setGeneralError($error_message);
+                ->setGeneralError($error_message);*/
         }
-        */
         return $this->generateRedirect('/admin/module/TheliaGiftCard');
     }
 
